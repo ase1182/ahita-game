@@ -4,53 +4,71 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>また明日も会うきみへ</title>
+  <meta name="description" content="森のおやつ会で、7日間だけ相手とおやつを分けます。相手は、昨日のあなたを覚えています。" />
+  <meta property="og:title" content="また明日も会うきみへ" />
+  <meta property="og:description" content="森のおやつ会で、7日間だけ相手とおやつを分けます。相手は、昨日のあなたを覚えています。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="" />
+  <meta property="og:image" content="" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="game">
+  <main class="game" aria-live="polite">
     <h1>また明日も会うきみへ</h1>
 
-    <section id="start-screen">
+    <section id="start-screen" class="card">
       <p>
         森の広場には、毎日おやつが置かれます。<br>
         あなたと相手は、同時に手を伸ばします。<br>
         この森では、昨日のことをみんな覚えています。
       </p>
-      <button id="start-button">森へ行く</button>
+      <button id="start-button" type="button">森へ行く</button>
     </section>
 
-    <section id="game-screen" hidden>
-      <p id="day-label">1日目</p>
+    <section id="game-screen" class="card" hidden aria-label="ゲーム画面">
+      <div class="day-row">
+        <p id="day-label" class="day">1日目</p>
+        <p id="day-note" class="day-note">7日間のうち 1日目</p>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
       <div class="scene">
-        <div class="character">あなた</div>
-        <div class="snack">🍪</div>
-        <div class="character" id="opponent-name">？？？</div>
+        <div class="character" aria-label="あなた">🙂<small>あなた</small></div>
+        <div class="snack" id="snack-icon" aria-hidden="true">🍪</div>
+        <div class="character mystery" id="opponent-name" aria-label="相手">🐾<small>？？？</small></div>
       </div>
 
-      <p id="message">どうしますか？</p>
+      <p id="message" role="status" aria-live="polite">どうしますか？</p>
 
       <div class="buttons">
-        <button id="share-button">わける</button>
-        <button id="take-button">ひとりじめ</button>
+        <button id="share-button" type="button">わける</button>
+        <button id="take-button" type="button">ひとりじめ</button>
       </div>
     </section>
 
-    <section id="result-screen" hidden>
+    <section id="result-screen" class="card" hidden aria-label="結果画面">
       <h2 id="result-title"></h2>
       <p id="result-text"></p>
 
       <h3 id="opponent-reveal"></h3>
       <p id="opponent-text"></p>
 
-      <button id="retry-button">もう一度、森へ行く</button>
+      <p id="relationship-ending" class="sub-result"></p>
+      <p id="snack-result" class="sub-result"></p>
 
-      <div class="theory">
-        <h3>この森のしくみ</h3>
+      <details class="theory">
+        <summary>この森のしくみ</summary>
         <p>
           このゲームは、ゲーム理論で知られる「囚人のジレンマ」をもとにした小さな体験です。
           一度きりなら、ひとりじめは強い選択です。
-          でも、同じ相手と何度も会うなら、昨日のことが関係を変えます。
+          でも、同じ相手と何度も会うなら、「昨日のこと」が関係を変えます。
         </p>
+      </details>
+
+      <div class="buttons result-buttons">
+        <button id="retry-button" type="button">もう一度、森へ行く</button>
+        <button id="share-result-button" type="button">Xで共有</button>
       </div>
     </section>
   </main>
