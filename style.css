@@ -93,6 +93,29 @@ body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
 #result-screen .theory details summary{cursor:pointer;font-weight:700;color:#2f261b}
 #result-screen .theory details p{margin-top:8px;color:#31291d;line-height:1.8;font-size:.9rem}
 @media (max-width:640px){.day-note{font-size:.9rem;max-width:68%}#message{min-height:52px}.buttons{bottom:6px}button{padding:10px 14px}#start-screen > p{padding:12px 13px}#result-screen .result-opponent-body{flex-direction:column;align-items:flex-start;gap:8px}#result-screen .result-opponent-wrap{align-self:center}#result-screen .result-opponent-image{width:110px;height:110px}#result-screen .result-panel{padding:11px 11px}#result-screen .result-primary #result-text{font-size:.98rem}#result-screen .result-buttons{bottom:0}}
+@media (max-width:420px){
+  .game{padding:14px 10px 22px}
+  .day-row{padding:8px}
+  .day-note{max-width:64%;font-size:.87rem}
+  .footprint-wrap{padding:7px}
+  .footprint-line{gap:6px}
+  .footprint-row{gap:5px}
+  .forest-stage{height:206px;margin-bottom:8px}
+  .character-card{bottom:44px;min-width:88px;padding:7px}
+  .stump{bottom:56px}
+  #message{padding:9px 10px;margin-bottom:8px;line-height:1.65}
+  .buttons{bottom:0;gap:8px;padding-bottom:calc(2px + env(safe-area-inset-bottom))}
+  button{min-height:50px;padding:10px 12px}
+  #result-screen{gap:8px}
+  #result-screen .result-panel{padding:10px}
+  #result-screen .result-footprint-wrap{padding:7px}
+  #result-screen .result-buttons{padding:8px}
+  #result-screen .result-buttons button{min-height:50px}
+  #result-screen .ending-scene{height:66px;margin-bottom:2px}
+  #result-screen .theory{padding:9px 10px}
+  #result-screen .theory > p{line-height:1.7}
+  #result-screen .theory details summary{padding:8px 0}
+}
 
 @media (max-width:900px){body{background-attachment:scroll}}
 @media (prefers-reduced-motion:no-preference){#progress-bar,#snack-icon,.player,.mystery,.forest-stage{transition:all .35s ease}.forest-stage.pulse{animation:flash .55s ease}.character-card.nod{animation:nod .55s ease}@keyframes flash{0%{filter:brightness(1)}50%{filter:brightness(1.08)}100%{filter:brightness(1)}}@keyframes nod{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}}
