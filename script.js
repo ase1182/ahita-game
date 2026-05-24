@@ -106,7 +106,9 @@ function updateScreen() {
 function setupOpponentShadow() {
   const shadowImage = "assets/character-shadow.webp";
   opponentImage.hidden = false;
+  opponentFallback.hidden = true;
   opponentImage.alt = "正体のわからない相手";
+  opponentImage.classList.add("unknown-character-image");
   opponentImage.src = shadowImage;
   opponentImage.onerror = () => {
     opponentImage.hidden = true;
@@ -150,6 +152,7 @@ function showResult() {
 function renderResultOpponent() {
   const { name, image, emoji } = state.currentOpponent;
   resultOpponentImage.hidden = false;
+  resultOpponentFallback.hidden = true;
   resultOpponentImage.alt = name;
   resultOpponentImage.src = image || "";
   resultOpponentImage.onerror = () => {

@@ -43,3 +43,38 @@ button:disabled{opacity:.52;filter:grayscale(.3);box-shadow:none}
 .sub-result{margin-top:10px;font-size:.95rem}.theory{margin-top:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,.45)}
 .result-buttons{margin-top:14px}
 @media (prefers-reduced-motion:no-preference){#progress-bar,#snack-icon,.player,.mystery,.forest-stage{transition:all .35s ease}.forest-stage.pulse{animation:flash .55s ease}.character-card.nod{animation:nod .55s ease}@keyframes flash{0%{filter:brightness(1)}50%{filter:brightness(1.12)}100%{filter:brightness(1)}}@keyframes nod{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}}
+
+
+/* Phase 2.8: prioritize uploaded image assets */
+.has-image-assets .forest-stage{
+  background:
+    linear-gradient(rgba(28,24,20,.14), rgba(28,24,20,.24)),
+    url("assets/bg-forest-dusk.webp"),
+    linear-gradient(180deg,#c8d4c4 0%,#7f9272 100%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.has-image-assets .stage-overlay{
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(18,16,12,.06));
+}
+.has-image-assets .trees,
+.has-image-assets .ground,
+.has-image-assets .grass{
+  display:none;
+}
+.character-image{
+  width:96px;
+  height:96px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto 2px;
+  background: transparent;
+}
+.mystery .character-image{
+  filter: brightness(.75) contrast(.95);
+  opacity:.9;
+}
+.has-image-assets .character-card.mystery{
+  background: rgba(38,41,37,.35);
+}
