@@ -38,8 +38,14 @@
       <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
 
       <div class="footprint-wrap" aria-label="7日間の足あと">
-        <div class="footprint-row" id="player-track" aria-label="あなたの足あと"></div>
-        <div class="footprint-row" id="opponent-track" aria-label="相手の足あと"></div>
+        <div class="footprint-line">
+          <span class="footprint-label">あなた</span>
+          <div class="footprint-row" id="player-track" aria-label="あなたの足あと"></div>
+        </div>
+        <div class="footprint-line">
+          <span class="footprint-label">相手</span>
+          <div class="footprint-row" id="opponent-track" aria-label="相手の足あと"></div>
+        </div>
       </div>
 
       <div class="forest-stage game-stage image-backed-stage" id="forest-stage">
@@ -51,7 +57,7 @@
         <div class="stump" id="snack-zone"><span id="snack-icon">🍪</span></div>
         <div class="character-card mystery" id="opponent-name">
           <img id="opponent-image" class="character-image" alt="正体のわからない相手" width="110" height="110" hidden>
-          <span id="opponent-fallback" class="animal">⬛</span>
+          <span id="opponent-fallback" class="animal mystery-fallback">？</span>
           <small>？？？</small>
         </div>
       </div>
