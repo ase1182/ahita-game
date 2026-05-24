@@ -87,8 +87,11 @@ body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
 #result-screen #new-opponent-button{background:rgba(248,244,229,.86);border-color:rgba(76,88,98,.35);box-shadow:0 8px 16px rgba(26,30,36,.16)}
 #result-screen #share-result-button{background:rgba(250,246,232,.74);font-weight:600}
 #result-screen .theory{margin-top:2px;padding:10px 12px;border-radius:12px;background:rgba(243,235,221,.48);border:1px solid rgba(80,70,55,.15)}
-#result-screen .theory summary{cursor:pointer;font-weight:700;color:#2f261b}
-#result-screen .theory p{margin-top:8px;color:#31291d;line-height:1.8;font-size:.92rem}
+#result-screen .theory h3{margin-bottom:6px}
+#result-screen .theory > p{margin-top:0;color:#31291d;line-height:1.8;font-size:.92rem}
+#result-screen .theory details{margin-top:8px;padding-top:8px;border-top:1px dashed rgba(90,77,59,.28)}
+#result-screen .theory details summary{cursor:pointer;font-weight:700;color:#2f261b}
+#result-screen .theory details p{margin-top:8px;color:#31291d;line-height:1.8;font-size:.9rem}
 @media (max-width:640px){.day-note{font-size:.9rem;max-width:68%}#message{min-height:52px}.buttons{bottom:6px}button{padding:10px 14px}#start-screen > p{padding:12px 13px}#result-screen .result-opponent-body{flex-direction:column;align-items:flex-start;gap:8px}#result-screen .result-opponent-wrap{align-self:center}#result-screen .result-opponent-image{width:110px;height:110px}#result-screen .result-panel{padding:11px 11px}#result-screen .result-primary #result-text{font-size:.98rem}#result-screen .result-buttons{bottom:0}}
 
 @media (max-width:900px){body{background-attachment:scroll}}
