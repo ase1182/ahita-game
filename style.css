@@ -1,4 +1,12 @@
-:root { --ink:#262117; --card:rgba(246,238,222,.86); }
+:root {
+  --ink:#262117;
+  --card:rgba(246,238,222,.86);
+  --panel-bg-color:rgba(242,238,220,.88);
+  --panel-border:rgba(76,66,50,.22);
+  --panel-texture-overlay-top:rgba(255,251,236,.44);
+  --panel-texture-overlay-bottom:rgba(216,206,182,.42);
+  --panel-shadow:0 10px 24px rgba(20,24,20,.18),inset 0 1px 0 rgba(255,255,255,.42),inset 0 -1px 0 rgba(80,70,48,.08);
+}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--ink);transition:background .5s ease;background:linear-gradient(rgba(18,22,18,.22),rgba(18,22,18,.36)),url("assets/bg-forest-dusk.webp") center/cover fixed no-repeat,linear-gradient(180deg,#3f4a3f 0%,#283028 100%)}
 .game{max-width:760px;margin:0 auto;padding:20px 14px 30px;background:transparent;border:none;border-radius:0;box-shadow:none}
@@ -162,3 +170,29 @@ body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
 
 #game-screen [hidden]{display:none!important}
 #result-screen[hidden]{display:none!important}
+
+#start-screen > p,
+#start-screen #start-button,
+#game-screen .day-row,
+#game-screen .footprint-wrap,
+#game-screen #message,
+#game-screen button:not(.bgm-toggle){
+  background-color:var(--panel-bg-color);
+  background-image:radial-gradient(circle at 18% 22%,rgba(255,255,255,.18),transparent 34%),linear-gradient(135deg,var(--panel-texture-overlay-top),var(--panel-texture-overlay-bottom)),url("assets/panel-texture.webp");
+  background-size:160px 120px,cover,cover;
+  background-position:left top,center,center;
+  border:1px solid var(--panel-border);
+  box-shadow:var(--panel-shadow);
+}
+
+#start-screen #start-button:hover,
+#start-screen #start-button:focus-visible,
+#game-screen button:not(.bgm-toggle):hover,
+#game-screen button:not(.bgm-toggle):focus-visible{
+  background-image:radial-gradient(circle at 18% 22%,rgba(255,255,255,.2),transparent 34%),linear-gradient(135deg,rgba(255,251,236,.48),rgba(220,209,184,.46)),url("assets/panel-texture.webp");
+}
+
+#start-screen #start-button:active,
+#game-screen button:not(.bgm-toggle):active{
+  background-image:radial-gradient(circle at 18% 22%,rgba(255,255,255,.12),transparent 34%),linear-gradient(135deg,rgba(245,237,214,.52),rgba(208,198,174,.5)),url("assets/panel-texture.webp");
+}
