@@ -28,6 +28,8 @@ const message = document.getElementById("message");
 const opponentName = document.getElementById("opponent-name");
 const playerTrack = document.getElementById("player-track");
 const opponentTrack = document.getElementById("opponent-track");
+const resultPlayerTrack = document.getElementById("result-player-track");
+const resultOpponentTrack = document.getElementById("result-opponent-track");
 const forestStage = document.getElementById("forest-stage");
 const playerCard = document.getElementById("player-card");
 const endingScene = document.getElementById("ending-scene");
@@ -195,8 +197,20 @@ function showResult() {
   renderResultOpponent();
   snackResult.innerHTML = `<span class="result-chip">あなたのおやつ ${state.playerScore}</span><span class="result-chip">相手のおやつ ${state.opponentScore}</span>`;
   relationshipEnding.textContent = `関係の結末：${getRelationshipEnding()}`;
+  renderResultTracks();
   renderEndingScene();
 }
+
+function renderResultTracks() {
+  if (!resultPlayerTrack || !resultOpponentTrack) return;
+  resultPlayerTrack.innerHTML = "";
+  resultOpponentTrack.innerHTML = "";
+  for (let i = 0; i < MAX_DAYS; i += 1) {
+    resultPlayerTrack.appendChild(makeStep(state.playerHistory[i], `結果 あなた ${i + 1}日目`));
+    resultOpponentTrack.appendChild(makeStep(state.opponentHistory[i], `結果 相手 ${i + 1}日目`));
+  }
+}
+
 
 function renderResultOpponent() {
   const { name, image, emoji } = state.currentOpponent;
