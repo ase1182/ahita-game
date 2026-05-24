@@ -71,7 +71,20 @@
     </section>
 
     <section id="result-screen" class="card" hidden aria-label="結果画面">
-      <div id="ending-scene" class="ending-scene"><span class="left">◯</span><span class="middle">🍪</span><span class="right">❓</span></div>
+      <section class="result-panel result-history" aria-label="7日間の足あと">
+        <h3>7日間の足あと</h3>
+        <div class="footprint-wrap result-footprint-wrap" aria-label="結果の足あと">
+          <div class="footprint-line">
+            <span class="footprint-label">あなた</span>
+            <div class="footprint-row" id="result-player-track" aria-label="結果:あなたの足あと"></div>
+          </div>
+          <div class="footprint-line">
+            <span class="footprint-label">相手</span>
+            <div class="footprint-row" id="result-opponent-track" aria-label="結果:相手の足あと"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="result-panel result-primary" aria-label="あなたの記録">
         <h2 id="result-title"></h2>
         <p id="result-text"></p>
@@ -95,6 +108,8 @@
       <section class="result-stats" aria-label="おやつ数">
         <p id="snack-result" class="sub-result"></p>
       </section>
+
+      <div id="ending-scene" class="ending-scene"><span class="left">◯</span><span class="middle">🍪</span><span class="right">❓</span></div>
 
       <div class="result-actions-divider" aria-hidden="true"></div>
 
