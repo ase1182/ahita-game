@@ -8,10 +8,12 @@ h1{text-align:center;margin:0 0 12px;font-size:clamp(1.5rem,4.6vw,2rem);color:#f
 p{line-height:1.75;margin:0}
 .mini-stage{height:96px;border-radius:16px;background:rgba(246,238,222,.78);backdrop-filter:blur(6px);display:flex;align-items:end;justify-content:space-between;padding:10px 16px;margin-bottom:12px;border:1px solid rgba(80,70,55,.18)}
 .mini-shadow{font-size:1.6rem;filter:grayscale(1) brightness(.45)} .mini-snack{font-size:1.8rem}
-.day-row{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:8px 10px;border-radius:12px;background:rgba(250,246,232,.78);border:1px solid rgba(80,70,55,.18);backdrop-filter:blur(6px)}.day{font-weight:700}.day-note{font-size:.86rem;opacity:.95}
+.day-row{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:8px 10px;border-radius:12px;background:rgba(250,246,232,.78);border:1px solid rgba(80,70,55,.18);backdrop-filter:blur(6px)}.day{font-weight:700}.day-note{font-size:.92rem;font-weight:500;color:rgba(43,36,26,.9);opacity:.98;max-width:72%;text-align:right}
 .progress{height:8px;background:rgba(45,40,34,.24);border-radius:999px;overflow:hidden;margin:8px 0 10px}#progress-bar{display:block;height:100%;width:14%;background:linear-gradient(90deg,#809579,#5d7058)}
-.footprint-wrap{margin:0 0 10px;padding:8px;border-radius:12px;background:rgba(250,246,232,.78);border:1px solid rgba(80,70,55,.18);backdrop-filter:blur(6px)}
-.footprint-row{display:flex;gap:6px;min-height:22px;align-items:center}
+.footprint-wrap{margin:0 0 10px;padding:8px;border-radius:12px;background:rgba(250,246,232,.78);border:1px solid rgba(80,70,55,.18);backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:4px}
+.footprint-line{display:flex;align-items:center;gap:8px}
+.footprint-label{font-size:.72rem;color:rgba(56,47,33,.82);font-weight:600;min-width:2.2em}
+.footprint-row{display:flex;gap:6px;min-height:22px;align-items:center;flex-wrap:wrap}
 .step{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.2);display:inline-block}
 .step.share{background:#ccd9c6}.step.take{background:#6d7869}.step.unknown{background:#e0d8ca}
 .forest-stage{position:relative;height:220px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,rgba(18,16,12,.08),rgba(18,16,12,.18));margin-bottom:10px;border:1px solid rgba(80,70,55,.12)}
@@ -25,6 +27,7 @@ p{line-height:1.75;margin:0}
 .player-silhouette::after{bottom:0;width:26px;height:26px;border-radius:48% 48% 38% 38%}
 .character-image{display:block;width:90px;height:90px;object-fit:contain;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.18);background:transparent;margin:0 auto 2px}
 .player{left:12px}.mystery{right:12px;background:rgba(40,40,36,.38);color:#f4efe5}.mystery .character-image{filter:brightness(.75) contrast(.85) saturate(.8);opacity:.72}.mystery .animal{filter:brightness(.62) grayscale(1)}
+.mystery-fallback{color:rgba(236,231,214,.8);font-size:1.85rem;opacity:.86;filter:none}
 .stump{position:absolute;left:50%;transform:translateX(-50%);bottom:60px;width:94px;height:62px;border-radius:44% 44% 40% 40%;background:linear-gradient(180deg,#9c7956,#6f5038);display:grid;place-items:center;border:2px solid rgba(64,45,30,.46);z-index:2;box-shadow:0 8px 10px rgba(0,0,0,.22)}
 .stump::before{content:"";position:absolute;top:6px;left:50%;transform:translateX(-50%);width:72px;height:16px;border-radius:50%;background:radial-gradient(circle at 50% 45%,rgba(217,188,152,.65) 0%,rgba(138,102,73,.46) 90%)}
 #snack-icon{font-size:1.9rem;display:block;transform-origin:center;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
@@ -32,7 +35,7 @@ p{line-height:1.75;margin:0}
 .buttons{display:flex;flex-direction:column;gap:10px;position:sticky;bottom:8px}
 button{border:1px solid rgba(69,59,46,.32);border-radius:18px;padding:11px 16px;font-size:1rem;font-weight:700;background:rgba(250,246,232,.84);color:#262118;box-shadow:0 7px 14px rgba(20,16,12,.22);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;gap:2px}
 button .label-main{line-height:1.2}
-button .label-sub{font-size:.74rem;font-weight:500;opacity:.86}
+button .label-sub{font-size:.82rem;font-weight:500;opacity:.94;line-height:1.3}
 button:disabled{opacity:.52;filter:grayscale(.3);box-shadow:none}
 button:focus-visible{outline:3px solid rgba(88,111,85,.55);outline-offset:2px}
 .turn-cc .stump{filter:brightness(1.08)} .turn-tt .forest-stage{filter:brightness(.88)} .turn-ts .mystery{filter:brightness(.8)} .turn-st .player{filter:saturate(.7) brightness(.94)}
@@ -45,6 +48,20 @@ button:focus-visible{outline:3px solid rgba(88,111,85,.55);outline-offset:2px}
 .result-opponent-fallback{font-size:2.5rem}
 .sub-result{margin-top:10px;font-size:.95rem}.theory{margin-top:14px;padding:12px;border-radius:12px;background:rgba(243,235,221,.55)}
 .result-buttons{margin-top:14px}
+
+#start-screen > p{background:rgba(246,239,218,.82);border:1px solid rgba(70,58,42,.18);border-radius:14px;padding:14px 16px;box-shadow:0 10px 24px rgba(0,0,0,.14);color:#1f1b15;line-height:1.8;backdrop-filter:blur(6px);margin-bottom:12px}
+#share-button:hover,#share-button:focus-visible{transform:translateY(-1px);box-shadow:0 9px 16px rgba(38,56,35,.2)}
+#take-button:hover,#take-button:focus-visible{transform:translateY(-1px);box-shadow:0 11px 18px rgba(35,27,21,.26)}
+button:active{transform:translateY(1px);box-shadow:0 4px 9px rgba(20,16,12,.2)}
+button:disabled:active{transform:none}
+body[data-phase="day-6"] .progress{box-shadow:0 0 0 1px rgba(90,78,58,.18),0 2px 10px rgba(37,31,25,.16)}
+body[data-phase="day-6"] #progress-bar{background:linear-gradient(90deg,#768d70,#53684f)}
+body[data-phase="day-7"] .progress{box-shadow:0 0 0 1px rgba(102,86,63,.22),0 3px 12px rgba(46,37,30,.2)}
+body[data-phase="day-7"] #progress-bar{background:linear-gradient(90deg,#6d8467,#4a5e46)}
+body[data-phase="day-7"] #progress-bar::after{content:"";display:block;height:100%;width:100%;box-shadow:0 0 10px rgba(199,186,145,.25) inset}
+body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
+@media (max-width:640px){.day-note{font-size:.9rem;max-width:68%}#message{min-height:52px}.buttons{bottom:6px}button{padding:10px 14px}#start-screen > p{padding:12px 13px}}
+
 @media (max-width:900px){body{background-attachment:scroll}}
 @media (prefers-reduced-motion:no-preference){#progress-bar,#snack-icon,.player,.mystery,.forest-stage{transition:all .35s ease}.forest-stage.pulse{animation:flash .55s ease}.character-card.nod{animation:nod .55s ease}@keyframes flash{0%{filter:brightness(1)}50%{filter:brightness(1.08)}100%{filter:brightness(1)}}@keyframes nod{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}}
 
