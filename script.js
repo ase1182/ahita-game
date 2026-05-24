@@ -72,6 +72,8 @@ const retryButton = document.getElementById("retry-button");
 const shareResultButton = document.getElementById("share-result-button");
 const newOpponentButton = document.getElementById("new-opponent-button");
 const continueButton = document.getElementById("continue-button");
+const bgm = document.getElementById("bgm");
+const bgmToggleButton = document.getElementById("bgm-toggle-button");
 
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false };
 
@@ -89,6 +91,18 @@ shareButton.addEventListener("click", () => playTurn(SHARE));
 takeButton.addEventListener("click", () => playTurn(TAKE));
 continueButton.addEventListener("click", proceedToNextDay);
 shareResultButton.addEventListener("click", shareResult);
+bgmToggleButton.addEventListener("click", toggleBgm);
+
+let isBgmOn = false;
+
+if (bgm) {
+  bgm.volume = 0.25;
+  bgm.addEventListener("error", () => {
+    isBgmOn = false;
+    bgmToggleButton.textContent = "音をつける";
+    bgmToggleButton.setAttribute("aria-pressed", "false");
+  });
+}
 
 function startGame() { resetGame(true); }
 
@@ -99,6 +113,31 @@ function restartWithSameOpponent() {
 function restartWithDifferentOpponent() {
   selectNewOpponent();
   resetGame(false);
+}
+
+function toggleBgm() {
+  if (!bgm) return;
+
+  if (isBgmOn) {
+    bgm.pause();
+    bgm.currentTime = 0;
+    isBgmOn = false;
+    bgmToggleButton.textContent = "音をつける";
+    bgmToggleButton.setAttribute("aria-pressed", "false");
+    return;
+  }
+
+  const playPromise = bgm.play();
+  if (playPromise && typeof playPromise.catch === "function") {
+    playPromise.catch(() => {
+      isBgmOn = false;
+      bgmToggleButton.textContent = "音をつける";
+      bgmToggleButton.setAttribute("aria-pressed", "false");
+    });
+  }
+  isBgmOn = true;
+  bgmToggleButton.textContent = "音を消す";
+  bgmToggleButton.setAttribute("aria-pressed", "true");
 }
 
 function showGameScreen() {
