@@ -1,163 +1,40 @@
-:root {
-  color-scheme: light;
-  --bg-light: #edf5e5;
-  --bg-mid: #d9e5d2;
-  --bg-dusk: #c9d5cb;
-  --ink: #2a2722;
-  --card: rgba(255, 254, 249, 0.78);
-  --line: rgba(54, 43, 31, 0.14);
-  --accent: #6f865f;
-  --accent-dark: #4f6443;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-  color: var(--ink);
-  background:
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 240, 0.65), transparent 42%),
-    radial-gradient(circle at 80% 10%, rgba(255, 230, 200, 0.28), transparent 36%),
-    linear-gradient(165deg, var(--bg-light) 0%, var(--bg-mid) 52%, var(--bg-dusk) 100%);
-}
-
-.game {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 28px 16px 36px;
-}
-
-h1 {
-  text-align: center;
-  font-size: clamp(1.6rem, 4vw, 2rem);
-  margin: 0 0 14px;
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  box-shadow: 0 10px 32px rgba(27, 30, 26, 0.14);
-  padding: 18px 16px;
-}
-
-p { line-height: 1.8; margin: 0; }
-
-.day-row { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.day { font-weight: 700; }
-.day-note { font-size: 0.84rem; opacity: 0.8; }
-
-.progress {
-  margin: 10px 0 16px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(58, 57, 49, 0.12);
-  overflow: hidden;
-}
-
-#progress-bar {
-  display: block;
-  height: 100%;
-  width: 14.28%;
-  background: linear-gradient(90deg, #9bb285, #6d855f);
-}
-
-.scene {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 10px;
-  margin: 18px 0 14px;
-  padding: 18px 12px;
-  border-radius: 18px;
-  background: rgba(250, 250, 246, 0.72);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.character {
-  min-height: 96px;
-  border-radius: 16px;
-  background: #ffffff;
-  display: grid;
-  place-content: center;
-  font-size: 1.9rem;
-  box-shadow: inset 0 0 0 1px rgba(26, 25, 20, 0.08);
-  text-align: center;
-}
-
-.character small {
-  display: block;
-  font-size: 0.78rem;
-  margin-top: 4px;
-}
-
-.character.mystery {
-  background: linear-gradient(180deg, #fbfbfb, #f0f2ee);
-}
-
-.snack {
-  font-size: 2.4rem;
-  transform-origin: center;
-}
-
-#message {
-  min-height: 66px;
-  margin: 0 0 12px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.55);
-}
-
-.buttons { display: flex; flex-direction: column; gap: 10px; }
-
-button {
-  border: 1px solid rgba(72, 64, 53, 0.18);
-  border-radius: 999px;
-  padding: 14px 20px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  color: #23201b;
-  background: linear-gradient(180deg, #fffefb, #f4f3ea);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.12);
-}
-
-button:hover { transform: translateY(-1px); }
-button:active { transform: translateY(0); }
-button:focus-visible { outline: 3px solid rgba(111, 134, 95, 0.42); outline-offset: 2px; }
-
-button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  filter: grayscale(0.25);
-  box-shadow: none;
-}
-
-.sub-result { margin: 12px 0 0; font-size: 0.95rem; }
-
-.theory {
-  margin-top: 16px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.45);
-  padding: 12px;
-}
-
-summary { font-weight: 700; cursor: pointer; }
-
-.result-buttons { margin-top: 14px; }
-
-.fade-in { opacity: 1; }
-.fade-out { opacity: 0.25; }
-.snack-react { transform: scale(1.1) rotate(5deg); }
-
-@media (prefers-reduced-motion: no-preference) {
-  #message, #progress-bar, .snack { transition: all 0.25s ease; }
-  .snack { animation: sway 2.2s ease-in-out infinite; }
-
-  @keyframes sway {
-    0%, 100% { transform: rotate(-2.5deg); }
-    50% { transform: rotate(2.5deg); }
-  }
-}
+:root { --ink:#222018; --card:rgba(255,251,243,.82); }
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--ink);transition:background .5s ease}
+body[data-phase="day-1"],body[data-phase="day-2"]{background:linear-gradient(180deg,#d9f0ff 0%,#d7f3df 45%,#c7deba 100%)}
+body[data-phase="day-3"],body[data-phase="day-4"],body[data-phase="day-5"]{background:linear-gradient(180deg,#f6ddb8 0%,#dfd8ba 45%,#c2d0b5 100%)}
+body[data-phase="day-6"],body[data-phase="day-7"]{background:linear-gradient(180deg,#c7c1d6 0%,#b6c1bb 45%,#95a692 100%)}
+.game{max-width:760px;margin:0 auto;padding:20px 14px 30px}
+h1{text-align:center;margin:0 0 12px;font-size:clamp(1.5rem,4.6vw,2rem)}
+.card{background:var(--card);border:1px solid rgba(53,46,36,.18);border-radius:22px;box-shadow:0 10px 26px rgba(28,28,26,.16);padding:16px}
+p{line-height:1.75;margin:0}
+.mini-stage{height:96px;border-radius:16px;background:linear-gradient(180deg,rgba(249,255,248,.9),rgba(219,234,216,.75));display:flex;align-items:end;justify-content:space-between;padding:10px 16px;margin-bottom:12px}
+.mini-shadow{font-size:1.6rem;filter:grayscale(1) brightness(.35)} .mini-snack{font-size:1.8rem}
+.day-row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.day{font-weight:700}.day-note{font-size:.86rem;opacity:.9}
+.progress{height:8px;background:rgba(45,40,34,.15);border-radius:999px;overflow:hidden;margin:8px 0 10px}#progress-bar{display:block;height:100%;width:14%;background:linear-gradient(90deg,#88b676,#587c49)}
+.footprint-wrap{margin:0 0 10px;padding:8px;border-radius:12px;background:rgba(255,255,255,.45)}
+.footprint-row{display:flex;gap:6px;min-height:22px;align-items:center}
+.step{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.2);display:inline-block}
+.step.share{background:#d9ecd1}.step.take{background:#718368}.step.unknown{background:#ece9de}
+.forest-stage{position:relative;height:220px;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,rgba(214,236,255,.7),rgba(214,233,196,.64));margin-bottom:10px}
+.trees::before,.trees::after{content:"";position:absolute;bottom:74px;width:90px;height:120px;background:rgba(35,62,44,.22);clip-path:polygon(50% 0%,0% 100%,100% 100%)}
+.trees::before{left:10px}.trees::after{right:14px}
+.ground{position:absolute;left:-8%;right:-8%;bottom:-36px;height:110px;background:radial-gradient(circle at 50% 40%,#95ad84 0%,#7d936f 70%)}
+.grass{position:absolute;left:0;right:0;bottom:44px;height:24px;background:repeating-linear-gradient(90deg,rgba(66,92,57,.24),rgba(66,92,57,.24) 8px,transparent 8px,transparent 18px)}
+.character-card{position:absolute;bottom:48px;width:30%;min-width:96px;max-width:150px;padding:10px;border-radius:14px;background:rgba(255,255,255,.86);text-align:center;border:1px solid rgba(0,0,0,.08)}
+.character-card .animal{font-size:1.7rem;display:block}.character-card small{font-size:.78rem}
+.player{left:12px}.mystery{right:12px;background:rgba(42,45,42,.55);color:#f0f0f0}.mystery .animal{filter:brightness(.4) grayscale(1)}
+.stump{position:absolute;left:50%;transform:translateX(-50%);bottom:64px;width:82px;height:56px;border-radius:45% 45% 40% 40%;background:linear-gradient(180deg,#b58f67,#8c694a);display:grid;place-items:center;border:2px solid rgba(78,54,34,.35)}
+#snack-icon{font-size:2rem;display:block;transform-origin:center}
+#message{min-height:56px;padding:8px 10px;background:rgba(255,255,255,.55);border-radius:12px;margin-bottom:10px}
+.buttons{display:flex;flex-direction:column;gap:10px;position:sticky;bottom:8px}
+button{border:1px solid rgba(69,59,46,.22);border-radius:999px;padding:14px 18px;font-size:1rem;font-weight:700;background:linear-gradient(180deg,#fffef9,#f3eee4);color:#262118;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+button:disabled{opacity:.52;filter:grayscale(.3);box-shadow:none}
+.turn-cc .stump{filter:brightness(1.14)} .turn-tt .forest-stage{filter:brightness(.9)} .turn-ts .mystery{filter:brightness(.7)} .turn-st .player{filter:saturate(.55) brightness(.92)}
+.turn-ss #snack-icon{transform:translateX(0) scale(.9)} .turn-ts #snack-icon{transform:translateX(-20px)} .turn-st #snack-icon{transform:translateX(20px)} .turn-tt #snack-icon{transform:scale(.8) rotate(10deg)}
+.turn-ss .mystery{right:20px}.turn-tt .player,.turn-tt .mystery{transform:translateY(2px)}
+.ending-scene{height:94px;border-radius:14px;background:rgba(230,236,225,.7);display:flex;align-items:center;justify-content:space-around;font-size:2rem;margin-bottom:8px}
+.ending-scene.close{background:rgba(229,242,221,.8)} .ending-scene.far{background:rgba(205,205,198,.75)} .ending-scene.tense{background:rgba(176,182,173,.75)} .ending-scene.repair{background:rgba(219,225,211,.85)}
+.sub-result{margin-top:10px;font-size:.95rem}.theory{margin-top:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,.45)}
+.result-buttons{margin-top:14px}
+@media (prefers-reduced-motion:no-preference){#progress-bar,#snack-icon,.player,.mystery,.forest-stage{transition:all .35s ease}.forest-stage.pulse{animation:flash .55s ease}.character-card.nod{animation:nod .55s ease}@keyframes flash{0%{filter:brightness(1)}50%{filter:brightness(1.12)}100%{filter:brightness(1)}}@keyframes nod{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}}

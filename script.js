@@ -1,8 +1,7 @@
-// 定数定義
 const SHARE = "わける";
 const TAKE = "ひとりじめ";
 const MAX_DAYS = 7;
-const TURN_DELAY_MS = 700;
+const TURN_DELAY_MS = 780;
 
 const PAYOFF_TABLE = {
   [`${SHARE}_${SHARE}`]: { player: 3, opponent: 3 },
@@ -12,25 +11,12 @@ const PAYOFF_TABLE = {
 };
 
 const TURN_MESSAGES = {
-  [`${SHARE}_${SHARE}`]: [
-    "ふたりで半分こした。広場は、少しだけあたたかかった。",
-    "半分こしたおやつを見て、相手は少し笑った。"
-  ],
-  [`${TAKE}_${SHARE}`]: [
-    "今日は、あなたがたくさん食べた。相手は何も言わなかった。ただ、見ていた。",
-    "あなたが先に手を伸ばした。相手は黙っていた。"
-  ],
-  [`${SHARE}_${TAKE}`]: [
-    "相手が全部持っていった。あなたは笑ったままでいられなかった。",
-    "あなたが差し出したぶんまで、相手が持っていった。"
-  ],
-  [`${TAKE}_${TAKE}`]: [
-    "ふたりの手が同時にぶつかった。おやつは少しだけ、土の上に落ちた。",
-    "同時に手を伸ばして、少し気まずい沈黙が残った。"
-  ]
+  [`${SHARE}_${SHARE}`]: ["ふたりで半分こした。広場の空気が、少しだけゆるんだ。"],
+  [`${TAKE}_${SHARE}`]: ["あなたが先に手を伸ばした。相手は一瞬、止まって見ていた。"],
+  [`${SHARE}_${TAKE}`]: ["相手が先に持っていった。あなたの手は、少し遅れて止まった。"],
+  [`${TAKE}_${TAKE}`]: ["ふたりの手がぶつかった。おやつのかけらが、土に落ちた。"]
 };
 
-// DOM取得
 const startScreen = document.getElementById("start-screen");
 const gameScreen = document.getElementById("game-screen");
 const resultScreen = document.getElementById("result-screen");
@@ -40,6 +26,12 @@ const progressBar = document.getElementById("progress-bar");
 const snackIcon = document.getElementById("snack-icon");
 const message = document.getElementById("message");
 const opponentName = document.getElementById("opponent-name");
+const playerTrack = document.getElementById("player-track");
+const opponentTrack = document.getElementById("opponent-track");
+const forestStage = document.getElementById("forest-stage");
+const playerCard = document.getElementById("player-card");
+const endingScene = document.getElementById("ending-scene");
+
 const resultTitle = document.getElementById("result-title");
 const resultText = document.getElementById("result-text");
 const snackResult = document.getElementById("snack-result");
@@ -53,253 +45,115 @@ const takeButton = document.getElementById("take-button");
 const retryButton = document.getElementById("retry-button");
 const shareResultButton = document.getElementById("share-result-button");
 
-// 状態管理
-const state = {
-  day: 1,
-  playerHistory: [],
-  opponentHistory: [],
-  playerScore: 0,
-  opponentScore: 0,
-  currentOpponent: null,
-  isProcessingTurn: false,
-  isFinished: false,
-  resultTypeTitle: ""
-};
+const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "" };
 
-// opponents 配列
 const opponents = [
-  {
-    id: "tanuki",
-    name: "まねっこタヌキ",
-    emoji: "🦝",
-    mask: "🦝",
-    description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。",
-    decideMove: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory[playerHistory.length - 1])
-  },
-  {
-    id: "crow",
-    name: "疑い深いカラス",
-    emoji: "🐦‍⬛",
-    mask: "🐦‍⬛",
-    description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。",
-    decideMove: ({ day, playerHistory }) => {
-      if (day === 1) return TAKE;
-      const shareCount = playerHistory.filter((move) => move === SHARE).length;
-      return shareCount >= 3 ? SHARE : TAKE;
-    }
-  },
-  {
-    id: "rabbit",
-    name: "忘れっぽいウサギ",
-    emoji: "🐇",
-    mask: "🐇",
-    description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。",
-    decideMove: ({ playerHistory }) => {
-      const recent = playerHistory.slice(-2);
-      return recent.length === 2 && recent.every((move) => move === TAKE) ? TAKE : SHARE;
-    }
-  }
+  { name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", decideMove: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory[playerHistory.length - 1]) },
+  { name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", decideMove: ({ day, playerHistory }) => (day === 1 ? TAKE : playerHistory.filter((m) => m === SHARE).length >= 3 ? SHARE : TAKE) },
+  { name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", decideMove: ({ playerHistory }) => (playerHistory.slice(-2).every((m) => m === TAKE) && playerHistory.length >= 2 ? TAKE : SHARE) }
 ];
 
 startButton.addEventListener("click", startGame);
-retryButton.addEventListener("click", () => resetGame({ newOpponent: true }));
+retryButton.addEventListener("click", () => resetGame(true));
 shareButton.addEventListener("click", () => playTurn(SHARE));
 takeButton.addEventListener("click", () => playTurn(TAKE));
 shareResultButton.addEventListener("click", shareResult);
 
-function startGame() {
-  resetGame({ newOpponent: true });
-}
+function startGame() { resetGame(true); }
 
-function resetGame({ newOpponent }) {
-  state.day = 1;
-  state.playerHistory = [];
-  state.opponentHistory = [];
-  state.playerScore = 0;
-  state.opponentScore = 0;
-  state.isProcessingTurn = false;
-  state.isFinished = false;
-  state.resultTypeTitle = "";
-  if (newOpponent || !state.currentOpponent) {
-    state.currentOpponent = opponents[Math.floor(Math.random() * opponents.length)];
-  }
-
-  startScreen.hidden = true;
-  gameScreen.hidden = false;
-  resultScreen.hidden = true;
-
-  setChoiceDisabled(false);
-  updateScreen();
+function resetGame(newOpponent) {
+  Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "" });
+  if (newOpponent || !state.currentOpponent) state.currentOpponent = opponents[Math.floor(Math.random() * opponents.length)];
+  startScreen.hidden = true; gameScreen.hidden = false; resultScreen.hidden = true;
+  setChoiceDisabled(false); updateScreen(); renderTracks();
 }
 
 function playTurn(playerMove) {
   if (state.isProcessingTurn || state.isFinished || state.day > MAX_DAYS) return;
-  state.isProcessingTurn = true;
-  setChoiceDisabled(true);
+  state.isProcessingTurn = true; setChoiceDisabled(true);
+  const opponentMove = state.currentOpponent.decideMove({ day: state.day, playerHistory: state.playerHistory, opponentHistory: state.opponentHistory });
+  state.playerHistory.push(playerMove); state.opponentHistory.push(opponentMove);
+  const payoff = PAYOFF_TABLE[`${playerMove}_${opponentMove}`]; state.playerScore += payoff.player; state.opponentScore += payoff.opponent;
 
-  const opponentMove = state.currentOpponent.decideMove({
-    day: state.day,
-    playerHistory: state.playerHistory,
-    opponentHistory: state.opponentHistory
-  });
+  const turnKey = `${playerMove === SHARE ? "s" : "t"}${opponentMove === SHARE ? "s" : "t"}`;
+  gameScreen.className = `card turn-${turnKey}`;
+  forestStage.classList.add("pulse");
+  playerCard.classList.add("nod");
+  message.textContent = TURN_MESSAGES[`${playerMove}_${opponentMove}`][0];
+  renderTracks();
 
-  state.playerHistory.push(playerMove);
-  state.opponentHistory.push(opponentMove);
-
-  const payoff = getPayoff(playerMove, opponentMove);
-  state.playerScore += payoff.player;
-  state.opponentScore += payoff.opponent;
-
-  message.classList.add("fade-out");
-  snackIcon.classList.add("snack-react");
-  message.textContent = getTurnMessage(playerMove, opponentMove);
-
-  const isLastDay = state.day >= MAX_DAYS;
-  window.setTimeout(() => {
-    if (isLastDay) {
-      state.isFinished = true;
-      showResult();
-      return;
-    }
-
-    state.day += 1;
-    state.isProcessingTurn = false;
-    setChoiceDisabled(false);
-    snackIcon.classList.remove("snack-react");
-    updateScreen();
+  setTimeout(() => {
+    forestStage.classList.remove("pulse");
+    playerCard.classList.remove("nod");
+    if (state.day >= MAX_DAYS) { state.isFinished = true; message.textContent = "7日目が終わりました。森は、あなたたちの選び方を覚えていました。"; showResult(); return; }
+    state.day += 1; state.isProcessingTurn = false; setChoiceDisabled(false); updateScreen();
   }, TURN_DELAY_MS);
-}
-
-function getPayoff(playerMove, opponentMove) {
-  return PAYOFF_TABLE[`${playerMove}_${opponentMove}`];
-}
-
-function getTurnMessage(playerMove, opponentMove) {
-  const candidates = TURN_MESSAGES[`${playerMove}_${opponentMove}`];
-  const index = Math.floor(Math.random() * candidates.length);
-  return candidates[index];
 }
 
 function updateScreen() {
   dayLabel.textContent = `${state.day}日目`;
-  dayNote.textContent = `7日間のうち ${state.day}日目`;
+  dayNote.textContent = state.day === 1 ? "相手は、昨日のことを覚えています。" : "明日も、この広場で会います。";
   progressBar.style.width = `${(state.day / MAX_DAYS) * 100}%`;
-  opponentName.innerHTML = `<span>${state.currentOpponent.mask}</span><small>？？？</small>`;
-  message.textContent = "どうしますか？";
-  message.classList.remove("fade-out");
+  document.body.setAttribute("data-phase", `day-${state.day}`);
+  opponentName.innerHTML = `<span class="animal">${state.currentOpponent.mask}</span><small>？？？</small>`;
+  message.textContent = "まだ、相手の正体はわかりません。";
+}
+
+function renderTracks() {
+  playerTrack.innerHTML = ""; opponentTrack.innerHTML = "";
+  for (let i = 0; i < MAX_DAYS; i += 1) {
+    playerTrack.appendChild(makeStep(state.playerHistory[i], `あなた ${i + 1}日目`));
+    opponentTrack.appendChild(makeStep(state.opponentHistory[i], `相手 ${i + 1}日目`));
+  }
+}
+
+function makeStep(move, label) {
+  const span = document.createElement("span");
+  span.className = `step ${move === SHARE ? "share" : move === TAKE ? "take" : "unknown"}`;
+  span.setAttribute("aria-label", `${label} ${move || "未選択"}`);
+  return span;
 }
 
 function showResult() {
-  gameScreen.hidden = true;
-  resultScreen.hidden = false;
-  state.isProcessingTurn = false;
-
-  const result = getResultType();
-  state.resultTypeTitle = result.title;
-  resultTitle.textContent = `あなたの記録：${result.title}`;
-  resultText.textContent = result.text;
-
+  gameScreen.hidden = true; resultScreen.hidden = false;
+  const result = getResultType(); state.resultTypeTitle = result.title;
+  resultTitle.textContent = `あなたの記録：${result.title}`; resultText.textContent = result.text;
+  opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
   snackResult.textContent = `あなたのおやつ ${state.playerScore} / 相手のおやつ ${state.opponentScore}`;
   relationshipEnding.textContent = `関係の結末：${getRelationshipEnding()}`;
+  renderEndingScene();
+}
 
-  opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`;
-  opponentText.textContent = state.currentOpponent.description;
-  opponentName.innerHTML = `<span>${state.currentOpponent.emoji}</span><small>${state.currentOpponent.name}</small>`;
+function renderEndingScene() {
+  const coop = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === SHARE).length;
+  const clash = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === TAKE).length;
+  const recover = state.playerHistory.some((m, i) => i > 0 && m === SHARE && state.playerHistory[i - 1] === TAKE);
+  let tone = "far";
+  if (coop >= 4) tone = "close"; else if (clash >= 3) tone = "tense"; else if (recover) tone = "repair";
+  endingScene.className = `ending-scene ${tone}`;
+  endingScene.innerHTML = `<span class="left">🙂</span><span class="middle">🍪</span><span class="right">${state.currentOpponent.emoji}</span>`;
 }
 
 function getResultType() {
-  const player = state.playerHistory;
-  const opponent = state.opponentHistory;
-  const shareCount = player.filter((m) => m === SHARE).length;
-  const takeCount = player.filter((m) => m === TAKE).length;
-
-  const hadRetaliationRun = opponent.some((opMove, i) => opMove === TAKE && player[i] === SHARE)
-    && player.slice(-3).every((m) => m === TAKE);
-
-  const hadReconcile = player.some((move, i) => {
-    if (i < 2 || move !== SHARE) return false;
-    return player[i - 1] === TAKE && opponent[i - 1] === TAKE;
-  });
-
-  const earlyTakeCount = player.slice(0, 3).filter((m) => m === TAKE).length;
-  const lateShareCount = player.slice(4).filter((m) => m === SHARE).length;
-
-  if (shareCount >= 5) {
-    return {
-      title: "明日を信じる人",
-      text: "あなたは、何度か迷いながらも、分け合う道を選びました。この森では、それは一番すばやく得をする方法ではありません。でも、明日も誰かと会うなら、悪くない選び方です。"
-    };
-  }
-
-  if (takeCount >= 5) {
-    return {
-      title: "今日を取りにいく人",
-      text: "あなたは、目の前のおやつを逃しませんでした。何度か、それは正しい選択でした。ただ、相手もまた、昨日のあなたを覚えています。"
-    };
-  }
-
-  if (hadRetaliationRun) {
-    return {
-      title: "針をしまえない人",
-      text: "あなたは、一度のことを簡単には忘れませんでした。それは身を守る力でもあります。でも、ときどき、仲直りの合図まで見落としてしまいます。"
-    };
-  }
-
-  if (hadReconcile) {
-    return {
-      title: "仲直りを試す人",
-      text: "あなたは、こじれたあとでも、もう一度だけ手を差し出しました。うまくいくとは限りません。それでも、森はその一度を覚えています。"
-    };
-  }
-
-  if (earlyTakeCount >= 2 && lateShareCount >= 2) {
-    return {
-      title: "様子を見る人",
-      text: "あなたは、最初からすべてを信じることはしませんでした。相手を見て、少しずつ選び方を変えていきました。この森では、慎重さもまた、ひとつのやさしさです。"
-    };
-  }
-
-  return {
-    title: "迷いながら選ぶ人",
-    text: "あなたは、信じることと守ることの間で揺れていました。この森では、その迷いもまた、ひとつの記録として残ります。"
-  };
+  const shareCount = state.playerHistory.filter((m) => m === SHARE).length;
+  const takeCount = state.playerHistory.filter((m) => m === TAKE).length;
+  if (shareCount >= 5) return { title: "明日を信じる人", text: "あなたは、迷いながらも分け合う道を選びました。明日がある場所では、その選び方が静かに残ります。" };
+  if (takeCount >= 5) return { title: "今日を取りにいく人", text: "あなたは、目の前のぶんを取りこぼしませんでした。ただ、相手も昨日のことを覚えています。" };
+  return { title: "迷いながら選ぶ人", text: "信じることと守ることの間で、あなたは何度も立ち止まりました。森は、その揺れも覚えています。" };
 }
 
 function getRelationshipEnding() {
-  const pairHistory = state.playerHistory.map((playerMove, i) => `${playerMove}_${state.opponentHistory[i]}`);
-  const coopCount = pairHistory.filter((pair) => pair === `${SHARE}_${SHARE}`).length;
-  const exploitCount = pairHistory.filter((pair) => pair.includes(`${TAKE}`) && !pair.endsWith(`_${TAKE}`) || pair.startsWith(`${SHARE}_`)).length;
-  const clashCount = pairHistory.filter((pair) => pair === `${TAKE}_${TAKE}`).length;
-
-  const recovered = state.playerHistory.some((move, i) => i > 0 && move === SHARE && state.playerHistory[i - 1] === TAKE);
-
-  if (recovered && clashCount >= 1) {
-    return "ぎこちなさは残ったまま。それでも、7日目のあとにもう一度だけ手を伸ばす気配がありました。";
-  }
-
-  if (clashCount >= 3) {
-    return `7日目のあと、${state.currentOpponent.name.replace("疑い深い", "").replace("忘れっぽい", "")}は少し距離を置いたまま、広場を見ていました。`;
-  }
-
-  if (coopCount >= 4) {
-    return `次の日も、${state.currentOpponent.name.replace("疑い深い", "").replace("忘れっぽい", "")}は広場に来ました。少し笑っていました。`;
-  }
-
-  if (exploitCount >= 3) {
-    return `7日目のあと、${state.currentOpponent.name.replace("疑い深い", "").replace("忘れっぽい", "")}は何も言わず、少し離れた木のそばにいました。`;
-  }
-
-  return "関係はまだ決まっていません。明日、また会えば、記録は少しずつ変わっていきます。";
+  const coop = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === SHARE).length;
+  const clash = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === TAKE).length;
+  if (coop >= 4) return "7日目のあと、ふたりは同じ切り株のそばに残っていました。";
+  if (clash >= 3) return "7日目のあと、ふたりのあいだには少し固い空気が残りました。";
+  return "7日目のあと、少し離れたまま、どちらも広場を振り返っていました。";
 }
 
 function shareResult() {
   const text = `「また明日も会うきみへ」で遊びました。私の記録は「${state.resultTypeTitle}」でした。森では、昨日のことをみんな覚えています。`;
   const url = `${window.location.origin}${window.location.pathname}`;
-  const shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-  window.open(shareUrl, "_blank", "noopener,noreferrer");
+  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank", "noopener,noreferrer");
 }
 
-function setChoiceDisabled(isDisabled) {
-  shareButton.disabled = isDisabled;
-  takeButton.disabled = isDisabled;
-}
+function setChoiceDisabled(disabled) { shareButton.disabled = disabled; takeButton.disabled = disabled; }
