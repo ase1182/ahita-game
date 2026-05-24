@@ -66,10 +66,21 @@ shareResultButton.addEventListener("click", shareResult);
 
 function startGame() { resetGame(true); }
 
+function showGameScreen() {
+  startScreen.hidden = true;
+  gameScreen.hidden = false;
+  resultScreen.hidden = true;
+}
+
+function showResultScreen() {
+  gameScreen.hidden = true;
+  resultScreen.hidden = false;
+}
+
 function resetGame(newOpponent) {
   Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "" });
   if (newOpponent || !state.currentOpponent) state.currentOpponent = opponents[Math.floor(Math.random() * opponents.length)];
-  startScreen.hidden = true; gameScreen.hidden = false; resultScreen.hidden = true;
+  showGameScreen();
   setChoiceDisabled(false); updateScreen(); renderTracks();
 }
 
@@ -149,7 +160,7 @@ function makeStep(move, label) {
 }
 
 function showResult() {
-  gameScreen.hidden = true; resultScreen.hidden = false;
+  showResultScreen();
   const result = getResultType(); state.resultTypeTitle = result.title;
   resultTitle.textContent = `あなたの記録：${result.title}`; resultText.textContent = result.text;
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
