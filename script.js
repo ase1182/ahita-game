@@ -137,7 +137,7 @@ const shareResultButton = document.getElementById("share-result-button");
 const newOpponentButton = document.getElementById("new-opponent-button");
 const continueButton = document.getElementById("continue-button");
 const bgm = document.getElementById("bgm");
-const bgmToggleButton = document.getElementById("bgm-toggle-button");
+const bgmToggleButton = document.getElementById("bgm-toggle") || document.getElementById("bgm-toggle-button");
 
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false };
 
@@ -155,11 +155,13 @@ shareButton.addEventListener("click", () => playTurn(SHARE));
 takeButton.addEventListener("click", () => playTurn(TAKE));
 continueButton.addEventListener("click", proceedToNextDay);
 shareResultButton.addEventListener("click", shareResult);
-bgmToggleButton.addEventListener("click", toggleBgm);
+if (bgmToggleButton) {
+  bgmToggleButton.addEventListener("click", toggleBgm);
+}
 
 let isBgmOn = false;
 
-if (bgm) {
+if (bgm && bgmToggleButton) {
   bgm.volume = 0.25;
   bgm.addEventListener("error", () => {
     isBgmOn = false;
@@ -180,7 +182,7 @@ function restartWithDifferentOpponent() {
 }
 
 function toggleBgm() {
-  if (!bgm) return;
+  if (!bgm || !bgmToggleButton) return;
 
   if (isBgmOn) {
     bgm.pause();
