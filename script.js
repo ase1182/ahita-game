@@ -154,7 +154,7 @@ function showResult() {
   resultTitle.textContent = `あなたの記録：${result.title}`; resultText.textContent = result.text;
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
   renderResultOpponent();
-  snackResult.textContent = `あなたのおやつ ${state.playerScore} / 相手のおやつ ${state.opponentScore}`;
+  snackResult.innerHTML = `<span class="result-chip">あなたのおやつ ${state.playerScore}</span><span class="result-chip">相手のおやつ ${state.opponentScore}</span>`;
   relationshipEnding.textContent = `関係の結末：${getRelationshipEnding()}`;
   renderEndingScene();
 }
