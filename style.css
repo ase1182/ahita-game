@@ -78,3 +78,56 @@ button:disabled{opacity:.52;filter:grayscale(.3);box-shadow:none}
 .has-image-assets .character-card.mystery{
   background: rgba(38,41,37,.35);
 }
+
+
+
+/* Uploaded asset background: assets/bg-forest-dusk.webp */
+.image-backed-stage {
+  background:
+    linear-gradient(rgba(28, 24, 20, 0.12), rgba(28, 24, 20, 0.22)),
+    url("assets/bg-forest-dusk.webp") center / cover no-repeat,
+    linear-gradient(180deg, #c9d4c3 0%, #7c9070 100%);
+}
+.image-backed-stage .trees,
+.image-backed-stage .ground,
+.image-backed-stage .grass,
+.image-backed-stage .stage-sky,
+.image-backed-stage .stage-trees,
+.image-backed-stage .stage-tree,
+.image-backed-stage .stage-hill,
+.image-backed-stage .stage-grass,
+.image-backed-stage .stage-ground {
+  display: none !important;
+}
+.image-backed-stage::before,
+.image-backed-stage::after,
+.game-stage::before,
+.game-stage::after,
+.forest-stage::before,
+.forest-stage::after {
+  display: none !important;
+}
+.image-backed-stage .stage-overlay {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(18, 16, 12, 0.04));
+}
+.character-portrait img,
+.opponent-portrait img,
+.result-character-image,
+.character-image,
+.result-opponent-image {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  display: block;
+  background: transparent;
+}
+.character-image { margin: 0 auto 4px; }
+.result-opponent-image { width: 130px; height: 130px; }
+.unknown-character-image {
+  filter: brightness(0.85) contrast(0.95);
+  opacity: 0.92;
+}
+.has-image-assets .character-card.mystery {
+  background: rgba(38, 41, 37, 0.22);
+  padding: 10px 8px;
+}
