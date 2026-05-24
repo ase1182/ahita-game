@@ -1,7 +1,7 @@
 const SHARE = "わける";
 const TAKE = "ひとりじめ";
 const MAX_DAYS = 7;
-const TURN_DELAY_MS = 780;
+const TURN_DELAY_MS = 520;
 
 const PAYOFF_TABLE = {
   [`${SHARE}_${SHARE}`]: { player: 3, opponent: 3 },
@@ -10,11 +10,31 @@ const PAYOFF_TABLE = {
   [`${TAKE}_${TAKE}`]: { player: 1, opponent: 1 }
 };
 
-const TURN_MESSAGES = {
-  [`${SHARE}_${SHARE}`]: ["ふたりで半分こした。広場の空気が、少しだけゆるんだ。"],
-  [`${TAKE}_${SHARE}`]: ["あなたが先に手を伸ばした。相手は一瞬、止まって見ていた。"],
-  [`${SHARE}_${TAKE}`]: ["相手が先に持っていった。あなたの手は、少し遅れて止まった。"],
-  [`${TAKE}_${TAKE}`]: ["ふたりの手がぶつかった。おやつのかけらが、土に落ちた。"]
+const REACTION_MESSAGES = {
+  default: {
+    [`${SHARE}_${SHARE}`]: ["ふたりの前に、おやつが半分ずつ残りました。相手の影が、少しだけ近くに見えました。", "森の空気が、ほんの少しやわらぎました。ふたりは同じ速さで手を引きました。"],
+    [`${SHARE}_${TAKE}`]: ["あなたの前のおやつは、空っぽになりました。分けるつもりだった手が、少しだけ止まりました。", "相手は何も言わず、こちらを見ていました。広場に、細い緊張が残りました。"],
+    [`${TAKE}_${SHARE}`]: ["あなたのおやつは増えました。相手の前には、何も残りませんでした。", "今日だけなら、それは得に見えました。相手の影は、少しだけ遠くなりました。"],
+    [`${TAKE}_${TAKE}`]: ["ふたりとも、自分の分だけを守りました。広場の真ん中に、少し冷たい沈黙が残りました。", "今日は、どちらも近づきませんでした。視線だけが、短く重なりました。"]
+  },
+  "まねっこタヌキ": {
+    [`${SHARE}_${SHARE}`]: ["タヌキは、昨日のぬくもりを返すように分けました。丸いしっぽが、ちいさく揺れました。", "覚えていた手つきで、タヌキも半分こしました。『きのうみたいだね』という顔でした。"],
+    [`${SHARE}_${TAKE}`]: ["あなたが差し出したぶんを、タヌキはすっと抱えました。覚えたことを、そのまま返したようでした。", "タヌキは先に持っていきました。昨日の写し絵みたいに、静かな動きでした。"],
+    [`${TAKE}_${SHARE}`]: ["あなたが多く取ると、タヌキは止まって見ていました。明日の鏡を、しまい込むように。", "タヌキの前は空っぽになりました。まねの準備だけが、目の奥に残りました。"],
+    [`${TAKE}_${TAKE}`]: ["ふたりの手は同じ速さで閉じました。タヌキは『おそろい』を覚える顔でした。", "タヌキは自分のぶんを離しませんでした。返す手紙みたいに、きっちり同じでした。"]
+  },
+  "疑い深いカラス": {
+    [`${SHARE}_${SHARE}`]: ["カラスは少し首をかしげてから、半分を置きました。警戒の羽音が、ほんの少し静かになりました。", "黒い目があなたを測って、それから分けました。信じる練習を、ひとつ進めたようでした。"],
+    [`${SHARE}_${TAKE}`]: ["差し出したぶんは、カラスのくちばしに消えました。距離を取る影が、また長くなりました。", "カラスは先に取って、すぐ一歩下がりました。『まだわからない』という沈黙でした。"],
+    [`${TAKE}_${SHARE}`]: ["あなたが多く取ると、カラスは羽をすぼめました。次はもっと高い枝から見るつもりのようでした。", "カラスは何も言わず見ていました。信じる目盛りが、少し戻ってしまいました。"],
+    [`${TAKE}_${TAKE}`]: ["ふたりとも抱え込むと、カラスは視線を外しました。広場に乾いた羽音だけが残りました。", "カラスも守りに入りました。近づくより先に、疑いが前に出た日でした。"]
+  },
+  "忘れっぽいウサギ": {
+    [`${SHARE}_${SHARE}`]: ["ウサギはやわらかく笑って、半分を置きました。耳先が、ほっとほどけたようでした。", "ふたりで分けると、ウサギは小さくうなずきました。昨日のこわばりは、もう薄れていました。"],
+    [`${SHARE}_${TAKE}`]: ["ウサギは先に抱えて、でもすぐこちらを見ました。強く責めない目が、少しだけ曇りました。", "空っぽの皿を見て、ウサギは耳を伏せました。やわらかな距離が、ひとつ生まれました。"],
+    [`${TAKE}_${SHARE}`]: ["あなたが多く取ると、ウサギは黙って引きました。許したい気持ちと、身を守る気持ちが並んでいました。", "ウサギの前には何も残りませんでした。それでも目は閉じずに、明日を見ていました。"],
+    [`${TAKE}_${TAKE}`]: ["ふたりとも守る手を選ぶと、ウサギは少し離れました。やわらかい足音だけが残りました。", "ウサギも自分のぶんを抱えました。近づくのは、また今度にする顔でした。"]
+  }
 };
 
 const startScreen = document.getElementById("start-screen");
@@ -51,8 +71,9 @@ const takeButton = document.getElementById("take-button");
 const retryButton = document.getElementById("retry-button");
 const shareResultButton = document.getElementById("share-result-button");
 const newOpponentButton = document.getElementById("new-opponent-button");
+const continueButton = document.getElementById("continue-button");
 
-const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "" };
+const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false };
 
 // Character image assets are loaded from /assets relative to index.html
 const opponents = [
@@ -66,6 +87,7 @@ retryButton.addEventListener("click", restartWithSameOpponent);
 newOpponentButton.addEventListener("click", restartWithDifferentOpponent);
 shareButton.addEventListener("click", () => playTurn(SHARE));
 takeButton.addEventListener("click", () => playTurn(TAKE));
+continueButton.addEventListener("click", proceedToNextDay);
 shareResultButton.addEventListener("click", shareResult);
 
 function startGame() { resetGame(true); }
@@ -91,7 +113,7 @@ function showResultScreen() {
 }
 
 function resetGame(newOpponent) {
-  Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "" });
+  Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false });
   if (newOpponent || !state.currentOpponent) state.currentOpponent = chooseRandomOpponent();
   showGameScreen();
   setChoiceDisabled(false); updateScreen(); renderTracks();
@@ -116,7 +138,9 @@ function selectNewOpponent() {
 
 function playTurn(playerMove) {
   if (state.isProcessingTurn || state.isFinished || state.day > MAX_DAYS) return;
-  state.isProcessingTurn = true; setChoiceDisabled(true);
+  state.isProcessingTurn = true;
+  state.turnResolved = false;
+  setChoiceDisabled(true);
   const opponentMove = state.currentOpponent.decideMove({ day: state.day, playerHistory: state.playerHistory, opponentHistory: state.opponentHistory });
   state.playerHistory.push(playerMove); state.opponentHistory.push(opponentMove);
   const payoff = PAYOFF_TABLE[`${playerMove}_${opponentMove}`]; state.playerScore += payoff.player; state.opponentScore += payoff.opponent;
@@ -125,15 +149,31 @@ function playTurn(playerMove) {
   gameScreen.className = `card turn-${turnKey}`;
   forestStage.classList.add("pulse");
   playerCard.classList.add("nod");
-  message.textContent = TURN_MESSAGES[`${playerMove}_${opponentMove}`][0];
+  message.textContent = pickReactionMessage(playerMove, opponentMove);
   renderTracks();
+  updateContinueButton();
 
   setTimeout(() => {
     forestStage.classList.remove("pulse");
     playerCard.classList.remove("nod");
-    if (state.day >= MAX_DAYS) { state.isFinished = true; message.textContent = "7日目が終わりました。森は、あなたたちの選び方を覚えていました。"; showResult(); return; }
-    state.day += 1; state.isProcessingTurn = false; setChoiceDisabled(false); updateScreen();
+    state.isProcessingTurn = false;
+    state.turnResolved = true;
+    updateContinueButton();
   }, TURN_DELAY_MS);
+}
+
+function proceedToNextDay() {
+  if (!state.turnResolved || state.isProcessingTurn) return;
+  if (state.day >= MAX_DAYS) {
+    state.isFinished = true;
+    showResult();
+    return;
+  }
+  state.day += 1;
+  state.turnResolved = false;
+  setChoiceDisabled(false);
+  updateContinueButton();
+  updateScreen();
 }
 
 function updateScreen() {
@@ -152,6 +192,21 @@ function updateScreen() {
   document.body.setAttribute("data-phase", `day-${state.day}`);
   setupOpponentShadow();
   message.textContent = "まだ、相手の正体はわかりません。";
+  updateContinueButton();
+}
+
+function updateContinueButton() {
+  const ready = state.turnResolved && !state.isProcessingTurn;
+  continueButton.hidden = !ready;
+  continueButton.disabled = !ready;
+  continueButton.textContent = state.day >= MAX_DAYS ? "結果を見る" : "次の日へ";
+}
+
+function pickReactionMessage(playerMove, opponentMove) {
+  const key = `${playerMove}_${opponentMove}`;
+  const byOpponent = REACTION_MESSAGES[state.currentOpponent?.name] || REACTION_MESSAGES.default;
+  const candidates = byOpponent[key] || REACTION_MESSAGES.default[key];
+  return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
 function setupOpponentShadow() {
