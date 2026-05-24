@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>また明日も会うきみへ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game">
+    <h1>また明日も会うきみへ</h1>
+
+    <section id="start-screen">
+      <p>
+        森の広場には、毎日おやつが置かれます。<br>
+        あなたと相手は、同時に手を伸ばします。<br>
+        この森では、昨日のことをみんな覚えています。
+      </p>
+      <button id="start-button">森へ行く</button>
+    </section>
+
+    <section id="game-screen" hidden>
+      <p id="day-label">1日目</p>
+      <div class="scene">
+        <div class="character">あなた</div>
+        <div class="snack">🍪</div>
+        <div class="character" id="opponent-name">？？？</div>
+      </div>
+
+      <p id="message">どうしますか？</p>
+
+      <div class="buttons">
+        <button id="share-button">わける</button>
+        <button id="take-button">ひとりじめ</button>
+      </div>
+    </section>
+
+    <section id="result-screen" hidden>
+      <h2 id="result-title"></h2>
+      <p id="result-text"></p>
+
+      <h3 id="opponent-reveal"></h3>
+      <p id="opponent-text"></p>
+
+      <button id="retry-button">もう一度、森へ行く</button>
+
+      <div class="theory">
+        <h3>この森のしくみ</h3>
+        <p>
+          このゲームは、ゲーム理論で知られる「囚人のジレンマ」をもとにした小さな体験です。
+          一度きりなら、ひとりじめは強い選択です。
+          でも、同じ相手と何度も会うなら、昨日のことが関係を変えます。
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
