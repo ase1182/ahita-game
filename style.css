@@ -1,4 +1,12 @@
-:root { --ink:#262117; --card:rgba(246,238,222,.86); }
+:root {
+  --ink:#262117;
+  --card:rgba(246,238,222,.86);
+  --panel-bg-color:rgba(242,238,220,.88);
+  --panel-border:rgba(76,66,50,.22);
+  --panel-texture-overlay-top:rgba(255,255,245,.62);
+  --panel-texture-overlay-bottom:rgba(232,226,205,.62);
+  --panel-shadow:0 10px 24px rgba(20,24,20,.16),inset 0 1px 0 rgba(255,255,255,.45);
+}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--ink);transition:background .5s ease;background:linear-gradient(rgba(18,22,18,.22),rgba(18,22,18,.36)),url("assets/bg-forest-dusk.webp") center/cover fixed no-repeat,linear-gradient(180deg,#3f4a3f 0%,#283028 100%)}
 .game{max-width:760px;margin:0 auto;padding:20px 14px 30px;background:transparent;border:none;border-radius:0;box-shadow:none}
@@ -162,3 +170,24 @@ body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
 
 #game-screen [hidden]{display:none!important}
 #result-screen[hidden]{display:none!important}
+
+#game-screen .day-row,
+#game-screen .footprint-wrap,
+#game-screen #message,
+#game-screen button:not(.bgm-toggle){
+  background-color:var(--panel-bg-color);
+  background-image:linear-gradient(var(--panel-texture-overlay-top),var(--panel-texture-overlay-bottom)),url("assets/panel-texture.webp");
+  background-size:cover;
+  background-position:center;
+  border:1px solid var(--panel-border);
+  box-shadow:var(--panel-shadow);
+}
+
+#game-screen button:not(.bgm-toggle):hover,
+#game-screen button:not(.bgm-toggle):focus-visible{
+  background-image:linear-gradient(rgba(255,255,245,.68),rgba(235,228,206,.66)),url("assets/panel-texture.webp");
+}
+
+#game-screen button:not(.bgm-toggle):active{
+  background-image:linear-gradient(rgba(247,241,221,.72),rgba(226,218,196,.68)),url("assets/panel-texture.webp");
+}
