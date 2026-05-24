@@ -251,6 +251,24 @@ function selectNewOpponent() {
   state.currentOpponent = nextOpponent;
 }
 
+
+function scrollMessageIntoViewOnMobile() {
+  if (!window.matchMedia("(max-width: 600px)").matches) return;
+  const target = document.getElementById("message");
+  if (!target) return;
+
+  const rect = target.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  const messageVisible = rect.top >= 0 && rect.bottom <= viewportHeight;
+  if (messageVisible) return;
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  target.scrollIntoView({
+    behavior: prefersReducedMotion ? "auto" : "smooth",
+    block: "nearest"
+  });
+}
+
 function playTurn(playerMove) {
   if (state.isProcessingTurn || state.isFinished || state.day > MAX_DAYS) return;
   state.isProcessingTurn = true;
@@ -267,12 +285,14 @@ function playTurn(playerMove) {
   message.textContent = pickReactionMessage(playerMove, opponentMove);
   renderTracks();
   updateContinueButton();
+  scrollMessageIntoViewOnMobile();
 
   setTimeout(() => {
     forestStage.classList.remove("pulse");
     playerCard.classList.remove("nod");
     state.isProcessingTurn = false;
     state.turnResolved = true;
+    setChoiceDisabled(true);
     updateContinueButton();
   }, TURN_DELAY_MS);
 }
@@ -454,4 +474,10 @@ function shareResult() {
   window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank", "noopener,noreferrer");
 }
 
-function setChoiceDisabled(disabled) { shareButton.disabled = disabled; takeButton.disabled = disabled; }
+function setChoiceDisabled(disabled) {
+  shareButton.disabled = disabled;
+  takeButton.disabled = disabled;
+  const hideChoices = disabled && state.turnResolved;
+  shareButton.hidden = hideChoices;
+  takeButton.hidden = hideChoices;
+}
