@@ -2,6 +2,9 @@ const SHARE = "わける";
 const TAKE = "ひとりじめ";
 const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
+const BUILD_VERSION = "d33b57b";
+
+console.info("また明日も会うきみへ build:", BUILD_VERSION);
 
 const PAYOFF_TABLE = {
   [`${SHARE}_${SHARE}`]: { player: 3, opponent: 3 },
@@ -137,7 +140,14 @@ const shareResultButton = document.getElementById("share-result-button");
 const newOpponentButton = document.getElementById("new-opponent-button");
 const continueButton = document.getElementById("continue-button");
 const bgm = document.getElementById("bgm");
-const bgmToggleButton = document.getElementById("bgm-toggle") || document.getElementById("bgm-toggle-button");
+const bgmToggleButton =
+  document.getElementById("bgm-toggle-button") ||
+  document.getElementById("bgm-toggle");
+const buildVersionElement = document.getElementById("build-version");
+
+if (buildVersionElement) {
+  buildVersionElement.textContent = `build ${BUILD_VERSION}`;
+}
 
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false };
 

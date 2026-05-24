@@ -11,7 +11,7 @@
   <meta property="og:url" content="" />
   <meta property="og:image" content="" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=d33b57b" />
 </head>
 <body data-phase="day-1" class="has-image-assets">
   <audio id="bgm" src="assets/forest-bgm.mp3" loop preload="none"></audio>
@@ -150,7 +150,9 @@
     </section>
   </main>
   <button id="bgm-toggle" class="bgm-toggle" type="button" aria-pressed="false">音をつける</button>
+  <!-- Temporary build marker for cache/deploy debugging -->
+  <small id="build-version" class="build-version" aria-hidden="true"></small>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=d33b57b"></script>
 </body>
 </html>
