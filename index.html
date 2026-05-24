@@ -47,7 +47,7 @@
         <div class="trees" aria-hidden="true"></div>
         <div class="ground" aria-hidden="true"></div>
         <div class="grass" aria-hidden="true"></div>
-        <div class="character-card player" id="player-card"><span class="animal">🙂</span><small>あなた</small></div>
+        <div class="character-card player" id="player-card"><span class="animal player-silhouette" aria-hidden="true"></span><small>あなた</small></div>
         <div class="stump" id="snack-zone"><span id="snack-icon">🍪</span></div>
         <div class="character-card mystery" id="opponent-name">
           <img id="opponent-image" class="character-image" alt="正体のわからない相手" width="110" height="110" hidden>
@@ -59,13 +59,13 @@
       <p id="message" role="status" aria-live="polite">相手は、昨日のことを覚えています。</p>
 
       <div class="buttons">
-        <button id="share-button" type="button">わける</button>
-        <button id="take-button" type="button">ひとりじめ</button>
+        <button id="share-button" type="button"><span class="label-main">わける</span><span class="label-sub">ふたりで少しずつ</span></button>
+        <button id="take-button" type="button"><span class="label-main">ひとりじめ</span><span class="label-sub">今日は多く取れる</span></button>
       </div>
     </section>
 
     <section id="result-screen" class="card" hidden aria-label="結果画面">
-      <div id="ending-scene" class="ending-scene"><span class="left">🙂</span><span class="middle">🍪</span><span class="right">❓</span></div>
+      <div id="ending-scene" class="ending-scene"><span class="left">◯</span><span class="middle">🍪</span><span class="right">❓</span></div>
       <h2 id="result-title"></h2>
       <p id="result-text"></p>
       <h3 id="opponent-reveal"></h3>

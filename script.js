@@ -96,8 +96,17 @@ function playTurn(playerMove) {
 }
 
 function updateScreen() {
+  const dayNotes = {
+    1: "まだ、相手のことを何も知りません。",
+    2: "昨日のことが、少しだけ残っています。",
+    3: "相手は、あなたの手元を覚えています。",
+    4: "同じ広場に、また戻ってきました。",
+    5: "選び方に、癖が出はじめています。",
+    6: "明日も、この広場で会います。",
+    7: "最後の日です。相手は、昨日までのあなたを覚えています。"
+  };
   dayLabel.textContent = `${state.day}日目`;
-  dayNote.textContent = state.day === 1 ? "相手は、昨日のことを覚えています。" : "明日も、この広場で会います。";
+  dayNote.textContent = dayNotes[state.day] || dayNotes[1];
   progressBar.style.width = `${(state.day / MAX_DAYS) * 100}%`;
   document.body.setAttribute("data-phase", `day-${state.day}`);
   setupOpponentShadow();
@@ -178,7 +187,7 @@ function renderEndingScene() {
   let tone = "far";
   if (coop >= 4) tone = "close"; else if (clash >= 3) tone = "tense"; else if (recover) tone = "repair";
   endingScene.className = `ending-scene ${tone}`;
-  endingScene.innerHTML = `<span class="left">🙂</span><span class="middle">🍪</span><span class="right">${state.currentOpponent.emoji}</span>`;
+  endingScene.innerHTML = `<span class="left">◯</span><span class="middle">🍪</span><span class="right">${state.currentOpponent.emoji}</span>`;
 }
 
 function getResultType() {
