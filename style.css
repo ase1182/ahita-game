@@ -6,16 +6,16 @@
   --panel-texture-overlay-top:rgba(255,251,236,.44);
   --panel-texture-overlay-bottom:rgba(216,206,182,.42);
   --panel-shadow:0 10px 24px rgba(20,24,20,.18),inset 0 1px 0 rgba(255,255,255,.42),inset 0 -1px 0 rgba(80,70,48,.08);
-  --panel-read-bg:rgba(242,237,220,.84);
-  --panel-read-border:rgba(72,62,48,.26);
+  --panel-read-bg:rgba(228,236,231,.74);
+  --panel-read-border:rgba(58,70,67,.34);
   --panel-read-shadow:0 8px 18px rgba(16,18,14,.16),inset 0 1px 0 rgba(255,255,255,.34);
   --panel-read-overlay-top:rgba(255,251,236,.34);
   --panel-read-overlay-bottom:rgba(212,202,178,.36);
-  --button-choice-bg:rgba(247,241,224,.92);
-  --button-choice-border:rgba(74,64,50,.42);
+  --button-choice-bg:rgba(239,243,238,.94);
+  --button-choice-border:rgba(66,77,72,.52);
   --button-choice-shadow:0 9px 18px rgba(20,16,12,.24),inset 0 1px 0 rgba(255,255,255,.38);
-  --button-primary-bg:rgba(249,243,225,.96);
-  --button-primary-border:rgba(72,81,58,.5);
+  --button-primary-bg:rgba(247,242,222,.98);
+  --button-primary-border:rgba(82,91,61,.62);
   --button-primary-shadow:0 12px 24px rgba(20,18,12,.3),inset 0 1px 0 rgba(255,255,255,.44);
   --button-share-bg:rgba(248,244,228,.93);
   --button-share-border:rgba(74,95,72,.46);
@@ -88,9 +88,9 @@ p{line-height:1.75;margin:0}
 .bgm-toggle:hover{background:rgba(245,241,224,.94)}
 button{border:1px solid rgba(69,59,46,.32);border-radius:18px;padding:11px 16px;font-size:1rem;font-weight:700;background:rgba(250,246,232,.84);color:#262118;box-shadow:0 7px 14px rgba(20,16,12,.22);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;gap:2px}
 button .label-main{line-height:1.2}
-button .label-sub{font-size:.82rem;font-weight:500;opacity:.94;line-height:1.3}
+button .label-sub{font-size:.82rem;font-weight:500;opacity:.98;line-height:1.3}
 button:disabled{opacity:.52;filter:grayscale(.3);box-shadow:none}
-button:focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px;box-shadow:0 0 0 2px rgba(248,244,229,.62),0 9px 18px rgba(22,18,12,.24)}
+button:focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px;box-shadow:0 0 0 3px rgba(244,241,223,.76),0 11px 20px rgba(22,18,12,.28)}
 .turn-cc .stump{filter:brightness(1.08)} .turn-tt .forest-stage{filter:brightness(.88)} .turn-ts .mystery{filter:brightness(.8)} .turn-st .player{filter:saturate(.7) brightness(.94)}
 .turn-ss #snack-icon{transform:translateX(0) scale(.9)} .turn-ts #snack-icon{transform:translateX(-16px)} .turn-st #snack-icon{transform:translateX(16px)} .turn-tt #snack-icon{transform:scale(.84) rotate(8deg)}
 .turn-ss .mystery{right:20px}.turn-tt .player,.turn-tt .mystery{transform:translateY(2px)}
@@ -199,9 +199,10 @@ body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
   box-shadow:var(--panel-read-shadow);
 }
 
-#game-screen .footprint-wrap{opacity:.94}
+#game-screen .footprint-wrap{opacity:.88}
+#game-screen .day-row{opacity:.9}
 #game-screen #message{
-  background-image:linear-gradient(180deg,rgba(255,252,242,.64),rgba(238,230,211,.58)),radial-gradient(circle at 18% 22%,rgba(255,255,255,.12),transparent 36%),url("assets/panel-texture.webp");
+  background-image:linear-gradient(180deg,rgba(252,250,241,.82),rgba(233,241,236,.78)),radial-gradient(circle at 18% 22%,rgba(255,255,255,.12),transparent 36%),url("assets/panel-texture.webp");
   line-height:1.72;
 }
 
@@ -218,12 +219,13 @@ body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
 #game-screen #share-button{
   background-color:var(--button-share-bg);
   border-color:var(--button-share-border);
+  box-shadow:0 10px 20px rgba(24,34,26,.24),inset 0 1px 0 rgba(255,255,255,.45);
 }
 
 #game-screen #take-button{
   background-color:var(--button-take-bg);
   border-color:var(--button-take-border);
-  box-shadow:0 10px 19px rgba(22,16,12,.28),inset 0 1px 0 rgba(255,255,255,.32);
+  box-shadow:0 11px 20px rgba(28,20,14,.34),inset 0 1px 0 rgba(255,255,255,.26);
 }
 
 #game-screen #continue-button{
@@ -231,6 +233,9 @@ body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
   border-color:var(--button-primary-border);
   box-shadow:var(--button-primary-shadow);
   font-weight:800;
+  letter-spacing:.01em;
+  padding-top:12px;
+  padding-bottom:12px;
 }
 
 #start-screen #start-button:hover,
