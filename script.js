@@ -31,6 +31,10 @@ const opponentTrack = document.getElementById("opponent-track");
 const forestStage = document.getElementById("forest-stage");
 const playerCard = document.getElementById("player-card");
 const endingScene = document.getElementById("ending-scene");
+const opponentImage = document.getElementById("opponent-image");
+const opponentFallback = document.getElementById("opponent-fallback");
+const resultOpponentImage = document.getElementById("result-opponent-image");
+const resultOpponentFallback = document.getElementById("result-opponent-fallback");
 
 const resultTitle = document.getElementById("result-title");
 const resultText = document.getElementById("result-text");
@@ -48,9 +52,9 @@ const shareResultButton = document.getElementById("share-result-button");
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "" };
 
 const opponents = [
-  { name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", decideMove: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory[playerHistory.length - 1]) },
-  { name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", decideMove: ({ day, playerHistory }) => (day === 1 ? TAKE : playerHistory.filter((m) => m === SHARE).length >= 3 ? SHARE : TAKE) },
-  { name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", decideMove: ({ playerHistory }) => (playerHistory.slice(-2).every((m) => m === TAKE) && playerHistory.length >= 2 ? TAKE : SHARE) }
+  { name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", decideMove: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory[playerHistory.length - 1]) },
+  { name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", decideMove: ({ day, playerHistory }) => (day === 1 ? TAKE : playerHistory.filter((m) => m === SHARE).length >= 3 ? SHARE : TAKE) },
+  { name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", decideMove: ({ playerHistory }) => (playerHistory.slice(-2).every((m) => m === TAKE) && playerHistory.length >= 2 ? TAKE : SHARE) }
 ];
 
 startButton.addEventListener("click", startGame);
@@ -95,8 +99,26 @@ function updateScreen() {
   dayNote.textContent = state.day === 1 ? "相手は、昨日のことを覚えています。" : "明日も、この広場で会います。";
   progressBar.style.width = `${(state.day / MAX_DAYS) * 100}%`;
   document.body.setAttribute("data-phase", `day-${state.day}`);
-  opponentName.innerHTML = `<span class="animal">${state.currentOpponent.mask}</span><small>？？？</small>`;
+  setupOpponentShadow();
   message.textContent = "まだ、相手の正体はわかりません。";
+}
+
+function setupOpponentShadow() {
+  const shadowImage = "assets/character-shadow.webp";
+  opponentImage.hidden = false;
+  opponentImage.alt = "正体のわからない相手";
+  opponentImage.src = shadowImage;
+  opponentImage.onerror = () => {
+    opponentImage.hidden = true;
+    opponentFallback.hidden = false;
+  };
+  opponentImage.onload = () => {
+    opponentFallback.hidden = true;
+  };
+  if (!opponentImage.complete) {
+    opponentFallback.hidden = false;
+  }
+  opponentName.querySelector("small").textContent = "？？？";
 }
 
 function renderTracks() {
@@ -119,9 +141,30 @@ function showResult() {
   const result = getResultType(); state.resultTypeTitle = result.title;
   resultTitle.textContent = `あなたの記録：${result.title}`; resultText.textContent = result.text;
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
+  renderResultOpponent();
   snackResult.textContent = `あなたのおやつ ${state.playerScore} / 相手のおやつ ${state.opponentScore}`;
   relationshipEnding.textContent = `関係の結末：${getRelationshipEnding()}`;
   renderEndingScene();
+}
+
+function renderResultOpponent() {
+  const { name, image, emoji } = state.currentOpponent;
+  resultOpponentImage.hidden = false;
+  resultOpponentImage.alt = name;
+  resultOpponentImage.src = image || "";
+  resultOpponentImage.onerror = () => {
+    resultOpponentImage.hidden = true;
+    resultOpponentFallback.hidden = false;
+    resultOpponentFallback.textContent = emoji;
+  };
+  resultOpponentImage.onload = () => {
+    resultOpponentFallback.hidden = true;
+  };
+  if (!image) {
+    resultOpponentImage.hidden = true;
+    resultOpponentFallback.hidden = false;
+    resultOpponentFallback.textContent = emoji;
+  }
 }
 
 function renderEndingScene() {

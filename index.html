@@ -43,12 +43,17 @@
       </div>
 
       <div class="forest-stage" id="forest-stage">
+        <div class="stage-overlay" aria-hidden="true"></div>
         <div class="trees" aria-hidden="true"></div>
         <div class="ground" aria-hidden="true"></div>
         <div class="grass" aria-hidden="true"></div>
         <div class="character-card player" id="player-card"><span class="animal">🙂</span><small>あなた</small></div>
         <div class="stump" id="snack-zone"><span id="snack-icon">🍪</span></div>
-        <div class="character-card mystery" id="opponent-name"><span class="animal">⬛</span><small>？？？</small></div>
+        <div class="character-card mystery" id="opponent-name">
+          <img id="opponent-image" class="character-image" alt="正体のわからない相手" width="110" height="110" hidden>
+          <span id="opponent-fallback" class="animal">⬛</span>
+          <small>？？？</small>
+        </div>
       </div>
 
       <p id="message" role="status" aria-live="polite">相手は、昨日のことを覚えています。</p>
@@ -64,6 +69,10 @@
       <h2 id="result-title"></h2>
       <p id="result-text"></p>
       <h3 id="opponent-reveal"></h3>
+      <div class="result-opponent-wrap">
+        <img id="result-opponent-image" class="result-opponent-image" alt="" width="130" height="130" loading="lazy" hidden>
+        <span id="result-opponent-fallback" class="result-opponent-fallback">❓</span>
+      </div>
       <p id="opponent-text"></p>
       <p id="relationship-ending" class="sub-result"></p>
       <p id="snack-result" class="sub-result"></p>
