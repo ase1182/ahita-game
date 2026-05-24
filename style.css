@@ -47,3 +47,12 @@ button:focus-visible{outline:3px solid rgba(88,111,85,.55);outline-offset:2px}
 .result-buttons{margin-top:14px}
 @media (max-width:900px){body{background-attachment:scroll}}
 @media (prefers-reduced-motion:no-preference){#progress-bar,#snack-icon,.player,.mystery,.forest-stage{transition:all .35s ease}.forest-stage.pulse{animation:flash .55s ease}.character-card.nod{animation:nod .55s ease}@keyframes flash{0%{filter:brightness(1)}50%{filter:brightness(1.08)}100%{filter:brightness(1)}}@keyframes nod{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}}
+
+/* Remove large inner game panel shell: keep only small readable UI panels */
+#game-screen,
+#game-screen.card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
