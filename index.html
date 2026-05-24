@@ -72,16 +72,36 @@
 
     <section id="result-screen" class="card" hidden aria-label="結果画面">
       <div id="ending-scene" class="ending-scene"><span class="left">◯</span><span class="middle">🍪</span><span class="right">❓</span></div>
-      <h2 id="result-title"></h2>
-      <p id="result-text"></p>
-      <h3 id="opponent-reveal"></h3>
-      <div class="result-opponent-wrap">
-        <img id="result-opponent-image" class="result-opponent-image" alt="" width="130" height="130" loading="lazy" hidden>
-        <span id="result-opponent-fallback" class="result-opponent-fallback">❓</span>
+      <section class="result-panel result-primary" aria-label="あなたの記録">
+        <h2 id="result-title"></h2>
+        <p id="result-text"></p>
+      </section>
+
+      <section class="result-panel result-opponent" aria-label="相手の正体">
+        <h3 id="opponent-reveal"></h3>
+        <div class="result-opponent-body">
+          <div class="result-opponent-wrap">
+            <img id="result-opponent-image" class="result-opponent-image" alt="" width="130" height="130" loading="lazy" hidden>
+            <span id="result-opponent-fallback" class="result-opponent-fallback">❓</span>
+          </div>
+          <p id="opponent-text"></p>
+        </div>
+      </section>
+
+      <section class="result-panel result-ending" aria-label="関係の結末">
+        <p id="relationship-ending" class="sub-result"></p>
+      </section>
+
+      <section class="result-stats" aria-label="おやつ数">
+        <p id="snack-result" class="sub-result"></p>
+      </section>
+
+      <div class="result-actions-divider" aria-hidden="true"></div>
+
+      <div class="buttons result-buttons">
+        <button id="retry-button" type="button">もう一度、森へ行く</button>
+        <button id="share-result-button" type="button">Xで共有</button>
       </div>
-      <p id="opponent-text"></p>
-      <p id="relationship-ending" class="sub-result"></p>
-      <p id="snack-result" class="sub-result"></p>
 
       <details class="theory">
         <summary>この森のしくみ</summary>
@@ -91,11 +111,6 @@
           でも、同じ相手と何度も会うなら、「昨日のこと」が関係を変えます。
         </p>
       </details>
-
-      <div class="buttons result-buttons">
-        <button id="retry-button" type="button">もう一度、森へ行く</button>
-        <button id="share-result-button" type="button">Xで共有</button>
-      </div>
     </section>
   </main>
 
