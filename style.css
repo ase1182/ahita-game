@@ -77,7 +77,9 @@ body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
 #result-screen .result-chip{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(243,236,222,.88);border:1px solid rgba(85,72,55,.22);font-size:.86rem;font-weight:700;color:#2d261b;box-shadow:0 5px 12px rgba(0,0,0,.1)}
 #result-screen .result-actions-divider{height:1px;background:linear-gradient(90deg,rgba(243,236,220,0),rgba(243,236,220,.8),rgba(243,236,220,0));margin-top:2px}
 #result-screen .result-buttons{margin-top:0;position:static;gap:9px}
+#result-screen .result-buttons button{min-height:52px;justify-content:center}
 #result-screen #retry-button{background:rgba(250,246,232,.9);border-color:rgba(75,95,70,.4);box-shadow:0 8px 16px rgba(24,34,22,.2)}
+#result-screen #new-opponent-button{background:rgba(248,244,229,.86);border-color:rgba(76,88,98,.35);box-shadow:0 8px 16px rgba(26,30,36,.16)}
 #result-screen #share-result-button{background:rgba(250,246,232,.74);font-weight:600}
 #result-screen .theory{margin-top:2px;padding:10px 12px;border-radius:12px;background:rgba(243,235,221,.48);border:1px solid rgba(80,70,55,.15)}
 #result-screen .theory summary{cursor:pointer;font-weight:700;color:#2f261b}

@@ -48,6 +48,7 @@ const shareButton = document.getElementById("share-button");
 const takeButton = document.getElementById("take-button");
 const retryButton = document.getElementById("retry-button");
 const shareResultButton = document.getElementById("share-result-button");
+const newOpponentButton = document.getElementById("new-opponent-button");
 
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "" };
 
@@ -59,12 +60,22 @@ const opponents = [
 ];
 
 startButton.addEventListener("click", startGame);
-retryButton.addEventListener("click", () => resetGame(true));
+retryButton.addEventListener("click", restartWithSameOpponent);
+newOpponentButton.addEventListener("click", restartWithDifferentOpponent);
 shareButton.addEventListener("click", () => playTurn(SHARE));
 takeButton.addEventListener("click", () => playTurn(TAKE));
 shareResultButton.addEventListener("click", shareResult);
 
 function startGame() { resetGame(true); }
+
+function restartWithSameOpponent() {
+  resetGame(false);
+}
+
+function restartWithDifferentOpponent() {
+  selectNewOpponent();
+  resetGame(false);
+}
 
 function showGameScreen() {
   startScreen.hidden = true;
@@ -79,9 +90,26 @@ function showResultScreen() {
 
 function resetGame(newOpponent) {
   Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "" });
-  if (newOpponent || !state.currentOpponent) state.currentOpponent = opponents[Math.floor(Math.random() * opponents.length)];
+  if (newOpponent || !state.currentOpponent) state.currentOpponent = chooseRandomOpponent();
   showGameScreen();
   setChoiceDisabled(false); updateScreen(); renderTracks();
+}
+
+function chooseRandomOpponent() {
+  return opponents[Math.floor(Math.random() * opponents.length)];
+}
+
+function selectNewOpponent() {
+  if (opponents.length <= 1) {
+    state.currentOpponent = chooseRandomOpponent();
+    return;
+  }
+
+  let nextOpponent = chooseRandomOpponent();
+  while (nextOpponent === state.currentOpponent) {
+    nextOpponent = chooseRandomOpponent();
+  }
+  state.currentOpponent = nextOpponent;
 }
 
 function playTurn(playerMove) {
