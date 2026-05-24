@@ -35,6 +35,9 @@ const startScreen = document.getElementById("start-screen");
 const gameScreen = document.getElementById("game-screen");
 const resultScreen = document.getElementById("result-screen");
 const dayLabel = document.getElementById("day-label");
+const dayNote = document.getElementById("day-note");
+const progressBar = document.getElementById("progress-bar");
+const snackIcon = document.getElementById("snack-icon");
 const message = document.getElementById("message");
 const opponentName = document.getElementById("opponent-name");
 const resultTitle = document.getElementById("result-title");
@@ -69,6 +72,7 @@ const opponents = [
     id: "tanuki",
     name: "まねっこタヌキ",
     emoji: "🦝",
+    mask: "🦝",
     description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。",
     decideMove: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory[playerHistory.length - 1])
   },
@@ -76,6 +80,7 @@ const opponents = [
     id: "crow",
     name: "疑い深いカラス",
     emoji: "🐦‍⬛",
+    mask: "🐦‍⬛",
     description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。",
     decideMove: ({ day, playerHistory }) => {
       if (day === 1) return TAKE;
@@ -87,6 +92,7 @@ const opponents = [
     id: "rabbit",
     name: "忘れっぽいウサギ",
     emoji: "🐇",
+    mask: "🐇",
     description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。",
     decideMove: ({ playerHistory }) => {
       const recent = playerHistory.slice(-2);
@@ -144,6 +150,8 @@ function playTurn(playerMove) {
   state.playerScore += payoff.player;
   state.opponentScore += payoff.opponent;
 
+  message.classList.add("fade-out");
+  snackIcon.classList.add("snack-react");
   message.textContent = getTurnMessage(playerMove, opponentMove);
 
   const isLastDay = state.day >= MAX_DAYS;
@@ -157,6 +165,7 @@ function playTurn(playerMove) {
     state.day += 1;
     state.isProcessingTurn = false;
     setChoiceDisabled(false);
+    snackIcon.classList.remove("snack-react");
     updateScreen();
   }, TURN_DELAY_MS);
 }
@@ -173,8 +182,11 @@ function getTurnMessage(playerMove, opponentMove) {
 
 function updateScreen() {
   dayLabel.textContent = `${state.day}日目`;
-  opponentName.textContent = "？？？";
+  dayNote.textContent = `7日間のうち ${state.day}日目`;
+  progressBar.style.width = `${(state.day / MAX_DAYS) * 100}%`;
+  opponentName.innerHTML = `<span>${state.currentOpponent.mask}</span><small>？？？</small>`;
   message.textContent = "どうしますか？";
+  message.classList.remove("fade-out");
 }
 
 function showResult() {
@@ -192,6 +204,7 @@ function showResult() {
 
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`;
   opponentText.textContent = state.currentOpponent.description;
+  opponentName.innerHTML = `<span>${state.currentOpponent.emoji}</span><small>${state.currentOpponent.name}</small>`;
 }
 
 function getResultType() {
