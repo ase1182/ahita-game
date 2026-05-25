@@ -131,6 +131,7 @@ const snackResult = document.getElementById("snack-result");
 const relationshipEnding = document.getElementById("relationship-ending");
 const opponentReveal = document.getElementById("opponent-reveal");
 const opponentText = document.getElementById("opponent-text");
+const dayMotionTargets = [dayLabel, dayNote, playerTrack, opponentTrack, message];
 
 const startButton = document.getElementById("start-button");
 const shareButton = document.getElementById("share-button");
@@ -220,11 +221,13 @@ function showGameScreen() {
   startScreen.hidden = true;
   gameScreen.hidden = false;
   resultScreen.hidden = true;
+  triggerMotion(gameScreen, "motion-enter");
 }
 
 function showResultScreen() {
   gameScreen.hidden = true;
   resultScreen.hidden = false;
+  triggerMotion(resultScreen, "motion-enter");
 }
 
 function resetGame(newOpponent) {
@@ -283,7 +286,12 @@ function playTurn(playerMove) {
   forestStage.classList.add("pulse");
   playerCard.classList.add("nod");
   message.textContent = pickReactionMessage(playerMove, opponentMove);
+  triggerMotion(message, "motion-message");
+  triggerMotion(snackIcon, "motion-pop");
+  triggerMotion(opponentName, "motion-approach");
   renderTracks();
+  triggerMotion(playerTrack, "motion-refresh");
+  triggerMotion(opponentTrack, "motion-refresh");
   updateContinueButton();
   scrollMessageIntoViewOnMobile();
 
@@ -327,6 +335,7 @@ function updateScreen() {
   document.body.setAttribute("data-phase", `day-${state.day}`);
   setupOpponentShadow();
   message.textContent = "まだ、相手の正体はわかりません。";
+  dayMotionTargets.forEach((target) => triggerMotion(target, "motion-refresh"));
   updateContinueButton();
 }
 
@@ -335,6 +344,7 @@ function updateContinueButton() {
   continueButton.hidden = !ready;
   continueButton.disabled = !ready;
   continueButton.textContent = state.day >= MAX_DAYS ? "結果を見る" : "次の日へ";
+  if (ready) triggerMotion(continueButton, "motion-advance");
 }
 
 function pickReactionMessage(playerMove, opponentMove) {
@@ -390,6 +400,11 @@ function showResult() {
   relationshipEnding.textContent = `関係の結末：${getRelationshipEnding()}`;
   renderResultTracks();
   renderEndingScene();
+  const resultItems = resultScreen.querySelectorAll(".result-panel, .result-stats, .ending-scene, .result-buttons");
+  resultItems.forEach((item, index) => {
+    item.style.animationDelay = `${Math.min(index * 0.05, 0.25)}s`;
+    triggerMotion(item, "motion-result");
+  });
 }
 
 function renderResultTracks() {
@@ -480,4 +495,16 @@ function setChoiceDisabled(disabled) {
   const hideChoices = disabled && state.turnResolved;
   shareButton.hidden = hideChoices;
   takeButton.hidden = hideChoices;
+}
+
+function triggerMotion(element, className) {
+  if (!element) return;
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+  const cleanup = () => {
+    element.classList.remove(className);
+    element.removeEventListener("animationend", cleanup);
+  };
+  element.addEventListener("animationend", cleanup);
 }
