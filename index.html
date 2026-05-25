@@ -78,28 +78,13 @@
     </section>
 
     <section id="result-screen" class="card" hidden aria-label="結果画面">
-      <section class="result-panel result-history" aria-label="7日間の足あと">
-        <h3>7日間の足あと</h3>
-        <div class="footprint-wrap result-footprint-wrap" aria-label="結果の足あと">
-          <div class="footprint-line">
-            <span class="footprint-label">あなた</span>
-            <div class="footprint-row" id="result-player-track" aria-label="結果:あなたの足あと"></div>
-          </div>
-          <div class="footprint-line">
-            <span class="footprint-label">相手</span>
-            <div class="footprint-row" id="result-opponent-track" aria-label="結果:相手の足あと"></div>
-          </div>
-        </div>
-      </section>
-
       <section class="result-panel result-primary" aria-label="あなたの記録">
         <h2 id="result-title"></h2>
         <p id="result-text"></p>
       </section>
 
-      <section class="result-panel story-panel" aria-label="7日間の物語">
-        <h2>7日間の物語</h2>
-        <p id="result-story"></p>
+      <section class="result-stats" aria-label="おやつ数">
+        <p id="snack-result" class="sub-result"></p>
       </section>
 
       <section class="result-panel result-opponent" aria-label="相手の正体">
@@ -111,23 +96,40 @@
           </div>
           <div class="result-opponent-texts">
             <p id="opponent-text"></p>
-            <section id="opponent-profile" class="opponent-profile" hidden aria-label="この子のこと">
-              <h4>この子のこと</h4>
-              <p id="opponent-profile-temperament"></p>
-              <p id="opponent-profile-habit"></p>
-              <p id="opponent-profile-memory"></p>
-            </section>
+            <details id="opponent-profile" class="opponent-profile" hidden>
+              <summary>この子のことを読む</summary>
+              <div class="opponent-profile-body">
+                <p id="opponent-profile-temperament"></p>
+                <p id="opponent-profile-habit"></p>
+                <p id="opponent-profile-memory"></p>
+              </div>
+            </details>
           </div>
         </div>
       </section>
+
+      <details class="result-panel result-history" aria-label="7日間の足あと">
+        <summary>7日間の足あとを見る</summary>
+        <div class="footprint-wrap result-footprint-wrap" aria-label="結果の足あと">
+          <div class="footprint-line">
+            <span class="footprint-label">あなた</span>
+            <div class="footprint-row" id="result-player-track" aria-label="結果:あなたの足あと"></div>
+          </div>
+          <div class="footprint-line">
+            <span class="footprint-label">相手</span>
+            <div class="footprint-row" id="result-opponent-track" aria-label="結果:相手の足あと"></div>
+          </div>
+        </div>
+      </details>
 
       <section class="result-panel result-ending" aria-label="関係の結末">
         <p id="relationship-ending" class="sub-result"></p>
       </section>
 
-      <section class="result-stats" aria-label="おやつ数">
-        <p id="snack-result" class="sub-result"></p>
-      </section>
+      <details class="result-panel story-panel" aria-label="7日間の物語">
+        <summary>7日間の物語を読む</summary>
+        <p id="result-story"></p>
+      </details>
 
       <div id="ending-scene" class="ending-scene"><span class="left">◯</span><span class="middle">🍪</span><span class="right">❓</span></div>
 
@@ -140,8 +142,8 @@
       </div>
 
       <section class="result-recommend-panel result-panel" aria-label="おすすめページへの案内">
-        <h3>この森が好きな人へ</h3>
-        <p>物語の余韻に合う本や音声コンテンツを少しだけ集めました。</p>
+        <h3>この森の続きを探す</h3>
+        <p>この世界観に近い本・音声コンテンツの紹介ページです。</p>
         <p><a class="result-recommend-link" href="recommendations.html">おすすめを見る</a></p>
       </section>
 

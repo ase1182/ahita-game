@@ -515,12 +515,14 @@ function renderOpponentProfile(profile) {
     && typeof profile.memory === "string";
   if (!hasCompleteProfile) {
     opponentProfile.hidden = true;
+    opponentProfile.open = false;
     opponentProfileTemperament.textContent = "";
     opponentProfileHabit.textContent = "";
     opponentProfileMemory.textContent = "";
     return;
   }
   opponentProfile.hidden = false;
+  opponentProfile.open = false;
   opponentProfileTemperament.textContent = profile.temperament;
   opponentProfileHabit.textContent = profile.habit;
   opponentProfileMemory.textContent = profile.memory;
