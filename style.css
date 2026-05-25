@@ -750,3 +750,13 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 #result-screen .result-cookies-panel #grant-cookies-button{margin-top:8px}
 #result-screen .result-cookies-panel .forest-cookie-message{margin-top:8px;color:#4a4134}
 #result-screen .result-cookie-notice{font-size:.9rem;color:#4e4639;line-height:1.7}
+
+#result-screen .result-cookies-panel{position:relative;z-index:2}
+#result-screen .result-cookies-panel #grant-cookies-button{min-height:44px;touch-action:manipulation;position:relative;z-index:3}
+#start-screen .start-forest-life-link-wrap{margin:2px 0 0}
+#start-screen .start-forest-life-link{font-size:.95rem;opacity:.92;line-height:1.4}
+#start-screen .start-forest-life-link small{font-size:.82rem;font-weight:500;opacity:.9}
+#forest-life-page #forest-life-start-screen,#forest-life-page #forest-life-game-screen{display:flex;flex-direction:column;gap:10px}
+#forest-life-page .forest-life-bottom-actions{margin-top:8px;padding-top:10px;border-top:1px dashed rgba(80,70,55,.28);display:flex;flex-direction:column;gap:8px}
+#forest-life-page #add-brought-in-button{touch-action:manipulation;min-height:44px}
+#forest-life-page #start-forest-session{touch-action:manipulation;min-height:44px}
