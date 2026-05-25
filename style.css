@@ -809,3 +809,15 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 #forest-life-page #forest-life-bgm-toggle[aria-pressed="true"]{
   background:rgba(223,236,217,.9);
 }
+
+#forest-life-page .forest-life-stats p{margin:0;padding:6px 8px;background:rgba(250,246,232,.75);border-radius:10px;border:1px solid rgba(80,70,55,.15)}
+#forest-life-page .forest-day-status{padding:10px 12px;border-radius:12px;background:rgba(39,45,39,.14);border:1px dashed rgba(70,60,50,.28)}
+#forest-life-page .forest-life-ledgers{display:grid;grid-template-columns:1fr;gap:10px}
+#forest-life-page h2{font-size:1.02rem;margin:8px 0 6px}
+#forest-life-page ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+#forest-life-page .forest-life-action-buttons button{min-height:54px}
+#forest-life-page .button-link{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:10px 14px;border-radius:14px;background:rgba(250,246,232,.9);border:1px solid rgba(69,59,46,.32);color:#211b14;text-decoration:none;font-weight:700}
+#forest-life-page button:disabled{opacity:.45;filter:grayscale(.55);cursor:not-allowed;border-color:rgba(80,70,55,.22);background:rgba(220,214,200,.55)}
+@media (min-width:720px){
+  #forest-life-page .forest-life-ledgers{grid-template-columns:1fr 1fr}
+}

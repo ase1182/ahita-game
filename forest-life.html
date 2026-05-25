@@ -9,32 +9,74 @@
 <body id="forest-life-page">
   <main class="forest-life-wrap">
     <h1>森のクッキー暮らし</h1>
-      <div class="forest-life-bgm-controls">
-        <button id="forest-life-bgm-toggle" type="button" aria-pressed="false">BGMを流す</button>
-      </div>
+    <div class="forest-life-bgm-controls">
+      <button id="forest-life-bgm-toggle" type="button" aria-pressed="false">BGMを流す</button>
+    </div>
 
     <section id="forest-life-start-screen" class="forest-life-card">
       <p id="forest-balance">現在のフォレストクッキー残高: 0</p>
-      <label for="brought-in-input">持ち込み数</label>
+      <label for="brought-in-input">持ち込みクッキー</label>
       <input id="brought-in-input" type="number" min="0" step="1" value="0" />
-      <button id="start-forest-session" type="button">開始</button>
-      <p class="forest-start-note">開始後も下部から追加で持ち込みできます。</p>
+      <button id="start-forest-session" type="button">この暮らしを始める</button>
+      <p class="forest-start-note">持ち込んだ分だけで、毎日のおやつ代をまかないながら森で暮らします。</p>
       <p><a id="start-back-to-ahita-link" class="button-link" href="index.html">また明日も会うきみへへ戻る</a></p>
     </section>
 
     <section id="forest-life-game-screen" class="forest-life-card" hidden>
-      <p id="forest-session-status">現在の手元クッキー: 0</p>
-      <div class="forest-life-buttons">
-        <button id="spend-one-cookie" type="button">1クッキー使う</button>
-        <button id="finish-forest-session" type="button">終了</button>
+      <div class="forest-life-stats">
+        <p id="forest-day">現在の日数: 0日目</p>
+        <p id="forest-session-status">手持ちクッキー: 0</p>
+        <p id="forest-snack-cost">今日のおやつ代: 3</p>
+        <p id="forest-actions-left">今日の残り行動回数: 2</p>
+        <p id="forest-animals">おやつを待つ動物たち: 3匹</p>
       </div>
-      <section class="forest-life-bottom-actions">
-        <p id="forest-outside-balance">森の外に残っているクッキー: 0</p>
-        <label for="add-brought-in-input">追加する数</label>
-        <input id="add-brought-in-input" type="number" min="0" step="1" value="0" />
-        <button id="add-brought-in-button" type="button">持ち込みクッキーを追加</button>
-        <p><a id="back-to-ahita-link" class="button-link" href="index.html">また明日も会うきみへへ戻る</a></p>
+
+      <p id="forest-day-status" class="forest-day-status">行動を選んでください。</p>
+
+      <div class="forest-life-buttons forest-life-action-buttons">
+        <button id="forest-lend-button" type="button">森の仲間にあずける（貸付）</button>
+        <button id="forest-borrow-button" type="button">森の倉庫から前借りする（借り入れ）</button>
+        <button id="forest-invest-button" type="button">森の畑にまく（投資）</button>
+      </div>
+
+      <div class="forest-life-buttons">
+        <button id="forest-next-day-button" type="button" disabled>次の日へ</button>
+        <button id="finish-forest-session" type="button">また明日も会うきみへへ戻る</button>
+      </div>
+
+      <section class="forest-life-ledgers">
+        <div>
+          <h2>予約中の貸付一覧</h2>
+          <ul id="forest-lend-list"></ul>
+        </div>
+        <div>
+          <h2>返済予定の借り入れ一覧</h2>
+          <ul id="forest-borrow-list"></ul>
+        </div>
       </section>
+
+      <section>
+        <h2>投資結果のログ</h2>
+        <ul id="forest-invest-log"></ul>
+      </section>
+
+      <section>
+        <h2>行動ログ</h2>
+        <ul id="forest-action-log"></ul>
+      </section>
+    </section>
+
+    <section id="forest-life-result-screen" class="forest-life-card" hidden>
+      <h2 id="forest-result-title">森で0日分のおやつをまかなえました</h2>
+      <p id="forest-result-brought-in">持ち込み: 0</p>
+      <p id="forest-result-day">最終日数: 0日</p>
+      <p id="forest-result-balance">最後の手持ちクッキー: 0</p>
+      <p id="forest-result-lending">貸付中だったクッキー: 0</p>
+      <p id="forest-result-borrowing">返済予定だったクッキー: 0</p>
+      <div class="forest-life-buttons">
+        <button id="forest-retry-button" type="button">もう一度遊ぶ</button>
+        <a id="result-back-link" class="button-link" href="index.html">また明日も会うきみへへ戻る</a>
+      </div>
     </section>
 
     <section class="forest-life-note">
@@ -43,6 +85,7 @@
       <p>データはこのブラウザに保存されます。削除や別端末では引き継がれません。</p>
     </section>
   </main>
+
   <audio id="forest-life-bgm" src="assets/forest-house-bgm.mp3" loop preload="auto"></audio>
   <script src="forest-life.js" defer></script>
 </body>
