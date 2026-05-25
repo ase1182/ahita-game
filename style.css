@@ -851,6 +851,14 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   #forest-life-page .forest-life-toast.is-visible{animation:none;opacity:1;}
 }
 #forest-life-page .forest-life-stats p{margin:0;padding:6px 8px;background:rgba(250,246,232,.75);border-radius:10px;border:1px solid rgba(80,70,55,.15)}
+#forest-life-page .forest-secondary-card{padding:10px;border-radius:12px;background:rgba(247,241,226,.72);border:1px solid rgba(80,70,55,.16)}
+#forest-life-page .forest-secondary-card h2{margin:0 0 6px}
+#forest-life-page .forest-life-ledgers-wrap{padding:8px 10px;border-radius:12px;background:rgba(248,243,230,.72);border:1px solid rgba(80,70,55,.16)}
+#forest-life-page .forest-life-ledgers-wrap > summary{cursor:pointer;font-weight:700}
+#forest-life-page #forest-factory-card .forest-life-buttons{margin-top:6px}
+#forest-life-page #forest-build-factory-button{width:100%}
+#forest-life-page .action-modal{pointer-events:auto}
+#forest-life-page .action-modal[hidden]{pointer-events:none}
 #forest-life-page .forest-upcoming-note{
   margin-top:-4px;
   font-size:.82rem;

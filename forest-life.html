@@ -26,7 +26,7 @@
     </section>
 
     <section id="forest-life-game-screen" class="forest-life-card" hidden>
-      <div class="forest-life-stats">
+      <div class="forest-life-stats" id="forest-core-stats">
         <p id="forest-day">現在の日数: 0日目</p>
         <p id="forest-session-status">手持ちクッキー: 0</p>
         <p id="forest-upcoming-note" class="forest-upcoming-note" hidden>※ 配当や売掛は届かないことがあります。</p>
@@ -34,6 +34,24 @@
         <p id="forest-actions-left">今日の残り行動回数: 2</p>
         <p id="forest-animals">おやつを待つ動物たち: 3匹</p>
       </div>
+
+      <section class="forest-life-stats forest-secondary-card" id="forest-market-stats">
+        <h2>森と夜の状態</h2>
+        <p id="forest-unease">森のざわめき: 0 <small class="forest-stat-help">高いほど、おやつ代や取引条件が悪くなります。</small></p>
+        <p id="forest-black-market-trust">夜の信用: 50 <small id="forest-black-market-trust-help" class="forest-stat-help">高いほど、夜の市場で少し有利になります。</small></p>
+      </section>
+
+      <section class="forest-life-stats forest-secondary-card" id="forest-inventory-card">
+        <h2>夜の在庫</h2>
+        <p id="forest-black-market-inventory-summary">夜の在庫: 黒いクッキー 0 / すごくおいしいクッキー 0 / クッキー？ 0</p>
+      </section>
+
+      <section class="forest-life-stats forest-secondary-card" id="forest-factory-card">
+        <h2>クッキー工場</h2>
+        <p id="forest-factory-summary">所有数: 0 / 毎日の配当: +0 / おやつを待つ動物を減らしている数: 0匹</p>
+        <p id="forest-factory-note" class="forest-stat-help">50枚で建てられます。</p>
+        <div class="forest-life-buttons"><button id="forest-build-factory-button" type="button">クッキー工場を建てる（50枚）</button></div>
+      </section>
 
       <p id="forest-day-status" class="forest-day-status">行動を選んでください。</p>
 
@@ -53,9 +71,7 @@
       <section id="forest-black-market-panel" class="forest-black-market-hint" hidden>
         <h2>夜の市場に何を並べますか？</h2>
         <p>森の奥で、夜だけ品物を並べます。売れれば大きいですが、約束が残ることがあります。</p>
-        <p id="forest-unease">森のざわめき: 0</p>
-        <p id="forest-black-market-trust">夜の信用: 50</p>
-        <p id="forest-black-market-inventory-summary">夜の在庫: 黒いクッキー 0 / すごくおいしいクッキー 0 / クッキー？ 0</p>
+        <p id="forest-black-market-modal-trust" class="forest-stat-note">現在の夜の信用: 50</p>
         <div id="forest-black-market-actions" class="forest-life-buttons"></div>
         <div class="forest-life-buttons">
           <button id="forest-close-black-market-panel" type="button">閉じる</button>
@@ -71,12 +87,7 @@
           <h3>支払う約束</h3>
           <ul id="forest-accounts-payable"></ul>
         </details>
-        <details>
-          <summary>クッキー工場</summary>
-          <p id="forest-factory-summary">クッキー工場はまだありません。</p>
-          <div class="forest-life-buttons"><button id="forest-build-factory-button" type="button" hidden>クッキー工場を建てる（50枚）</button></div>
-        </details>
-      </section>
+              </section>
 
       <div class="forest-life-buttons">
         <button id="forest-next-day-button" type="button" disabled>次の日へ</button>
@@ -84,7 +95,9 @@
         <button id="finish-forest-session" type="button">また明日も会うきみへへ戻る</button>
       </div>
 
-      <section class="forest-life-ledgers">
+      <details class="forest-life-ledgers-wrap" open>
+        <summary>予定一覧</summary>
+        <section class="forest-life-ledgers">
         <div>
           <h2>予約中の貸付一覧</h2>
           <ul id="forest-lend-list"></ul>
@@ -98,6 +111,7 @@
           <ul id="forest-dividend-list"></ul>
         </div>
       </section>
+      </details>
 
       <section>
         <h2>投資結果のログ</h2>
