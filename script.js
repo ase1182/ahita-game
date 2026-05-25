@@ -3,6 +3,13 @@ const TAKE = "ひとりじめ";
 const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BUILD_VERSION = "f5e4a2c";
+const COOKIE_GRANT_AMOUNT = 3;
+const STORAGE_KEYS = {
+  balance: "ahita.cookies.balance",
+  lastGrantRunId: "ahita.cookies.lastGrantRunId",
+  version: "ahita.cookies.version",
+  currentRunId: "ahita.ahita.currentRunId"
+};
 
 console.info("また明日も会うきみへ build:", BUILD_VERSION);
 
@@ -136,6 +143,9 @@ const opponentProfile = document.getElementById("opponent-profile");
 const opponentProfileTemperament = document.getElementById("opponent-profile-temperament");
 const opponentProfileHabit = document.getElementById("opponent-profile-habit");
 const opponentProfileMemory = document.getElementById("opponent-profile-memory");
+const forestCookieBalance = document.getElementById("forest-cookie-balance");
+const grantCookiesButton = document.getElementById("grant-cookies-button");
+const grantCookiesMessage = document.getElementById("grant-cookies-message");
 const dayMotionTargets = [dayLabel, dayNote, playerTrack, opponentTrack, message];
 
 const startButton = document.getElementById("start-button");
@@ -156,6 +166,91 @@ if (buildVersionElement) {
 }
 
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 };
+let safeStorage = null;
+
+function initializeStorage() {
+  try {
+    if (!window || !window.localStorage) return null;
+    const testKey = "__ahita_storage_test__";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return window.localStorage;
+  } catch (_error) {
+    return null;
+  }
+}
+
+function readNumber(key, fallback) {
+  if (!safeStorage) return fallback;
+  const raw = safeStorage.getItem(key);
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) {
+    safeStorage.setItem(key, String(fallback));
+    return fallback;
+  }
+  return value;
+}
+
+function readString(key, fallback) {
+  if (!safeStorage) return fallback;
+  const raw = safeStorage.getItem(key);
+  if (typeof raw !== "string" || raw.length === 0) {
+    safeStorage.setItem(key, fallback);
+    return fallback;
+  }
+  return raw;
+}
+
+function ensureCookieStorageDefaults() {
+  const version = readNumber(STORAGE_KEYS.version, 1);
+  if (version !== 1 && safeStorage) safeStorage.setItem(STORAGE_KEYS.version, "1");
+  readNumber(STORAGE_KEYS.balance, 0);
+  readString(STORAGE_KEYS.lastGrantRunId, "");
+  readString(STORAGE_KEYS.currentRunId, "");
+}
+
+function getCurrentRunId() {
+  return readString(STORAGE_KEYS.currentRunId, "");
+}
+
+function setCurrentRunId(runId) {
+  if (!safeStorage) return;
+  safeStorage.setItem(STORAGE_KEYS.currentRunId, runId);
+}
+
+function issueNewRunId() {
+  const runId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  setCurrentRunId(runId);
+}
+
+function updateCookieGrantUi() {
+  if (!forestCookieBalance || !grantCookiesButton || !grantCookiesMessage) return;
+  const balance = readNumber(STORAGE_KEYS.balance, 0);
+  forestCookieBalance.textContent = `残高: ${balance}`;
+  const currentRunId = getCurrentRunId();
+  const lastGrantRunId = readString(STORAGE_KEYS.lastGrantRunId, "");
+  const canGrant = currentRunId && lastGrantRunId !== currentRunId;
+  grantCookiesButton.disabled = !canGrant;
+  grantCookiesMessage.textContent = canGrant ? "このプレイ分の受け取りができます。" : "このプレイ分は受け取り済みです。";
+}
+
+function grantForestCookies() {
+  if (!safeStorage) {
+    if (grantCookiesMessage) grantCookiesMessage.textContent = "このブラウザでは保存機能が使えないため受け取れません。";
+    return;
+  }
+  const currentRunId = getCurrentRunId();
+  const lastGrantRunId = readString(STORAGE_KEYS.lastGrantRunId, "");
+  if (!currentRunId || lastGrantRunId === currentRunId) {
+    updateCookieGrantUi();
+    return;
+  }
+  const balance = readNumber(STORAGE_KEYS.balance, 0);
+  safeStorage.setItem(STORAGE_KEYS.balance, String(balance + COOKIE_GRANT_AMOUNT));
+  safeStorage.setItem(STORAGE_KEYS.lastGrantRunId, currentRunId);
+  if (grantCookiesMessage) grantCookiesMessage.textContent = `+${COOKIE_GRANT_AMOUNT}フォレストクッキーを受け取りました。`;
+  updateCookieGrantUi();
+}
 
 // Character image assets are loaded from /assets relative to index.html
 
@@ -319,6 +414,9 @@ shareButton.addEventListener("click", () => playTurn(SHARE));
 takeButton.addEventListener("click", () => playTurn(TAKE));
 continueButton.addEventListener("click", proceedToNextDay);
 shareResultButton.addEventListener("click", shareResult);
+if (grantCookiesButton) {
+  grantCookiesButton.addEventListener("click", grantForestCookies);
+}
 if (bgmToggleButton) {
   bgmToggleButton.addEventListener("click", toggleBgm);
 }
@@ -391,6 +489,7 @@ function showResultScreen() {
 
 function resetGame(newOpponent) {
   Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 });
+  issueNewRunId();
   if (newOpponent || !state.currentOpponent) state.currentOpponent = selectWeightedOpponent();
   showGameScreen();
   setChoiceDisabled(false); updateScreen(); renderTracks();
@@ -572,6 +671,7 @@ function makeStep(move, label) {
 
 function showResult() {
   showResultScreen();
+  updateCookieGrantUi();
   const result = getResultType(); state.resultTypeTitle = result.title;
   resultTitle.textContent = `あなたの記録：${result.title}`; resultText.textContent = result.text;
   if (resultStory) resultStory.textContent = generateSevenDayStory(result);
@@ -590,6 +690,9 @@ function showResult() {
     triggerMotion(item, "motion-result");
   });
 }
+
+safeStorage = initializeStorage();
+ensureCookieStorageDefaults();
 
 function renderOpponentProfile(profile) {
   if (!opponentProfile || !opponentProfileTemperament || !opponentProfileHabit || !opponentProfileMemory) return;

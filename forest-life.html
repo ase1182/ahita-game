@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>森のクッキー暮らし</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body id="forest-life-page">
+  <main class="forest-life-wrap">
+    <h1>森のクッキー暮らし</h1>
+    <section class="forest-life-card">
+      <p id="forest-balance">現在のフォレストクッキー残高: 0</p>
+      <label for="brought-in-input">持ち込み数</label>
+      <input id="brought-in-input" type="number" min="0" step="1" value="0" />
+      <button id="start-forest-session" type="button">開始</button>
+      <p id="forest-session-status">現在の手元クッキー: 0</p>
+      <div class="forest-life-buttons">
+        <button id="spend-one-cookie" type="button">1クッキー使う</button>
+        <button id="finish-forest-session" type="button">終了</button>
+      </div>
+      <p><a id="back-to-ahita-link" class="button-link" href="index.html">また明日も会うきみへへ戻る</a></p>
+    </section>
+    <section class="forest-life-note">
+      <p>フォレストクッキーは、この森の中だけのゲーム内ポイントです。現実のお金・景品・サービスとは交換できません。</p>
+      <p>広告クリックやアフィリエイト成果とは関係ありません。</p>
+      <p>データはこのブラウザに保存されます。削除や別端末では引き継がれません。</p>
+    </section>
+  </main>
+  <script src="forest-life.js"></script>
+</body>
+</html>
