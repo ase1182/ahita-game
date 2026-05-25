@@ -866,6 +866,14 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 #forest-life-page .forest-action-plan-list button{min-height:48px;font-size:.95rem}
 #forest-life-page .forest-action-plan-list .label-main{font-size:1rem}
 #forest-life-page .forest-action-plan-list .label-sub{font-size:.86rem}
+#forest-life-page::before,
+#forest-life-page::after{pointer-events:none}
+#forest-life-page .forest-stat-note{display:block;font-size:.74rem;opacity:.78;margin-top:2px;line-height:1.35}
+#forest-life-page .action-modal[hidden]{display:none}
+#forest-life-page .action-modal{position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(24,28,26,.32)}
+#forest-life-page .action-modal__panel{width:min(94vw,520px);max-height:min(84vh,620px);overflow:auto;padding:12px;border-radius:14px;background:rgba(249,244,231,.96);border:1px solid rgba(80,70,55,.2);box-shadow:0 16px 32px rgba(0,0,0,.25)}
+#forest-life-page .action-modal__close{min-height:40px;float:right}
+#forest-life-page #action-modal-description{font-size:.9rem;color:rgba(65,57,46,.84);margin:4px 0 8px}
 #forest-life-page .button-link{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:10px 14px;border-radius:14px;background:rgba(250,246,232,.9);border:1px solid rgba(69,59,46,.32);color:#211b14;text-decoration:none;font-weight:700}
 #forest-life-page button:disabled{opacity:.5;filter:grayscale(.55);cursor:not-allowed;border-color:rgba(80,70,55,.22);background:rgba(215,209,194,.72);color:rgba(65,57,46,.72)}
 @media (min-width:720px){
