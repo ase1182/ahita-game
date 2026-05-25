@@ -18,8 +18,42 @@ const statusEl = document.getElementById("forest-session-status");
 const spendButton = document.getElementById("spend-one-cookie");
 const finishButton = document.getElementById("finish-forest-session");
 const addBroughtInButton = document.getElementById("add-brought-in-button");
+const forestLifeBgm = document.getElementById("forest-life-bgm");
+const forestLifeBgmToggle = document.getElementById("forest-life-bgm-toggle");
 
 let safeStorage = null;
+
+
+function stopForestLifeBgm() {
+  if (!forestLifeBgm || !forestLifeBgmToggle) return;
+  forestLifeBgm.pause();
+  forestLifeBgm.currentTime = 0;
+  forestLifeBgmToggle.textContent = "音をならす";
+  forestLifeBgmToggle.setAttribute("aria-pressed", "false");
+}
+
+function toggleForestLifeBgm() {
+  if (!forestLifeBgm || !forestLifeBgmToggle) return;
+  if (forestLifeBgm.paused) {
+    const p = forestLifeBgm.play();
+    if (p && typeof p.catch === "function") {
+      p.then(() => {
+        forestLifeBgmToggle.textContent = "音をとめる";
+        forestLifeBgmToggle.setAttribute("aria-pressed", "true");
+      }).catch((error) => {
+        console.warn("forest-life bgm playback failed", error);
+        forestLifeBgmToggle.textContent = "音をならす";
+        forestLifeBgmToggle.setAttribute("aria-pressed", "false");
+      });
+      return;
+    }
+    forestLifeBgmToggle.textContent = "音をとめる";
+    forestLifeBgmToggle.setAttribute("aria-pressed", "true");
+    return;
+  }
+  stopForestLifeBgm();
+}
+
 
 function initStorage() { try { const k = "__forest_storage_test__"; window.localStorage.setItem(k, "1"); window.localStorage.removeItem(k); return window.localStorage; } catch (_e) { return null; } }
 function readNumber(key, fallback) { if (!safeStorage) return fallback; const n = Number(safeStorage.getItem(key)); if (!Number.isFinite(n) || n < 0) { safeStorage.setItem(key, String(fallback)); return fallback; } return n; }
@@ -82,6 +116,8 @@ function addBroughtIn() {
 function spendOne() { if (!safeStorage) return; const session = getSession(); if (session.state !== "active") return; const nextSpent = Math.min(session.broughtIn, session.spent + 1); writeNumber(STORAGE_KEYS.spent, nextSpent); if (nextSpent >= session.broughtIn) finishSession(); updateView(); }
 function finishSession() { if (!safeStorage) return; const session = getSession(); if (session.state !== "active") return; const hand = Math.max(0, session.broughtIn - session.spent); const balance = readNumber(STORAGE_KEYS.balance, 0); writeNumber(STORAGE_KEYS.balance, balance + hand); safeStorage.setItem(STORAGE_KEYS.state, "finished"); updateView(); }
 
+if (forestLifeBgm) forestLifeBgm.volume = 0.35;
+
 safeStorage = initStorage();
 ensureDefaults();
 updateView();
@@ -90,3 +126,7 @@ startButton.addEventListener("touchend", (event) => { event.preventDefault(); st
 spendButton.addEventListener("click", spendOne);
 finishButton.addEventListener("click", finishSession);
 addBroughtInButton.addEventListener("click", addBroughtIn);
+
+if (forestLifeBgmToggle) {
+  forestLifeBgmToggle.addEventListener("click", toggleForestLifeBgm);
+}

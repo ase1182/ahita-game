@@ -760,3 +760,25 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 #forest-life-page .forest-life-bottom-actions{margin-top:8px;padding-top:10px;border-top:1px dashed rgba(80,70,55,.28);display:flex;flex-direction:column;gap:8px}
 #forest-life-page #add-brought-in-button{touch-action:manipulation;min-height:44px}
 #forest-life-page #start-forest-session{touch-action:manipulation;min-height:44px}
+
+
+#forest-life-page .forest-life-bgm-controls{
+  display:flex;
+  justify-content:flex-end;
+  margin:0 0 10px;
+}
+
+#forest-life-page #forest-life-bgm-toggle{
+  min-height:44px;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(60,50,40,.35);
+  background:rgba(245,241,224,.9);
+  color:#2f2a22;
+  box-shadow:0 5px 12px rgba(20,16,12,.2);
+  font-weight:700;
+}
+
+#forest-life-page #forest-life-bgm-toggle[aria-pressed="true"]{
+  background:rgba(223,236,217,.9);
+}
