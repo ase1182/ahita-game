@@ -11,6 +11,7 @@
     <h1>森のクッキー暮らし</h1>
     <div class="forest-life-bgm-controls">
       <button id="forest-life-bgm-toggle" type="button" aria-pressed="false">BGMを流す</button>
+      <button id="forest-life-sound-effects-toggle" type="button" aria-pressed="true">効果音: ON</button>
     </div>
 
     <div id="forest-life-toast" class="forest-life-toast" hidden></div>
@@ -131,6 +132,8 @@
   </main>
 
   <audio id="forest-life-bgm" src="assets/forest-house-bgm.mp3" loop preload="auto"></audio>
+  <audio id="cookie-gain-se" src="assets/se-cookie-gain.mp3" preload="auto"></audio>
+  <audio id="cookie-loss-se" src="assets/se-cookie-loss.mp3" preload="auto"></audio>
   <script src="forest-life.js" defer></script>
 </body>
 </html>
