@@ -898,3 +898,21 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 }
 #forest-black-market-panel summary{cursor:pointer;font-weight:700}
 #forest-black-market-panel h3{margin:6px 0 2px;font-size:.95rem;color:var(--text-muted)}
+
+#forest-life-page .forest-warning{margin-top:2px;padding:6px 8px;border-radius:10px;border:1px solid rgba(177,73,62,.32);background:rgba(255,236,232,.72);color:#9a3f33;font-size:.84rem;line-height:1.5}
+#forest-life-page .action-modal__body,
+#forest-life-page #action-modal-body{overflow-y:auto}
+
+@media (max-width:640px){
+  #forest-life-page .forest-life-wrap{padding:14px 10px 22px}
+  #forest-life-page .forest-life-card,#forest-life-page .forest-life-note{padding:10px}
+  #forest-life-page .forest-life-stats p{padding:7px 8px}
+  #forest-life-page .forest-life-action-buttons button,
+  #forest-life-page .forest-life-buttons button,
+  #forest-life-page .forest-action-plan-list button,
+  #forest-life-page .button-link{width:100%;min-height:44px}
+  #forest-life-page .action-modal{align-items:flex-start;padding:10px 8px}
+  #forest-life-page .action-modal__panel{width:min(94vw,560px);max-height:82dvh;padding:10px}
+  #forest-life-page #action-modal-description{line-height:1.45}
+  #forest-life-page .forest-secondary-card{padding:9px}
+}
