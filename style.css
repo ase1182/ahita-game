@@ -179,6 +179,9 @@ p{line-height:1.75;margin:0}
   border-radius:999px;
   font-size:.85rem;
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
   background:rgba(245,241,224,.82);
   border:1px solid rgba(60,50,40,.35);
   color:#2f2a22;
@@ -254,6 +257,9 @@ h1,
   list-style:none;
   padding:12px 13px;
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
   color:#2f261b;
   min-height:44px;
   display:flex;
@@ -446,6 +452,9 @@ h1,
   background:rgba(255,250,238,.75);
   color:#2f271c;
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
   text-decoration:none;
 }
 #result-screen .result-recommend-link:hover,
@@ -482,6 +491,9 @@ h1,
   border-radius:999px;
   font-size:.8rem;
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
   color:#2d261b;
   background:rgba(247,241,224,.96);
   border:1px solid rgba(78,66,50,.36);
@@ -539,6 +551,9 @@ h1,
   color:#f9f4e8;
   text-decoration:none;
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
   padding:10px 14px;
   border-radius:999px;
   border:1px solid rgba(245,236,217,.7);
@@ -642,6 +657,9 @@ h1,
 #credits-page .credits-panel a{
   color:#2f271c;
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
 }
 #credits-page .credits-back-wrap{margin:20px 0 0}
 #credits-page .credits-back-link{
@@ -649,6 +667,9 @@ h1,
   color:#f9f4e8;
   text-decoration:none;
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
   padding:10px 14px;
   border-radius:999px;
   border:1px solid rgba(245,236,217,.7);
@@ -685,6 +706,9 @@ h1,
   color:#1f1a14;
   text-decoration:none;
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
 }
 .recommendations-ad-link:hover,
 .recommendations-ad-link:focus-visible{
@@ -777,6 +801,9 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   color:#2f2a22;
   box-shadow:0 5px 12px rgba(20,16,12,.2);
   font-weight:700;
+  touch-action:manipulation;
+  position:relative;
+  z-index:2;
 }
 
 #forest-life-page #forest-life-bgm-toggle[aria-pressed="true"]{
