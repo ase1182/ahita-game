@@ -512,3 +512,74 @@ h1,
     border-color:rgba(250,242,222,.9);
   }
 }
+
+
+.credits-entry-link-wrap{
+  margin:18px auto 24px;
+  text-align:center;
+}
+.credits-entry-link{
+  color:rgba(245,236,217,.92);
+  font-size:.86rem;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+.credits-entry-link:hover,
+.credits-entry-link:focus-visible{opacity:.85}
+
+#credits-page .credits-shell{
+  max-width:820px;
+  margin:0 auto;
+  padding:24px 20px 34px;
+}
+#credits-page h1{
+  margin:4px 0 18px;
+  font-size:clamp(1.6rem,4.8vw,2.2rem);
+  line-height:1.25;
+  letter-spacing:.03em;
+}
+#credits-page .credits-panel{
+  background:#f8f3e8;
+  border:1px solid rgba(63,52,36,.38);
+  box-shadow:0 12px 30px rgba(11,12,10,.26);
+  border-radius:16px;
+  padding:18px 20px;
+  margin-bottom:16px;
+}
+#credits-page .credits-panel h2{
+  margin:0 0 8px;
+  color:#1f1912;
+  font-size:clamp(1.05rem,3vw,1.25rem);
+}
+#credits-page .credits-panel p{
+  color:#1f1a14;
+  font-size:1.02rem;
+  line-height:1.82;
+}
+#credits-page .credits-panel a{
+  color:#2f271c;
+  font-weight:700;
+}
+#credits-page .credits-back-wrap{margin:20px 0 0}
+#credits-page .credits-back-link{
+  display:inline-block;
+  color:#f9f4e8;
+  text-decoration:none;
+  font-weight:700;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(245,236,217,.7);
+  background:rgba(34,43,40,.45);
+  box-shadow:0 5px 14px rgba(8,10,10,.28);
+}
+#credits-page .credits-back-link:hover,
+#credits-page .credits-back-link:focus-visible{
+  opacity:.92;
+  background:rgba(34,43,40,.62);
+}
+
+@media (max-width:420px){
+  #credits-page .credits-shell{padding:16px 16px 24px}
+  #credits-page .credits-panel{padding:14px}
+  #credits-page .credits-panel p{font-size:1rem;line-height:1.74}
+}
