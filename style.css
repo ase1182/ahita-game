@@ -42,6 +42,7 @@
   --focus-ring:rgba(220,198,142,.82);
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;min-height:100vh;font-family:"YDWaosagi","Hiragino Sans","Yu Gothic",system-ui,sans-serif;letter-spacing:.02em;line-height:1.78;color:var(--ink);transition:background .5s ease;background:linear-gradient(rgba(18,22,18,.2),rgba(18,22,18,.33)),url("assets/bg-forest-dusk.webp") center/cover fixed no-repeat,linear-gradient(180deg,#3f4a3f 0%,#283028 100%)}
 .game{max-width:760px;margin:0 auto;padding:20px 14px 30px;background:transparent;border:none;border-radius:0;box-shadow:none}
 #start-screen,#game-screen,#result-screen,.card{background:transparent;border:none;border-radius:0;box-shadow:none}
@@ -186,8 +187,6 @@ button:focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px;box-
 #start-screen .start-rules-card{padding:16px 18px;line-height:1.8;font-size:1rem;text-shadow:none}
 #start-screen .start-intro-card p + p{margin-top:6px}
 #start-screen .start-rules-card{padding-top:12px}
-#start-screen .cookie-count{display:flex;align-items:center;gap:8px;font-size:1.08rem;font-weight:700;line-height:1.5;color:#2a2218;margin-bottom:8px}
-#start-screen .cookie-count span{font-size:1rem}
 #start-screen .start-rules-list{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px;line-height:1.85}
 #start-screen .start-note{padding:12px 16px;font-size:1rem;line-height:1.8}
 #start-screen strong{font-weight:800;color:#16120d}
@@ -231,6 +230,7 @@ h1,
 #result-screen .result-ending{background:rgba(242,234,219,.8)}
 #result-screen .result-ending #relationship-ending{font-size:1rem;line-height:1.85;color:#2d261d}
 #result-screen .result-stats{display:flex;gap:8px;flex-wrap:wrap}
+#result-screen .result-stats-note{margin-top:2px;font-size:.96rem;line-height:1.7;color:#3a3126}
 #result-screen .result-chip{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(243,236,222,.88);border:1px solid rgba(85,72,55,.22);font-size:.86rem;font-weight:700;color:#2d261b;box-shadow:0 5px 12px rgba(0,0,0,.1)}
 #result-screen .result-actions-divider{height:1px;background:linear-gradient(90deg,rgba(243,236,220,0),rgba(243,236,220,.8),rgba(243,236,220,0));margin-top:2px}
 #result-screen .result-buttons{margin-top:0;position:static;gap:9px}
