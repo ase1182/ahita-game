@@ -11,6 +11,8 @@
 | `assets/fonts/YDWaosagi.otf` | フォント | https://ymnk-design.com/aosagi/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | フリーフォント案内あり。詳細条件（同梱テキスト/再配布/改変可否）は要確認。 |
 | `assets/forest-bgm.mp3` | BGM | https://nagumorizu.com/category/bgm/scene/%E3%82%B7%E3%83%AA%E3%82%A2%E3%82%B9/ （楽曲名: 無記名の招待状 / なぐもりずの音楽室・南雲莉翠） | 原則必要（要確認） | 配布元規約の範囲内で商用利用可（要確認） | フリーBGMでも著作権放棄ではない前提。クレジット要件・利用範囲・再配布可否を最新規約で確認。 |
 | `assets/forest-house-bgm.mp3` | BGM | なぐもりずの音楽室（楽曲名: 推理１） https://nagumorizu.com/category/bgm/scene/%E3%82%B7%E3%83%AA%E3%82%A2%E3%82%B9/ | 可能な限り表記 | 配布元規約の範囲内で可 | 二次配布禁止。配布元の最新規約を優先し、クレジット要否を確認。 |
+| `assets/se-cookie-gain.mp3` | 効果音 | 効果音ラボ（素材名: 財布をジャラッ） https://soundeffect-lab.info/sound/various/ | 要確認 | 配布元規約の範囲内で可 | 利用時は配布元の最新利用規約を確認。 |
+| `assets/se-cookie-loss.mp3` | 効果音 | 効果音ラボ（素材名: お金を落とす1） https://soundeffect-lab.info/sound/various/ | 要確認 | 配布元規約の範囲内で可 | 利用時は配布元の最新利用規約を確認。 |
 | `assets/bg-forest-dusk.webp` | 背景画像 | https://sozaino.site/ | 不要（配布元説明ベース、要確認） | 配布元規約の範囲内で商用利用可（要確認） | クレジット不要/加工可の案内あり。再配布禁止の扱いと、GitHub公開同梱の可否は要確認。 |
 | `assets/panel-texture.webp` | テクスチャ | https://sozaino.site/ | 不要（配布元説明ベース、要確認） | 配布元規約の範囲内で商用利用可（要確認） | クレジット不要/加工可の案内あり。再配布禁止の扱いと、GitHub公開同梱の可否は要確認。 |
 | `assets/character-shadow.webp` | 画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数（21点以上など）や用途条件に注意。再配布・素材主体の商品化可否を要確認。 |
@@ -50,3 +52,10 @@
 ## AI生成素材について
 
 現時点でAI生成画像素材は使用していません。将来追加する場合は、出所と利用条件をこのファイルに追記します。
+
+
+## 効果音
+
+- 「財布をジャラッ」 / 効果音ラボ
+- 「お金を落とす1」 / 効果音ラボ
+- https://soundeffect-lab.info/sound/various/
