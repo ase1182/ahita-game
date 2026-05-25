@@ -163,7 +163,22 @@ const strategies = {
   cautiousCrow: ({ day, playerHistory }) => (day === 1 ? TAKE : playerHistory.filter((m) => m === SHARE).length >= 3 ? SHARE : TAKE),
   forgetfulRabbit: ({ playerHistory }) => (playerHistory.slice(-2).every((m) => m === TAKE) && playerHistory.length >= 2 ? TAKE : SHARE),
   alwaysCooperate: () => SHARE,
-  grimTrigger: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory.includes(TAKE) ? TAKE : SHARE)
+  grimTrigger: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory.includes(TAKE) ? TAKE : SHARE),
+  pavlovLike: ({ day, playerHistory, opponentHistory }) => {
+    if (day === 1 || playerHistory.length === 0 || opponentHistory.length === 0) return SHARE;
+    const lastPlayerMove = playerHistory[playerHistory.length - 1];
+    const lastOpponentMove = opponentHistory[opponentHistory.length - 1];
+    const lastResult = SCORE_TABLE[`${lastPlayerMove}_${lastOpponentMove}`];
+    if (!lastResult) return SHARE;
+    return lastResult.opponent >= 3 ? lastOpponentMove : (lastOpponentMove === SHARE ? TAKE : SHARE);
+  },
+  generousMirror: ({ day, playerHistory }) => {
+    if (day === 1 || playerHistory.length === 0) return SHARE;
+    const lastPlayerMove = playerHistory[playerHistory.length - 1];
+    if (lastPlayerMove === SHARE) return SHARE;
+    return day % 2 === 0 ? SHARE : TAKE;
+  },
+  randomMood: () => (Math.random() < 0.5 ? SHARE : TAKE)
 };
 
 // OPPONENT_SCHEMA
@@ -180,7 +195,10 @@ const opponents = [
   { id: "crow", name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", strategyKey: "cautiousCrow", spawnWeight: 1, profile: { temperament: "高い枝の上から、相手の動きをよく見ている子です。", habit: "すぐには近づかず、自分のおやつを守るように選びます。", memory: "近づきすぎず、離れすぎず、最後まであなたの出方を見ていました。" } },
   { id: "rabbit", name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", strategyKey: "forgetfulRabbit", spawnWeight: 1, profile: { temperament: "こわかったことも、時間がたつと少し薄れていく子です。", habit: "昨日のことを全部は抱えきれないので、また分けるほうへ戻りやすくなります。", memory: "何度も迷いながら、それでも次の日には広場へ来てくれました。" } },
   { id: "squirrel", name: "分けつづけるりす", emoji: "🐿️", mask: "⬛", image: "assets/squirrel.webp", description: "いつも分けようとする、疑うことを知らない相手でした。", strategyKey: "alwaysCooperate", spawnWeight: 1, profile: { temperament: "小さなおやつでも、誰かと分けることを先に考える子です。", habit: "疑うよりも、まず差し出してみることを選びます。", memory: "あなたがどう選んでも、最後まで同じように広場に立っていました。" } },
-  { id: "wolf", name: "忘れないおおかみ", emoji: "🐺", mask: "⬛", image: "assets/wolf.webp", description: "最初は分けようとするけれど、一度裏切られると最後まで忘れない相手でした。", strategyKey: "grimTrigger", spawnWeight: 1, profile: { temperament: "最初は静かに分けようとしますが、一度のことを深く覚える子です。", habit: "傷ついたあとは、もう同じ距離では近づけなくなります。", memory: "最初の信頼が続くかどうかを、最後まで見ていました。" } }
+  { id: "wolf", name: "忘れないおおかみ", emoji: "🐺", mask: "⬛", image: "assets/wolf.webp", description: "最初は分けようとするけれど、一度裏切られると最後まで忘れない相手でした。", strategyKey: "grimTrigger", spawnWeight: 1, profile: { temperament: "最初は静かに分けようとしますが、一度のことを深く覚える子です。", habit: "傷ついたあとは、もう同じ距離では近づけなくなります。", memory: "最初の信頼が続くかどうかを、最後まで見ていました。" } },
+  { id: "fox", name: "様子を見るきつね", emoji: "🦊", mask: "⬛", image: "assets/fox.webp", description: "うまくいった日は同じように、うまくいかなかった日は少し選び方を変える相手でした。", strategyKey: "pavlovLike", spawnWeight: 1, profile: { temperament: "相手の声や広場の空気を、じっと見ている子です。", habit: "うまくいった日は同じ道を選び、うまくいかなかった日は少し足を止めます。", memory: "あなたとの7日間で、近づく日と離れる日を何度も測っていました。" } },
+  { id: "deer", name: "ゆるしてくれるしか", emoji: "🦌", mask: "⬛", image: "assets/deer.webp", description: "されたことを覚えていても、また分けるほうへ戻ろうとする相手でした。", strategyKey: "generousMirror", spawnWeight: 1, profile: { temperament: "こわかった日があっても、すぐに背を向けきれない子です。", habit: "傷ついたあとでも、ときどきもう一度だけ分けるほうを選びます。", memory: "あなたの選び方を覚えながら、それでも広場に戻る理由を探していました。" } },
+  { id: "cat", name: "気まぐれなねこ", emoji: "🐱", mask: "⬛", image: "assets/cat.webp", description: "その日の気分で、近づいたり離れたりする相手でした。", strategyKey: "randomMood", spawnWeight: 1, profile: { temperament: "近くに来たかと思うと、ふいに別の方を向く子です。", habit: "毎日同じようには選ばず、その日の気分で広場に立ちます。", memory: "あなたのそばにいた日も、少し離れて見ていた日もありました。" } }
 ];
 
 function validateOpponents() {
