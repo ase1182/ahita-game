@@ -287,6 +287,7 @@ function playTurn(playerMove) {
   playerCard.classList.add("nod");
   message.textContent = pickReactionMessage(playerMove, opponentMove);
   triggerMotion(message, "motion-message");
+  triggerMotion(message, "motion-trace");
   triggerMotion(snackIcon, "motion-pop");
   triggerMotion(opponentName, "motion-approach");
   renderTracks();
