@@ -617,3 +617,11 @@ h1,
   background:rgba(252,246,234,.98);
   text-decoration:underline;
 }
+
+#start-screen #start-button{
+  touch-action:manipulation;
+}
+
+[hidden]{
+  display:none !important;
+}
