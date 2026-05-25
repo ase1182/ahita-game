@@ -18,17 +18,25 @@
   <main class="game" aria-live="polite">
     <h1>また明日も会うきみへ</h1>
 
-    <section id="start-screen" class="card">
-      <div class="mini-stage">
-        <div class="mini-shadow">🐾</div>
-        <div class="mini-snack">🍪</div>
+    <section id="start-screen" class="card" aria-label="開始画面">
+      <div class="start-intro-card" aria-label="導入">
+        <p>森の広場には、毎日<strong>4枚</strong>のクッキーが置かれます。</p>
+        <p>あなたは<strong>7日間</strong>、同じ相手と出会い、<strong>「わける」</strong>か<strong>「ひとりじめ」</strong>を選びます。</p>
       </div>
-      <p>
-        森の広場には、毎日おやつが置かれます。<br>
-        7日間だけ、同じ相手と会います。<br>
-        今日だけなら、ひとりじめは得かもしれません。
-      </p>
-      <button id="start-button" type="button">1日目をはじめる</button>
+
+      <section class="start-rules-card" aria-label="ゲームルール">
+        <p class="cookie-count" aria-label="毎日4枚のクッキー">🍪🍪🍪🍪 <span>毎日4枚のクッキー</span></p>
+        <ul class="start-rules-list">
+          <li>毎日、クッキーは<strong>4枚</strong>。</li>
+          <li>あなたと相手が、それぞれ選びます。</li>
+          <li>2人とも<strong>「わける」</strong>なら、仲よく分け合います。</li>
+          <li>どちらかが<strong>「ひとりじめ」</strong>すると、もらえる枚数と相手との距離が変わります。</li>
+          <li><strong>7日後</strong>、選び方と関係から結末が決まります。</li>
+        </ul>
+      </section>
+
+      <p class="start-note">相手の正体は、最後までわかりません。</p>
+      <button id="start-button" type="button">7日間をはじめる</button>
     </section>
 
     <section id="game-screen" class="card" hidden aria-label="ゲーム画面">

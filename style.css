@@ -177,7 +177,19 @@ button:focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px;box-
 #result-screen .sub-result{margin-top:10px;font-size:.95rem}#result-screen .theory{margin-top:14px;padding:12px;border-radius:12px;background:rgba(243,235,221,.55)}
 #result-screen .result-buttons{margin-top:14px}
 
-#start-screen > p{background:rgba(246,239,218,.82);border:1px solid rgba(70,58,42,.18);border-radius:14px;padding:14px 16px;box-shadow:0 10px 24px rgba(0,0,0,.14);color:#1f1b15;line-height:1.8;backdrop-filter:blur(6px);margin-bottom:12px}
+#start-screen{display:flex;flex-direction:column;gap:10px}
+#start-screen .start-intro-card,
+#start-screen .start-rules-card,
+#start-screen .start-note{background:rgba(248,241,226,.96);border:1px solid rgba(72,58,42,.24);border-radius:14px;color:#1f1a14;box-shadow:0 10px 24px rgba(0,0,0,.16)}
+#start-screen .start-intro-card,
+#start-screen .start-rules-card{padding:14px 16px;line-height:1.9;text-shadow:none}
+#start-screen .start-intro-card p + p{margin-top:6px}
+#start-screen .start-rules-card{padding-top:12px}
+#start-screen .cookie-count{display:flex;align-items:center;gap:8px;font-size:1.08rem;font-weight:700;line-height:1.5;color:#2a2218;margin-bottom:8px}
+#start-screen .cookie-count span{font-size:1rem}
+#start-screen .start-rules-list{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px;line-height:1.85}
+#start-screen .start-note{padding:10px 14px;font-size:.95rem;line-height:1.75}
+#start-screen strong{font-weight:800;color:#16120d}
 #share-button:hover,#share-button:focus-visible{transform:translateY(-1px);box-shadow:0 9px 16px rgba(38,56,35,.2)}
 #take-button:hover,#take-button:focus-visible{transform:translateY(-1px);box-shadow:0 11px 18px rgba(35,27,21,.26)}
 button:active{transform:translateY(1px);box-shadow:0 4px 9px rgba(20,16,12,.2)}
@@ -231,7 +243,7 @@ h1,
 #result-screen .theory details{margin-top:8px;padding-top:8px;border-top:1px dashed rgba(90,77,59,.28)}
 #result-screen .theory details summary{cursor:pointer;font-weight:700;color:#2f261b;text-shadow:0 1px 0 rgba(255,252,242,.28)}
 #result-screen .theory details p{margin-top:8px;color:#342d22;line-height:1.8;font-size:.93rem}
-@media (max-width:640px){.day-note{font-size:.9rem;max-width:68%}#message{min-height:52px}.buttons{bottom:6px}button{padding:10px 14px}#start-screen > p{padding:12px 13px}#result-screen .result-opponent-body{flex-direction:column;align-items:flex-start;gap:8px}#result-screen .result-opponent-wrap{align-self:center}#result-screen .result-opponent-image{width:110px;height:110px}#result-screen .result-panel{padding:11px 11px}#result-screen .result-primary #result-text{font-size:.98rem}#result-screen .result-buttons{bottom:0}}
+@media (max-width:640px){.day-note{font-size:.9rem;max-width:68%}#message{min-height:52px}.buttons{bottom:6px}button{padding:10px 14px}#start-screen{gap:8px}#start-screen .start-intro-card,#start-screen .start-rules-card{padding:12px 13px;line-height:1.85}#start-screen .start-rules-list{gap:3px;padding-left:1.1em}#start-screen .cookie-count{font-size:1rem;gap:6px}#start-screen .start-note{padding:9px 12px}#result-screen .result-opponent-body{flex-direction:column;align-items:flex-start;gap:8px}#result-screen .result-opponent-wrap{align-self:center}#result-screen .result-opponent-image{width:110px;height:110px}#result-screen .result-panel{padding:11px 11px}#result-screen .result-primary #result-text{font-size:.98rem}#result-screen .result-buttons{bottom:0}}
 @media (max-width:420px){
   h1{margin:0 0 8px}
   .game{padding:12px 10px 18px}
@@ -274,7 +286,6 @@ h1,
 #game-screen [hidden]{display:none!important}
 #result-screen[hidden]{display:none!important}
 
-#start-screen > p,
 #game-screen .day-row,
 #game-screen .footprint-wrap,
 #game-screen #message{
