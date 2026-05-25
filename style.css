@@ -738,3 +738,15 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
     transform:none !important;
   }
 }
+
+#forest-life-page .forest-life-wrap{max-width:760px;margin:0 auto;padding:20px 14px 28px;color:#221d16}
+#forest-life-page h1{margin-bottom:12px}
+#forest-life-page .forest-life-card,#forest-life-page .forest-life-note{background:rgba(246,238,222,.86);border:1px solid rgba(80,70,55,.2);border-radius:14px;padding:14px;box-shadow:0 8px 18px rgba(0,0,0,.14)}
+#forest-life-page .forest-life-card{display:flex;flex-direction:column;gap:10px}
+#forest-life-page input{min-height:44px;border-radius:10px;border:1px solid rgba(80,70,55,.35);padding:8px 10px;font-size:1rem;background:rgba(255,252,244,.9)}
+#forest-life-page .forest-life-buttons{display:flex;flex-direction:column;gap:10px}
+#forest-life-page .forest-life-note{margin-top:12px;font-size:.92rem;color:#4a4134;line-height:1.7}
+#forest-life-page .forest-life-back-strong{font-weight:800;text-decoration:underline}
+#result-screen .result-cookies-panel #grant-cookies-button{margin-top:8px}
+#result-screen .result-cookies-panel .forest-cookie-message{margin-top:8px;color:#4a4134}
+#result-screen .result-cookie-notice{font-size:.9rem;color:#4e4639;line-height:1.7}
