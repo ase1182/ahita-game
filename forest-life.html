@@ -34,10 +34,17 @@
       <p id="forest-day-status" class="forest-day-status">行動を選んでください。</p>
 
       <div class="forest-life-buttons forest-life-action-buttons">
+        <button id="forest-work-button" type="button">森で働く（労働）</button>
         <button id="forest-lend-button" type="button">森の仲間にあずける（貸付）</button>
         <button id="forest-borrow-button" type="button">森の倉庫から前借りする（借り入れ）</button>
         <button id="forest-invest-button" type="button">あやしいクマさんの話を聞く（投資）</button>
       </div>
+      <section id="forest-black-market-hint" class="forest-black-market-hint" hidden>
+        <p>森の奥に、夜だけ開く市場があるらしい。</p>
+        <div class="forest-life-buttons">
+          <button id="forest-black-market-button" type="button">夜の市場をのぞく（まだ入れない）</button>
+        </div>
+      </section>
 
       <section id="forest-action-plan-panel" class="forest-action-plan-panel" hidden>
         <h2 id="forest-action-plan-title">どこにあずけますか？</h2>
@@ -60,6 +67,10 @@
         <div>
           <h2>返済予定の借り入れ一覧</h2>
           <ul id="forest-borrow-list"></ul>
+        </div>
+        <div>
+          <h2>配当中の話</h2>
+          <ul id="forest-dividend-list"></ul>
         </div>
       </section>
 

@@ -195,6 +195,19 @@ button{border:1px solid rgba(69,59,46,.32);border-radius:18px;min-height:52px;pa
 button .label-main{line-height:1.2}
 button .label-sub{font-size:.86rem;font-weight:550;opacity:1;line-height:1.35;color:var(--text-muted)}
 button:disabled{opacity:.52;filter:grayscale(.3);box-shadow:none}
+button:disabled{cursor:not-allowed}
+.forest-black-market-hint{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(250,246,232,.7);
+  border:1px solid rgba(80,70,55,.18);
+}
+.forest-black-market-hint p{
+  margin:0 0 8px;
+  font-size:.95rem;
+  color:var(--text-muted);
+}
 button:focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px;box-shadow:0 0 0 3px rgba(244,241,223,.76),0 11px 20px rgba(22,18,12,.28)}
 .turn-cc .stump{filter:brightness(1.08)} .turn-tt .forest-stage{filter:brightness(.88)} .turn-ts .mystery{filter:brightness(.8)} .turn-st .player{filter:saturate(.7) brightness(.94)}
 .turn-ss #snack-icon{transform:translateX(0) scale(.9)} .turn-ts #snack-icon{transform:translateX(-16px)} .turn-st #snack-icon{transform:translateX(16px)} .turn-tt #snack-icon{transform:scale(.84) rotate(8deg)}
