@@ -3,7 +3,6 @@ const TAKE = "ひとりじめ";
 const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BUILD_VERSION = "f5e4a2c";
-const COOKIE_GRANT_AMOUNT = 3;
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -229,9 +228,15 @@ function updateCookieGrantUi() {
   forestCookieBalance.textContent = `残高: ${balance}`;
   const currentRunId = getCurrentRunId();
   const lastGrantRunId = readString(STORAGE_KEYS.lastGrantRunId, "");
-  const canGrant = currentRunId && lastGrantRunId !== currentRunId;
+  const grantAmount = Math.max(0, Math.floor(state.playerScore));
+  const canGrant = Boolean(currentRunId) && lastGrantRunId !== currentRunId && grantAmount > 0;
   grantCookiesButton.disabled = !canGrant;
-  grantCookiesMessage.textContent = canGrant ? "このプレイ分の受け取りができます。" : "このプレイ分は受け取り済みです。";
+  grantCookiesButton.textContent = `フォレストクッキーを受け取る（+${grantAmount}）`;
+  grantCookiesMessage.textContent = canGrant
+    ? `この森で得た ${grantAmount} クッキーを受け取れます。`
+    : grantAmount > 0
+      ? "このプレイ分は受け取り済みです。"
+      : "このプレイでは受け取れるフォレストクッキーがありません。";
 }
 
 function grantForestCookies() {
@@ -245,10 +250,15 @@ function grantForestCookies() {
     updateCookieGrantUi();
     return;
   }
+  const grantAmount = Math.max(0, Math.floor(state.playerScore));
+  if (grantAmount <= 0) {
+    updateCookieGrantUi();
+    return;
+  }
   const balance = readNumber(STORAGE_KEYS.balance, 0);
-  safeStorage.setItem(STORAGE_KEYS.balance, String(balance + COOKIE_GRANT_AMOUNT));
+  safeStorage.setItem(STORAGE_KEYS.balance, String(balance + grantAmount));
   safeStorage.setItem(STORAGE_KEYS.lastGrantRunId, currentRunId);
-  if (grantCookiesMessage) grantCookiesMessage.textContent = `+${COOKIE_GRANT_AMOUNT}フォレストクッキーを受け取りました。`;
+  if (grantCookiesMessage) grantCookiesMessage.textContent = `${grantAmount} フォレストクッキーを受け取りました。`;
   updateCookieGrantUi();
 }
 
@@ -415,7 +425,18 @@ takeButton.addEventListener("click", () => playTurn(TAKE));
 continueButton.addEventListener("click", proceedToNextDay);
 shareResultButton.addEventListener("click", shareResult);
 if (grantCookiesButton) {
-  grantCookiesButton.addEventListener("click", grantForestCookies);
+  let grantTriggered = false;
+  const onGrantCookies = (event) => {
+    if (event && event.type === "touchend") event.preventDefault();
+    if (grantTriggered) return;
+    grantTriggered = true;
+    grantForestCookies();
+    window.setTimeout(() => {
+      grantTriggered = false;
+    }, 120);
+  };
+  grantCookiesButton.addEventListener("click", onGrantCookies);
+  grantCookiesButton.addEventListener("touchend", onGrantCookies, { passive: false });
 }
 if (bgmToggleButton) {
   bgmToggleButton.addEventListener("click", toggleBgm);
