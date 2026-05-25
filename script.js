@@ -559,25 +559,35 @@ function generateSevenDayStory(result) {
     lines.push("正体のわからない相手と出会った1日目、あなたはまず自分の分を守りました。");
   }
 
-  if (metrics.coop >= 4) addUniqueLine(lines, "分け合えた日が重なり、広場にはやわらかい時間が残りました。", maxLines);
+  const mixedPlay = (metrics.coop >= 2 && metrics.clash >= 2)
+    || (metrics.coop >= 2 && metrics.mismatch >= 3)
+    || (metrics.clash >= 2 && metrics.mismatch >= 3);
+
+  if (mixedPlay) addUniqueLine(lines, "分け合えた日も、守り合った日もありました。", maxLines);
+  else if (metrics.coop >= 4) addUniqueLine(lines, "分け合えた日が重なり、広場にはやわらかい時間が残りました。", maxLines);
   else if (metrics.clash >= 3) addUniqueLine(lines, "守る選択が重なり、広場にはかたい沈黙が残りました。", maxLines);
   else if (metrics.mismatch >= 4) addUniqueLine(lines, "同じ広場にいながら、選び方が反対になる日が多くありました。", maxLines);
 
-  if (metrics.forgive > 0) addUniqueLine(lines, "受け取れなかった次の日にも、あなたの手は前に出ました。", maxLines);
+  if (metrics.switchCount >= 5) addUniqueLine(lines, "選び方は一つに定まらず、広場の空気に合わせて揺れました。", maxLines);
+  else if (metrics.switchCount >= 4) addUniqueLine(lines, "信じる日と守る日が交互に現れ、あなたは様子を見ながら進みました。", maxLines);
+
+  if (metrics.recover >= 2) addUniqueLine(lines, "一度離れたあとも、あなたは何度か分ける道へ戻りました。", maxLines);
+  else if (metrics.forgive > 0) addUniqueLine(lines, "受け取れなかった次の日にも、あなたの手は前に出ました。", maxLines);
   else if (metrics.recover > 0) addUniqueLine(lines, "一度距離ができたあと、あなたはもう一度分ける道を選びました。", maxLines);
   else if (metrics.retaliate > 0) addUniqueLine(lines, "戻ってこない日のあと、あなたは次の日に自分の分を守りました。", maxLines);
   else if (metrics.lastDayChanged) addUniqueLine(lines, "最後の日、あなたの手はそれまでと違うほうへ動きました。", maxLines);
 
-  let cookieLines = 0;
-  if (metrics.totalCookies >= 34 && addUniqueLine(lines, "ふたりで残したクッキーは多く、広場には実りがありました。", maxLines)) cookieLines += 1;
-  else if (metrics.lostPotential >= 12 && addUniqueLine(lines, "残せたかもしれないクッキーも、いくつか森にこぼれていきました。", maxLines)) cookieLines += 1;
+  const cookieLines = [];
+  if (metrics.lostPotential >= 12) cookieLines.push("残せたかもしれないクッキーも、いくつか森にこぼれていきました。");
+  if (metrics.totalCookies >= 34) cookieLines.push("ふたりで残したクッキーは多く、広場には実りがありました。");
+  if (metrics.playerScore >= 24) cookieLines.push("7日間で、あなたの手元には多くのクッキーが残りました。");
+  if (metrics.playerScore <= 10) cookieLines.push("7日間で、手元に残ったクッキーは多くありませんでした。");
+  if (metrics.scoreDiff >= 8) cookieLines.push("手元の多さは、相手との距離も少し映していました。");
+  if (metrics.scoreDiff <= -8) cookieLines.push("手元の少なさは、差し出した日の数も映していました。");
 
-  if (cookieLines < 2) {
-    if (metrics.playerScore >= 24) addUniqueLine(lines, "7日間で、あなたの手元には多くのクッキーが残りました。", maxLines);
-    else if (metrics.playerScore <= 10) addUniqueLine(lines, "7日間で、手元に残ったクッキーは多くありませんでした。", maxLines);
-  }
+  cookieLines.slice(0, 2).forEach((line) => addUniqueLine(lines, line, maxLines));
 
-  if (metrics.maxDecisionTime >= 8) addUniqueLine(lines, metrics.mostHesitatedDay === 7
+  if (lines.length < maxLines && metrics.maxDecisionTime >= 8) addUniqueLine(lines, metrics.mostHesitatedDay === 7
     ? "最後の日、あなたは少し長く立ち止まりました。"
     : "いちばん長く迷った日、あなたの手はすぐには動きませんでした。", maxLines);
   else if (metrics.averageDecisionTime < 2.5) addUniqueLine(lines, "選択は早く、迷いはあまり長く残りませんでした。", maxLines);
