@@ -154,11 +154,69 @@ if (buildVersionElement) {
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 };
 
 // Character image assets are loaded from /assets relative to index.html
+const strategies = {
+  mirrorYesterday: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory[playerHistory.length - 1]),
+  cautiousCrow: ({ day, playerHistory }) => (day === 1 ? TAKE : playerHistory.filter((m) => m === SHARE).length >= 3 ? SHARE : TAKE),
+  forgetfulRabbit: ({ playerHistory }) => (playerHistory.slice(-2).every((m) => m === TAKE) && playerHistory.length >= 2 ? TAKE : SHARE)
+};
+
+// OPPONENT_SCHEMA
+// - id: 内部キー（一意・英小文字推奨）
+// - name: 表示名
+// - emoji: fallback表示や演出用
+// - image: 結果画面の画像パス
+// - description: 結果画面の説明文
+// - strategyKey: strategies のキー
+// - spawnWeight: 将来の出現率調整用（現時点では抽選に未使用）
+// - mask: 現状未使用（将来の正体隠し演出向けに保持）
 const opponents = [
-  { name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", decideMove: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory[playerHistory.length - 1]) },
-  { name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", decideMove: ({ day, playerHistory }) => (day === 1 ? TAKE : playerHistory.filter((m) => m === SHARE).length >= 3 ? SHARE : TAKE) },
-  { name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", decideMove: ({ playerHistory }) => (playerHistory.slice(-2).every((m) => m === TAKE) && playerHistory.length >= 2 ? TAKE : SHARE) }
+  { id: "tanuki", name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", strategyKey: "mirrorYesterday", spawnWeight: 1 },
+  { id: "crow", name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", strategyKey: "cautiousCrow", spawnWeight: 1 },
+  { id: "rabbit", name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", strategyKey: "forgetfulRabbit", spawnWeight: 1 }
 ];
+
+function validateOpponents() {
+  const requiredFields = ["id", "name", "emoji", "image", "description", "strategyKey"];
+  const seenIds = new Set();
+
+  opponents.forEach((opponent, index) => {
+    requiredFields.forEach((field) => {
+      if (!opponent[field]) {
+        console.warn(`[opponents] Missing required field "${field}" at index ${index}.`, opponent);
+      }
+    });
+
+    if (opponent.id) {
+      if (seenIds.has(opponent.id)) {
+        console.warn(`[opponents] Duplicate id "${opponent.id}" detected.`, opponent);
+      }
+      seenIds.add(opponent.id);
+    }
+
+    if (opponent.strategyKey && !strategies[opponent.strategyKey]) {
+      console.warn(`[opponents] Unknown strategyKey "${opponent.strategyKey}" for id "${opponent.id || `index-${index}`}".`, opponent);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(opponent, "spawnWeight")) {
+      if (typeof opponent.spawnWeight !== "number" || opponent.spawnWeight <= 0) {
+        console.warn(`[opponents] spawnWeight must be a positive number for id "${opponent.id || `index-${index}`}".`, opponent);
+      }
+    }
+  });
+}
+
+opponents.forEach((opponent) => {
+  opponent.decideMove = (turnState) => {
+    const strategy = strategies[opponent.strategyKey];
+    if (!strategy) {
+      console.warn(`[opponents] Fallback strategy used because strategyKey "${opponent.strategyKey}" is missing.`);
+      return SHARE;
+    }
+    return strategy(turnState, opponent);
+  };
+});
+
+validateOpponents();
 
 startButton.addEventListener("click", startGameFromButtonInteraction);
 startButton.addEventListener("touchend", startGameFromButtonInteraction, { passive: false });
