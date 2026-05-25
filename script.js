@@ -127,6 +127,7 @@ const resultOpponentFallback = document.getElementById("result-opponent-fallback
 
 const resultTitle = document.getElementById("result-title");
 const resultText = document.getElementById("result-text");
+const resultStory = document.getElementById("result-story");
 const snackResult = document.getElementById("snack-result");
 const relationshipEnding = document.getElementById("relationship-ending");
 const opponentReveal = document.getElementById("opponent-reveal");
@@ -403,6 +404,7 @@ function showResult() {
   showResultScreen();
   const result = getResultType(); state.resultTypeTitle = result.title;
   resultTitle.textContent = `あなたの記録：${result.title}`; resultText.textContent = result.text;
+  if (resultStory) resultStory.textContent = generateSevenDayStory(result);
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
   renderResultOpponent();
   snackResult.innerHTML = `<span class="result-chip">あなたのおやつ ${state.playerScore}</span><span class="result-chip">相手のおやつ ${state.opponentScore}</span>`;
@@ -456,6 +458,138 @@ function renderEndingScene() {
   if (coop >= 4) tone = "close"; else if (clash >= 3) tone = "tense"; else if (recover) tone = "repair";
   endingScene.className = `ending-scene ${tone}`;
   endingScene.innerHTML = `<span class="left">◯</span><span class="middle">🍪</span><span class="right">${state.currentOpponent.emoji}</span>`;
+}
+
+
+function getMostHesitatedDay(decisionTimes) {
+  if (!decisionTimes.length) return 0;
+  let max = decisionTimes[0];
+  let day = 1;
+  for (let i = 1; i < decisionTimes.length; i += 1) {
+    if (decisionTimes[i] > max) {
+      max = decisionTimes[i];
+      day = i + 1;
+    }
+  }
+  return day;
+}
+
+function countStreak(history, move) {
+  let best = 0;
+  let current = 0;
+  history.forEach((item) => {
+    if (item === move) {
+      current += 1;
+      best = Math.max(best, current);
+      return;
+    }
+    current = 0;
+  });
+  return best;
+}
+
+function countSwitches(history) {
+  let switches = 0;
+  for (let i = 1; i < history.length; i += 1) {
+    if (history[i] !== history[i - 1]) switches += 1;
+  }
+  return switches;
+}
+
+function addUniqueLine(lines, line, maxLines) {
+  if (!line || lines.includes(line) || lines.length >= maxLines) return false;
+  lines.push(line);
+  return true;
+}
+
+function getStoryMetrics() {
+  const history = state.playerHistory.slice();
+  const opponentHistory = state.opponentHistory.slice();
+  const decisionTimes = state.decisionTimes.slice(0, history.length);
+  const firstMove = history[0] || SHARE;
+  const lastMove = history[history.length - 1] || SHARE;
+  const shareCount = history.filter((m) => m === SHARE).length;
+  const takeCount = history.filter((m) => m === TAKE).length;
+  const coop = history.filter((m, i) => m === SHARE && opponentHistory[i] === SHARE).length;
+  const clash = history.filter((m, i) => m === TAKE && opponentHistory[i] === TAKE).length;
+  const mismatch = history.filter((m, i) => m !== opponentHistory[i]).length;
+  const playerOnlyTake = history.filter((m, i) => m === TAKE && opponentHistory[i] === SHARE).length;
+  const opponentOnlyTake = history.filter((m, i) => m === SHARE && opponentHistory[i] === TAKE).length;
+
+  let recover = 0;
+  let forgive = 0;
+  let retaliate = 0;
+  let afterTakingReturn = 0;
+  let afterTakingContinue = 0;
+  for (let i = 1; i < history.length; i += 1) {
+    if (history[i - 1] === TAKE && history[i] === SHARE) recover += 1;
+    if (opponentHistory[i - 1] === TAKE && history[i] === SHARE) forgive += 1;
+    if (history[i - 1] === SHARE && opponentHistory[i - 1] === TAKE && history[i] === TAKE) retaliate += 1;
+    if (history[i - 1] === TAKE && history[i] === SHARE) afterTakingReturn += 1;
+    if (history[i - 1] === TAKE && history[i] === TAKE) afterTakingContinue += 1;
+  }
+
+  const totalCookies = state.playerScore + state.opponentScore;
+  const lostPotential = (MAX_DAYS * 6) - totalCookies;
+  const decisionTotal = decisionTimes.reduce((sum, sec) => sum + sec, 0);
+  const averageDecisionTime = decisionTimes.length ? decisionTotal / decisionTimes.length : 0;
+  const maxDecisionTime = decisionTimes.length ? Math.max(...decisionTimes) : 0;
+
+  return {
+    firstMove, lastMove, shareCount, takeCount, playerScore: state.playerScore, opponentScore: state.opponentScore,
+    decisionTimes, averageDecisionTime, maxDecisionTime, mostHesitatedDay: getMostHesitatedDay(decisionTimes),
+    quickDecisions: decisionTimes.filter((sec) => sec < 2).length, slowDecisions: decisionTimes.filter((sec) => sec >= 6).length,
+    coop, clash, mismatch, playerOnlyTake, opponentOnlyTake, opponentTookFromPlayer: opponentOnlyTake * 5,
+    playerOnlyTakeCookies: playerOnlyTake * 5, mutualShareCookies: coop * 3, mutualTakeCookies: clash, totalCookies,
+    lostPotential, scoreDiff: state.playerScore - state.opponentScore, switchCount: countSwitches(history),
+    longestShareStreak: countStreak(history, SHARE), longestTakeStreak: countStreak(history, TAKE),
+    recover, forgive, retaliate, afterTakingReturn, afterTakingContinue,
+    lastDayChanged: history.length >= 2 && history[history.length - 1] !== history[history.length - 2]
+  };
+}
+
+function generateSevenDayStory(result) {
+  const metrics = getStoryMetrics();
+  const lines = [];
+  const maxLines = 6;
+
+  if (metrics.firstMove === SHARE) {
+    lines.push("正体のわからない相手と出会った1日目、あなたは最初に手をひらきました。");
+  } else {
+    lines.push("正体のわからない相手と出会った1日目、あなたはまず自分の分を守りました。");
+  }
+
+  if (metrics.coop >= 4) addUniqueLine(lines, "分け合えた日が重なり、広場にはやわらかい時間が残りました。", maxLines);
+  else if (metrics.clash >= 3) addUniqueLine(lines, "守る選択が重なり、広場にはかたい沈黙が残りました。", maxLines);
+  else if (metrics.mismatch >= 4) addUniqueLine(lines, "同じ広場にいながら、選び方が反対になる日が多くありました。", maxLines);
+
+  if (metrics.forgive > 0) addUniqueLine(lines, "受け取れなかった次の日にも、あなたの手は前に出ました。", maxLines);
+  else if (metrics.recover > 0) addUniqueLine(lines, "一度距離ができたあと、あなたはもう一度分ける道を選びました。", maxLines);
+  else if (metrics.retaliate > 0) addUniqueLine(lines, "戻ってこない日のあと、あなたは次の日に自分の分を守りました。", maxLines);
+  else if (metrics.lastDayChanged) addUniqueLine(lines, "最後の日、あなたの手はそれまでと違うほうへ動きました。", maxLines);
+
+  let cookieLines = 0;
+  if (metrics.totalCookies >= 34 && addUniqueLine(lines, "ふたりで残したクッキーは多く、広場には実りがありました。", maxLines)) cookieLines += 1;
+  else if (metrics.lostPotential >= 12 && addUniqueLine(lines, "残せたかもしれないクッキーも、いくつか森にこぼれていきました。", maxLines)) cookieLines += 1;
+
+  if (cookieLines < 2) {
+    if (metrics.playerScore >= 24) addUniqueLine(lines, "7日間で、あなたの手元には多くのクッキーが残りました。", maxLines);
+    else if (metrics.playerScore <= 10) addUniqueLine(lines, "7日間で、手元に残ったクッキーは多くありませんでした。", maxLines);
+  }
+
+  if (metrics.maxDecisionTime >= 8) addUniqueLine(lines, metrics.mostHesitatedDay === 7
+    ? "最後の日、あなたは少し長く立ち止まりました。"
+    : "いちばん長く迷った日、あなたの手はすぐには動きませんでした。", maxLines);
+  else if (metrics.averageDecisionTime < 2.5) addUniqueLine(lines, "選択は早く、迷いはあまり長く残りませんでした。", maxLines);
+  else if (metrics.averageDecisionTime >= 6) addUniqueLine(lines, "あなたは何度も考えてから、手を動かしました。", maxLines);
+
+  while (lines.length > maxLines - 1) lines.pop();
+  while (lines.length < 4) {
+    if (!addUniqueLine(lines, "同じ7日間でも、選び方の重さは毎日少しずつ変わっていきました。", maxLines)) break;
+  }
+
+  lines[lines.length - 1] = `森はその7日間を、「${result.title}」として覚えています。`;
+  return lines.join(" ");
 }
 
 function getResultType() {

@@ -211,6 +211,7 @@ h1,
 #result-screen .ending-scene{height:72px;opacity:.78;border:1px solid rgba(80,70,55,.15)}
 #result-screen .result-buttons{padding:10px;border-radius:12px;background:rgba(243,235,221,.42);border:1px solid rgba(80,70,55,.14)}
 #result-screen .result-primary #result-text{line-height:1.92;font-size:1.03rem;font-weight:550}
+#result-screen .story-panel #result-story{line-height:1.9;font-size:1rem;color:#2f281f}
 #result-screen .result-opponent-body{display:flex;align-items:center;gap:12px}
 #result-screen .result-opponent-wrap{display:flex;justify-content:center;align-items:center;margin:0;flex:0 0 auto}
 #result-screen #opponent-text{line-height:1.82;font-size:.99rem;flex:1;color:var(--text-main,var(--ink))}
