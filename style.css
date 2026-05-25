@@ -6,6 +6,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "YDWaosagi";
+  src: url("assets/fonts/YDWaosagi.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --ink:#262117;
   --card:rgba(246,238,222,.86);
@@ -32,7 +40,7 @@
   --focus-ring:rgba(105,123,88,.65);
 }
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--ink);transition:background .5s ease;background:linear-gradient(rgba(18,22,18,.22),rgba(18,22,18,.36)),url("assets/bg-forest-dusk.webp") center/cover fixed no-repeat,linear-gradient(180deg,#3f4a3f 0%,#283028 100%)}
+body{margin:0;min-height:100vh;font-family:"YDWaosagi","Hiragino Sans","Yu Gothic",system-ui,sans-serif;letter-spacing:.01em;color:var(--ink);transition:background .5s ease;background:linear-gradient(rgba(18,22,18,.22),rgba(18,22,18,.36)),url("assets/bg-forest-dusk.webp") center/cover fixed no-repeat,linear-gradient(180deg,#3f4a3f 0%,#283028 100%)}
 .game{max-width:760px;margin:0 auto;padding:20px 14px 30px;background:transparent;border:none;border-radius:0;box-shadow:none}
 #start-screen,#game-screen,#result-screen,.card{background:transparent;border:none;border-radius:0;box-shadow:none}
 h1{text-align:center;margin:0 0 12px;font-size:clamp(1.42rem,4.4vw,1.92rem);color:#f4f0e6;text-shadow:0 2px 6px rgba(0,0,0,.48);line-height:1.22}
