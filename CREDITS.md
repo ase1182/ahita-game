@@ -10,6 +10,7 @@
 | `assets/fonts/Ounen-mouhitsu.otf` | フォント | https://ffont.jp/ounen-mouhitsu/ （配布ページ名: 桜鯰） | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 同梱規約・再配布可否・最新規約の確認が必要。※ユーザー入力で `Ounen-mouhitsh.otf` という表記があったが、リポジトリ実ファイル名は `Ounen-mouhitsu.otf`。 |
 | `assets/fonts/YDWaosagi.otf` | フォント | https://ymnk-design.com/aosagi/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | フリーフォント案内あり。詳細条件（同梱テキスト/再配布/改変可否）は要確認。 |
 | `assets/forest-bgm.mp3` | BGM | https://nagumorizu.com/category/bgm/scene/%E3%82%B7%E3%83%AA%E3%82%A2%E3%82%B9/ （楽曲名: 無記名の招待状 / なぐもりずの音楽室・南雲莉翠） | 原則必要（要確認） | 配布元規約の範囲内で商用利用可（要確認） | フリーBGMでも著作権放棄ではない前提。クレジット要件・利用範囲・再配布可否を最新規約で確認。 |
+| `assets/forest-house-bgm.mp3` | BGM | なぐもりずの音楽室（楽曲名: 推理１） https://nagumorizu.com/category/bgm/scene/%E3%82%B7%E3%83%AA%E3%82%A2%E3%82%B9/ | 可能な限り表記 | 配布元規約の範囲内で可 | 二次配布禁止。配布元の最新規約を優先し、クレジット要否を確認。 |
 | `assets/bg-forest-dusk.webp` | 背景画像 | https://sozaino.site/ | 不要（配布元説明ベース、要確認） | 配布元規約の範囲内で商用利用可（要確認） | クレジット不要/加工可の案内あり。再配布禁止の扱いと、GitHub公開同梱の可否は要確認。 |
 | `assets/panel-texture.webp` | テクスチャ | https://sozaino.site/ | 不要（配布元説明ベース、要確認） | 配布元規約の範囲内で商用利用可（要確認） | クレジット不要/加工可の案内あり。再配布禁止の扱いと、GitHub公開同梱の可否は要確認。 |
 | `assets/character-shadow.webp` | 画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数（21点以上など）や用途条件に注意。再配布・素材主体の商品化可否を要確認。 |

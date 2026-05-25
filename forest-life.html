@@ -9,6 +9,9 @@
 <body id="forest-life-page">
   <main class="forest-life-wrap">
     <h1>森のクッキー暮らし</h1>
+      <div class="forest-life-bgm-controls">
+        <button id="forest-life-bgm-toggle" type="button" aria-pressed="false">音をならす</button>
+      </div>
 
     <section id="forest-life-start-screen" class="forest-life-card">
       <p id="forest-balance">現在のフォレストクッキー残高: 0</p>
@@ -40,6 +43,7 @@
       <p>データはこのブラウザに保存されます。削除や別端末では引き継がれません。</p>
     </section>
   </main>
+  <audio id="forest-life-bgm" src="assets/forest-house-bgm.mp3" loop preload="auto"></audio>
   <script src="forest-life.js"></script>
 </body>
 </html>
