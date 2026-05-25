@@ -158,6 +158,14 @@ if (buildVersionElement) {
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 };
 
 // Character image assets are loaded from /assets relative to index.html
+
+const getLastRoundScores = ({ playerHistory, opponentHistory }) => {
+  if (!playerHistory.length || !opponentHistory.length) return null;
+  const lastPlayerMove = playerHistory[playerHistory.length - 1];
+  const lastOpponentMove = opponentHistory[opponentHistory.length - 1];
+  return SCORE_TABLE[`${lastPlayerMove}_${lastOpponentMove}`] || null;
+};
+
 const strategies = {
   mirrorYesterday: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory[playerHistory.length - 1]),
   cautiousCrow: ({ day, playerHistory }) => (day === 1 ? TAKE : playerHistory.filter((m) => m === SHARE).length >= 3 ? SHARE : TAKE),
@@ -166,9 +174,8 @@ const strategies = {
   grimTrigger: ({ day, playerHistory }) => (day === 1 ? SHARE : playerHistory.includes(TAKE) ? TAKE : SHARE),
   pavlovLike: ({ day, playerHistory, opponentHistory }) => {
     if (day === 1 || playerHistory.length === 0 || opponentHistory.length === 0) return SHARE;
-    const lastPlayerMove = playerHistory[playerHistory.length - 1];
     const lastOpponentMove = opponentHistory[opponentHistory.length - 1];
-    const lastResult = SCORE_TABLE[`${lastPlayerMove}_${lastOpponentMove}`];
+    const lastResult = getLastRoundScores({ playerHistory, opponentHistory });
     if (!lastResult) return SHARE;
     return lastResult.opponent >= 3 ? lastOpponentMove : (lastOpponentMove === SHARE ? TAKE : SHARE);
   },
@@ -199,7 +206,23 @@ const strategies = {
     const takeCount = playerHistory.filter((move) => move === TAKE).length;
     const shareCount = playerHistory.length - takeCount;
     return takeCount > shareCount ? TAKE : SHARE;
-  }
+  } ,
+  remembersForTwoDays: ({ day, playerHistory }) => {
+    if (day === 1) return SHARE;
+    return playerHistory.slice(-2).includes(TAKE) ? TAKE : SHARE;
+  },
+  followsRichSide: ({ day, playerHistory, opponentHistory }) => {
+    if (day === 1) return SHARE;
+    const lastResult = getLastRoundScores({ playerHistory, opponentHistory });
+    if (!lastResult) return SHARE;
+    return lastResult.player > lastResult.opponent ? TAKE : SHARE;
+  },
+  changesAfterThree: ({ day, playerHistory }) => {
+    if (day <= 2) return SHARE;
+    return playerHistory.filter((move) => move === TAKE).length >= 2 ? TAKE : SHARE;
+  },
+  rareTaker: ({ day }) => (day === 3 || day === 6 ? TAKE : SHARE)
+
 };
 
 // OPPONENT_SCHEMA
@@ -214,6 +237,10 @@ const strategies = {
 const opponents = [
   { id: "tanuki", name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", strategyKey: "mirrorYesterday", spawnWeight: 1, profile: { temperament: "相手のしたことをよく見て、次の日にそっと返す子です。", habit: "信じてもらえた日は信じ返し、ひとりじめされた日は少し身を守ります。", memory: "あなたの選び方が、そのままこの子の明日の表情になっていました。" } },
   { id: "crow", name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", strategyKey: "cautiousCrow", spawnWeight: 1, profile: { temperament: "高い枝の上から、相手の動きをよく見ている子です。", habit: "すぐには近づかず、自分のおやつを守るように選びます。", memory: "近づきすぎず、離れすぎず、最後まであなたの出方を見ていました。" } },
+  { id: "porcupine", name: "しばらく覚えるやまあらし", emoji: "🦔", mask: "⬛", image: "assets/porcupine.webp", description: "こわかったことを少しの間だけ覚えて、しばらく身を守る相手でした。", strategyKey: "remembersForTwoDays", spawnWeight: 0.25, profile: { temperament: "近づきたい気持ちはありますが、すぐには針をしまえない子です。", habit: "こわかった日のことが近くにあるうちは、少し距離を置きます。", memory: "安心できる日が続くと、また少しずつ広場へ戻ってきました。" } },
+  { id: "raven", name: "多く持つ方を見るからす", emoji: "🐦‍⬛", mask: "⬛", image: "assets/raven.webp", description: "前の日にどちらが多く持っていたかを見て、次の日の距離を変える相手でした。", strategyKey: "followsRichSide", spawnWeight: 0.25, profile: { temperament: "高いところから、広場のおやつの行方をよく見ている子です。", habit: "前の日に多く持っていた方を見て、次の日の近づき方を変えます。", memory: "おやつの偏りを、黒い目で静かに覚えていました。" } },
+  { id: "turtle", name: "三日目から変わるかめ", emoji: "🐢", mask: "⬛", image: "assets/turtle.webp", description: "はじめはゆっくり分けながら、途中からこれまでの様子を見て変わる相手でした。", strategyKey: "changesAfterThree", spawnWeight: 0.25, profile: { temperament: "すぐには決めず、ゆっくり広場に慣れていく子です。", habit: "はじめの数日は分けながら、途中から足あとを見て選びます。", memory: "遅い歩みの中に、あなたの7日間が少しずつ残っていました。" } },
+  { id: "sheep", name: "まれに手を伸ばすひつじ", emoji: "🐑", mask: "⬛", image: "assets/sheep.webp", description: "ふだんは分けようとするけれど、まれに自分の分へ手を伸ばす相手でした。", strategyKey: "rareTaker", spawnWeight: 0.25, profile: { temperament: "穏やかに見えて、心の中に小さな揺れを持つ子です。", habit: "多くの日は分けますが、ときどき自分の分を先に抱えます。", memory: "静かな足あとに、ふと違う向きの日が混ざっていました。" } },
   { id: "rabbit", name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", strategyKey: "forgetfulRabbit", spawnWeight: 1, profile: { temperament: "こわかったことも、時間がたつと少し薄れていく子です。", habit: "昨日のことを全部は抱えきれないので、また分けるほうへ戻りやすくなります。", memory: "何度も迷いながら、それでも次の日には広場へ来てくれました。" } },
   { id: "squirrel", name: "分けつづけるりす", emoji: "🐿️", mask: "⬛", image: "assets/squirrel.webp", description: "いつも分けようとする、疑うことを知らない相手でした。", strategyKey: "alwaysCooperate", spawnWeight: 1, profile: { temperament: "小さなおやつでも、誰かと分けることを先に考える子です。", habit: "疑うよりも、まず差し出してみることを選びます。", memory: "あなたがどう選んでも、最後まで同じように広場に立っていました。" } },
   { id: "wolf", name: "忘れないおおかみ", emoji: "🐺", mask: "⬛", image: "assets/wolf.webp", description: "最初は分けようとするけれど、一度裏切られると最後まで忘れない相手でした。", strategyKey: "grimTrigger", spawnWeight: 1, profile: { temperament: "最初は静かに分けようとしますが、一度のことを深く覚える子です。", habit: "傷ついたあとは、もう同じ距離では近づけなくなります。", memory: "最初の信頼が続くかどうかを、最後まで見ていました。" } },
