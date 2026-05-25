@@ -160,7 +160,8 @@ const opponents = [
   { name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", decideMove: ({ playerHistory }) => (playerHistory.slice(-2).every((m) => m === TAKE) && playerHistory.length >= 2 ? TAKE : SHARE) }
 ];
 
-startButton.addEventListener("click", startGame);
+startButton.addEventListener("click", startGameFromButtonInteraction);
+startButton.addEventListener("touchend", startGameFromButtonInteraction, { passive: false });
 retryButton.addEventListener("click", restartWithSameOpponent);
 newOpponentButton.addEventListener("click", restartWithDifferentOpponent);
 shareButton.addEventListener("click", () => playTurn(SHARE));
@@ -180,6 +181,11 @@ if (bgm && bgmToggleButton) {
     bgmToggleButton.textContent = "音をつける";
     bgmToggleButton.setAttribute("aria-pressed", "false");
   });
+}
+
+function startGameFromButtonInteraction(event) {
+  if (event && event.type === "touchend") event.preventDefault();
+  startGame();
 }
 
 function startGame() { resetGame(true); }
@@ -222,6 +228,7 @@ function showGameScreen() {
   startScreen.hidden = true;
   gameScreen.hidden = false;
   resultScreen.hidden = true;
+  window.scrollTo(0, 0);
   triggerMotion(gameScreen, "motion-enter");
 }
 
