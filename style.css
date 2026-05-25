@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "OunenMouhitsu";
+  src: url("assets/fonts/Ounen-mouhitsu.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --ink:#262117;
   --card:rgba(246,238,222,.86);
@@ -27,7 +35,7 @@
 body{margin:0;min-height:100vh;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--ink);transition:background .5s ease;background:linear-gradient(rgba(18,22,18,.22),rgba(18,22,18,.36)),url("assets/bg-forest-dusk.webp") center/cover fixed no-repeat,linear-gradient(180deg,#3f4a3f 0%,#283028 100%)}
 .game{max-width:760px;margin:0 auto;padding:20px 14px 30px;background:transparent;border:none;border-radius:0;box-shadow:none}
 #start-screen,#game-screen,#result-screen,.card{background:transparent;border:none;border-radius:0;box-shadow:none}
-h1{text-align:center;margin:0 0 12px;font-size:clamp(1.5rem,4.6vw,2rem);color:#f4f0e6;text-shadow:0 2px 6px rgba(0,0,0,.48)}
+h1{text-align:center;margin:0 0 12px;font-size:clamp(1.42rem,4.4vw,1.92rem);color:#f4f0e6;text-shadow:0 2px 6px rgba(0,0,0,.48);line-height:1.22}
 .card{padding:0}
 p{line-height:1.75;margin:0}
 .mini-stage{height:96px;border-radius:16px;background:rgba(246,238,222,.78);backdrop-filter:blur(6px);display:flex;align-items:end;justify-content:space-between;padding:10px 16px;margin-bottom:12px;border:1px solid rgba(80,70,55,.18)}
@@ -113,6 +121,16 @@ body[data-phase="day-7"] .progress{box-shadow:0 0 0 1px rgba(102,86,63,.22),0 3p
 body[data-phase="day-7"] #progress-bar{background:linear-gradient(90deg,#6d8467,#4a5e46)}
 body[data-phase="day-7"] #progress-bar::after{content:"";display:block;height:100%;width:100%;box-shadow:0 0 10px rgba(199,186,145,.25) inset}
 body[data-phase="day-7"] .day-row{box-shadow:0 4px 14px rgba(38,31,22,.15)}
+
+h1,
+#result-screen h2,
+#result-screen h3,
+#result-title,
+#opponent-reveal,
+.theory h3{
+  font-family:"OunenMouhitsu","Hiragino Mincho ProN","Yu Mincho",serif;
+  letter-spacing:.04em;
+}
 
 #result-screen{display:flex;flex-direction:column;gap:10px}
 #result-screen h2,#result-screen h3{margin:0;color:#201a13;letter-spacing:.01em}
