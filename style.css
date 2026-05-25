@@ -260,6 +260,14 @@ h1,
 #result-screen .result-actions-divider{height:1px;background:linear-gradient(90deg,rgba(243,236,220,0),rgba(243,236,220,.8),rgba(243,236,220,0));margin-top:2px}
 #result-screen .result-buttons{margin-top:0;position:static;gap:9px}
 #result-screen .result-buttons button{min-height:52px;justify-content:center}
+#result-screen .replay-note{
+  margin:2px 2px 0;
+  font-size:.92rem;
+  line-height:1.7;
+  color:#2f281f;
+  text-align:center;
+  opacity:.9;
+}
 #result-screen #retry-button{background:rgba(250,246,232,.9);border-color:rgba(75,95,70,.4);box-shadow:0 8px 16px rgba(24,34,22,.2)}
 #result-screen #new-opponent-button{background:rgba(248,244,229,.86);border-color:rgba(76,88,98,.35);box-shadow:0 8px 16px rgba(26,30,36,.16)}
 #result-screen #share-result-button{background:rgba(250,246,232,.74);font-weight:600}
@@ -402,9 +410,12 @@ h1,
 #result-screen .result-recommend-panel h3{margin-bottom:6px}
 #result-screen .result-recommend-panel p{margin-top:0;line-height:1.82}
 #result-screen .result-recommend-link{
-  display:inline-block;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   margin-top:6px;
-  padding:8px 12px;
+  min-height:44px;
+  padding:10px 14px;
   border-radius:999px;
   border:1px solid rgba(83,69,50,.28);
   background:rgba(255,250,238,.75);
@@ -414,6 +425,13 @@ h1,
 }
 #result-screen .result-recommend-link:hover,
 #result-screen .result-recommend-link:focus-visible{opacity:.78}
+#result-screen .result-recommend-note{
+  margin-top:6px;
+  font-size:.84rem;
+  line-height:1.55;
+  color:#44392c;
+  opacity:.86;
+}
 
 #recommendations-page{
   color:var(--ink);
@@ -630,8 +648,11 @@ h1,
   color:#2b261f;
 }
 .recommendations-ad-link{
-  display:inline-block;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   margin-top:6px;
+  min-height:44px;
   padding:10px 14px;
   border-radius:10px;
   border:1px solid rgba(83,70,52,.35);
