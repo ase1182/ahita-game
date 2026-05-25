@@ -2,7 +2,7 @@ const SHARE = "わける";
 const TAKE = "ひとりじめ";
 const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
-const BUILD_VERSION = "d33b57b";
+const BUILD_VERSION = "f5e4a2c";
 
 console.info("また明日も会うきみへ build:", BUILD_VERSION);
 
@@ -150,7 +150,7 @@ if (buildVersionElement) {
   buildVersionElement.textContent = `build ${BUILD_VERSION}`;
 }
 
-const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false };
+const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 };
 
 // Character image assets are loaded from /assets relative to index.html
 const opponents = [
@@ -231,7 +231,7 @@ function showResultScreen() {
 }
 
 function resetGame(newOpponent) {
-  Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false });
+  Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 });
   if (newOpponent || !state.currentOpponent) state.currentOpponent = chooseRandomOpponent();
   showGameScreen();
   setChoiceDisabled(false); updateScreen(); renderTracks();
@@ -274,6 +274,12 @@ function scrollMessageIntoViewOnMobile() {
 
 function playTurn(playerMove) {
   if (state.isProcessingTurn || state.isFinished || state.day > MAX_DAYS) return;
+  const now = typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
+  const decisionSeconds = state.turnStartedAt
+    ? Math.max(0, (now - state.turnStartedAt) / 1000)
+    : 0;
+  state.decisionTimes.push(decisionSeconds);
+  state.turnStartedAt = 0;
   state.isProcessingTurn = true;
   state.turnResolved = false;
   setChoiceDisabled(true);
@@ -338,6 +344,8 @@ function updateScreen() {
   message.textContent = "まだ、相手の正体はわかりません。";
   dayMotionTargets.forEach((target) => triggerMotion(target, "motion-refresh"));
   updateContinueButton();
+  const now = typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
+  state.turnStartedAt = now;
 }
 
 function updateContinueButton() {
@@ -456,6 +464,13 @@ function getResultType() {
   const coop = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === SHARE).length;
   const clash = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === TAKE).length;
   const mismatch = state.playerHistory.filter((m, i) => m !== state.opponentHistory[i]).length;
+  const playerOnlyTake = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === SHARE).length;
+  const opponentOnlyTake = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === TAKE).length;
+  const opponentTookFromPlayer = opponentOnlyTake * 5;
+  const playerOnlyTakeCookies = playerOnlyTake * 5;
+  const mutualShareCookies = coop * 3;
+  const mutualTakeCookies = clash * 1;
+
   let recover = 0;
   let forgive = 0;
   let alternating = 0;
@@ -464,6 +479,7 @@ function getResultType() {
     if (state.opponentHistory[i - 1] === TAKE && state.playerHistory[i] === SHARE) forgive += 1;
     if (state.playerHistory[i - 1] !== state.playerHistory[i]) alternating += 1;
   }
+
   const earlyMoves = state.playerHistory.slice(0, 3);
   const lateMoves = state.playerHistory.slice(-3);
   const earlyShares = earlyMoves.filter((m) => m === SHARE).length;
@@ -471,20 +487,53 @@ function getResultType() {
   const earlyTakes = earlyMoves.filter((m) => m === TAKE).length;
   const lateTakes = lateMoves.filter((m) => m === TAKE).length;
 
-  if (shareCount === MAX_DAYS) return { title: "最後まで分けた人", text: "あなたは7日間、分けることを続けました。相手がどう動いても、その手つきは変わりませんでした。" };
-  if (takeCount === MAX_DAYS) return { title: "最後まで守った人", text: "あなたは7日間、自分の分を守り続けました。広場には、得たものと残った距離の両方がありました。" };
-  if (forgive > 0) return { title: "それでも差し出す人", text: "受け取れない日があっても、あなたはもう一度差し出しました。その選択は、すぐに報われなくても残ります。" };
-  if (recover > 0) return { title: "仲直りを試す人", text: "一度離れたあとも、あなたはもう一度分ける道を選びました。戻ろうとする選択も、森には残ります。" };
-  if (lateShares > earlyShares && lateShares >= 2) return { title: "静かに信じ直す人", text: "後半のあなたは、少しずつ分けるほうへ戻っていきました。広場の空気も、少しだけやわらいでいます。" };
-  if (lateTakes > earlyTakes && lateTakes >= 2) return { title: "距離を測る人", text: "後半のあなたは、少し距離を置く選び方をしました。守ることにも、理由があったのかもしれません。" };
-  if (coop >= 4) return { title: "同じ歩幅の人", text: "あなたと相手は、何度も同じ選び方で並びました。広場には、分け合った日の静けさが残っています。" };
-  if (clash >= 3) return { title: "針をしまえない人", text: "あなたは身を守る選択を多く取りました。そのぶん、広場には近づききれない空気も残りました。" };
-  if (mismatch >= 4) return { title: "すれ違いを抱えた人", text: "あなたと相手の選び方は、何度もすれ違いました。それでも7日間、同じ広場に戻ってきました。" };
-  if (state.playerScore >= 22 && shareCount >= 2 && takeCount >= 2) return { title: "今日と明日の間にいる人", text: "あなたは得ることと関係を残すことの間で選びました。今日の多さと、明日の空気が並んでいます。" };
-  if (alternating >= 4) return { title: "様子を見る人", text: "あなたは相手の出方を見ながら、何度も選び方を変えました。広場では、迷いもひとつの記録です。" };
-  if (shareCount >= 5) return { title: "明日を信じる人", text: "あなたは、迷いながらも分け合う道を選びました。明日がある場所では、その選び方が静かに残ります。" };
-  if (takeCount >= 5) return { title: "今日を取りにいく人", text: "あなたは、目の前のクッキーを取りこぼしませんでした。ただ、相手も昨日のことを覚えています。" };
-  return { title: "迷いながら選ぶ人", text: "信じることと守ることの間で、あなたは何度も立ち止まりました。森は、その揺れも覚えています。" };
+  const decisionTimes = state.decisionTimes.slice(0, state.playerHistory.length);
+  const decisionTotal = decisionTimes.reduce((sum, sec) => sum + sec, 0);
+  const averageDecisionTime = decisionTimes.length > 0 ? decisionTotal / decisionTimes.length : 0;
+  const maxDecisionTime = decisionTimes.length > 0 ? Math.max(...decisionTimes) : 0;
+  const quickDecisions = decisionTimes.filter((sec) => sec < 2).length;
+  const slowDecisions = decisionTimes.filter((sec) => sec >= 6).length;
+
+  const resultTypes = [
+    { when: shareCount === MAX_DAYS, title: "最後まで分けた人", text: "7日間、分けることを続けました。相手がどう動いても、その手つきは変わりませんでした。" },
+    { when: takeCount === MAX_DAYS, title: "最後まで守った人", text: "7日間、自分の分を守り続けました。手元には多く残り、広場には距離も残りました。" },
+    { when: shareCount >= 5 && averageDecisionTime < 2.5, title: "すばやく信じた人", text: "あまり迷わず、分ける道を選びました。その早さにも、ひとつの信じ方がありました。" },
+    { when: takeCount >= 5 && averageDecisionTime < 2.5, title: "すばやく取りにいく人", text: "目の前のクッキーを、すばやく選び取りました。迷いの少なさも、森には残っています。" },
+    { when: shareCount >= 5 && averageDecisionTime >= 6, title: "立ち止まって分ける人", text: "あなたは考えてから、分ける道を選びました。迷った時間ごと、広場に残っています。" },
+    { when: takeCount >= 5 && averageDecisionTime >= 6, title: "立ち止まって守る人", text: "あなたは考えてから、自分の分を守りました。急がない選択にも、理由があったのかもしれません。" },
+    { when: forgive > 0, title: "それでも差し出す人", text: "受け取れない日があっても、もう一度差し出しました。その選択は、すぐに報われなくても残ります。" },
+    { when: recover > 0, title: "仲直りを試す人", text: "一度離れたあとも、もう一度分ける道を選びました。戻ろうとする選択も、森には残ります。" },
+    { when: lateShares > earlyShares && lateShares >= 2, title: "静かに信じ直す人", text: "後半のあなたは、少しずつ分けるほうへ戻っていきました。広場の空気も、少しだけやわらいでいます。" },
+    { when: lateTakes > earlyTakes && lateTakes >= 2, title: "距離を測る人", text: "後半のあなたは、少し距離を置く選び方をしました。守ることにも、理由があったのかもしれません。" },
+    { when: coop >= 4, title: "同じ歩幅の人", text: "あなたと相手は、何度も同じ選び方で並びました。分け合った日の静けさが、広場に残っています。" },
+    { when: clash >= 3, title: "針をしまえない人", text: "身を守る選択が重なりました。そのぶん、広場には近づききれない空気も残りました。" },
+    { when: mismatch >= 4, title: "すれ違いを抱えた人", text: "あなたと相手の選び方は、何度もすれ違いました。それでも7日間、同じ広場に戻ってきました。" },
+    { when: state.playerScore >= 24, title: "多くを持ち帰る人", text: "手元には、たくさんのクッキーが残りました。その多さの向こうに、明日の空気も並んでいます。" },
+    { when: state.playerScore <= 12 && shareCount >= 4, title: "少なくても残した人", text: "手元のクッキーは多くありませんでした。それでも、分けた日の記憶は広場に残っています。" },
+    { when: opponentTookFromPlayer >= 10 && shareCount >= 4, title: "差し出し続けた人", text: "差し出しても戻らない日がありました。それでも、あなたの手は何度か前に出ました。" },
+    { when: playerOnlyTake >= 3, title: "甘さを集めた人", text: "クッキーはあなたの側に多く集まりました。今日の甘さと、少しの距離が残っています。" },
+    { when: alternating >= 4 && averageDecisionTime >= 4, title: "慎重に変える人", text: "あなたは何度も立ち止まり、選び方を変えました。迷いも、この森ではひとつの記録です。" },
+    { when: alternating >= 4, title: "風に揺れる人", text: "あなたの選び方は、何度か揺れました。広場の空気を見ながら、手を変えていきました。" },
+    { when: quickDecisions >= 5, title: "早足の人", text: "あなたの選択は、迷いなく早く積もりました。森は、その速さも覚えています。" },
+    { when: slowDecisions >= 4, title: "長く考える人", text: "あなたは何度も長く考えてから選びました。その間も、相手は広場で待っていました。" },
+    { when: state.playerScore >= 20 && shareCount >= 2 && takeCount >= 2, title: "今日と明日の間にいる人", text: "あなたは得ることと関係を残すことの間で選びました。今日の多さと、明日の空気が並んでいます。" },
+    { when: shareCount >= 5, title: "明日を信じる人", text: "迷いながらも、分け合う道を多く選びました。明日がある場所では、その選び方が静かに残ります。" },
+    { when: takeCount >= 5, title: "今日を取りにいく人", text: "目の前のクッキーを取りこぼしませんでした。ただ、相手も昨日のことを覚えています。" },
+    { when: shareCount >= 3 && takeCount >= 3, title: "様子を見る人", text: "あなたは相手の出方を見ながら、選び方を変えました。広場では、迷いもひとつの記録です。" },
+    { when: true, title: "迷いながら選ぶ人", text: "信じることと守ることの間で、何度も立ち止まりました。森は、その揺れも覚えています。" }
+  ];
+
+  const matched = resultTypes.find((result) => result.when);
+  if (!matched) {
+    return { title: "迷いながら選ぶ人", text: "信じることと守ることの間で、何度も立ち止まりました。森は、その揺れも覚えています。" };
+  }
+
+  void playerOnlyTakeCookies;
+  void mutualShareCookies;
+  void mutualTakeCookies;
+  void maxDecisionTime;
+
+  return { title: matched.title, text: matched.text };
 }
 
 function getRelationshipEnding() {
