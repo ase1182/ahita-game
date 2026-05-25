@@ -270,7 +270,7 @@ const getLastRoundScores = ({ playerHistory, opponentHistory }) => {
   if (!playerHistory.length || !opponentHistory.length) return null;
   const lastPlayerMove = playerHistory[playerHistory.length - 1];
   const lastOpponentMove = opponentHistory[opponentHistory.length - 1];
-  return SCORE_TABLE[`${lastPlayerMove}_${lastOpponentMove}`] || null;
+  return PAYOFF_TABLE[`${lastPlayerMove}_${lastOpponentMove}`] || null;
 };
 
 const strategies = {
