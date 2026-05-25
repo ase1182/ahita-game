@@ -805,7 +805,7 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   margin:0 0 10px;
 }
 
-#forest-life-page #forest-life-bgm-toggle{
+#forest-life-page #forest-life-sound-toggle{
   min-height:44px;
   padding:10px 14px;
   border-radius:999px;
@@ -819,8 +819,9 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   z-index:2;
 }
 
-#forest-life-page #forest-life-bgm-toggle[aria-pressed="true"]{
-  background:rgba(223,236,217,.9);
+#forest-life-page #forest-life-sound-toggle:disabled{
+  opacity:.55;
+  cursor:not-allowed;
 }
 
 

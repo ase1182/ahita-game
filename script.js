@@ -155,9 +155,11 @@ const shareResultButton = document.getElementById("share-result-button");
 const newOpponentButton = document.getElementById("new-opponent-button");
 const continueButton = document.getElementById("continue-button");
 const bgm = document.getElementById("bgm");
-const bgmToggleButton =
-  document.getElementById("bgm-toggle-button") ||
-  document.getElementById("bgm-toggle");
+const soundToggleButton = document.getElementById("sound-toggle");
+const cardFlipSe = document.getElementById("se-card-flip");
+const shareSnackSe = document.getElementById("se-share-snack");
+const bushRustleSe = document.getElementById("se-bush-rustle");
+const woodDropSe = document.getElementById("se-wood-drop");
 const buildVersionElement = document.getElementById("build-version");
 
 if (buildVersionElement) {
@@ -438,20 +440,11 @@ if (grantCookiesButton) {
   grantCookiesButton.addEventListener("click", onGrantCookies);
   grantCookiesButton.addEventListener("touchend", onGrantCookies, { passive: false });
 }
-if (bgmToggleButton) {
-  bgmToggleButton.addEventListener("click", toggleBgm);
-}
-
-let isBgmOn = false;
-
-if (bgm && bgmToggleButton) {
-  bgm.volume = 0.25;
-  bgm.addEventListener("error", () => {
-    isBgmOn = false;
-    bgmToggleButton.textContent = "音をつける";
-    bgmToggleButton.setAttribute("aria-pressed", "false");
-  });
-}
+if (soundToggleButton) soundToggleButton.addEventListener("click", handleSoundToggle);
+if (bgm) bgm.volume = 0.25;
+updateSoundToggleLabel();
+document.addEventListener("click", tryPlayBgm, { once: true });
+document.addEventListener("touchend", tryPlayBgm, { once: true, passive: true });
 
 function startGameFromButtonInteraction(event) {
   if (event && event.type === "touchend") event.preventDefault();
@@ -469,29 +462,66 @@ function restartWithDifferentOpponent() {
   resetGame(false);
 }
 
-function toggleBgm() {
-  if (!bgm || !bgmToggleButton) return;
+function isSoundEnabled() {
+  if (!safeStorage) return true;
+  const stored = safeStorage.getItem("ahita.sound.enabled");
+  return stored === null ? true : stored === "true";
+}
 
-  if (isBgmOn) {
-    bgm.pause();
-    bgm.currentTime = 0;
-    isBgmOn = false;
-    bgmToggleButton.textContent = "音をつける";
-    bgmToggleButton.setAttribute("aria-pressed", "false");
-    return;
-  }
+function setSoundEnabled(enabled) {
+  if (!safeStorage) return;
+  safeStorage.setItem("ahita.sound.enabled", enabled ? "true" : "false");
+}
 
+function updateSoundToggleLabel() {
+  if (!soundToggleButton) return;
+  soundToggleButton.textContent = isSoundEnabled() ? "音を消す" : "音を出す";
+}
+
+function tryPlayBgm() {
+  if (!bgm || !isSoundEnabled()) return;
   const playPromise = bgm.play();
   if (playPromise && typeof playPromise.catch === "function") {
-    playPromise.catch(() => {
-      isBgmOn = false;
-      bgmToggleButton.textContent = "音をつける";
-      bgmToggleButton.setAttribute("aria-pressed", "false");
-    });
+    playPromise.catch((error) => console.warn("BGMを再生できませんでした:", error));
   }
-  isBgmOn = true;
-  bgmToggleButton.textContent = "音を消す";
-  bgmToggleButton.setAttribute("aria-pressed", "true");
+}
+
+function stopBgm() {
+  if (!bgm) return;
+  bgm.pause();
+  bgm.currentTime = 0;
+}
+
+function playSoundElement(audioElement, volume = 0.45) {
+  if (!isSoundEnabled() || !audioElement) return;
+  try {
+    audioElement.currentTime = 0;
+    audioElement.volume = volume;
+    const playPromise = audioElement.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch((error) => console.warn("音声を再生できませんでした:", error));
+    }
+  } catch (error) {
+    console.warn("音声を再生できませんでした:", error);
+  }
+}
+
+function handleSoundToggle() {
+  const nextEnabled = !isSoundEnabled();
+  setSoundEnabled(nextEnabled);
+  if (nextEnabled) tryPlayBgm();
+  else stopBgm();
+  updateSoundToggleLabel();
+}
+
+function playCardFlipSound() {
+  playSoundElement(cardFlipSe, 0.4);
+}
+
+function playRoundResultSound(playerChoice, opponentChoice) {
+  if (playerChoice === SHARE && opponentChoice === SHARE) playSoundElement(shareSnackSe, 0.45);
+  else if (playerChoice === TAKE && opponentChoice === TAKE) playSoundElement(woodDropSe, 0.4);
+  else playSoundElement(bushRustleSe, 0.45);
 }
 
 function showGameScreen() {
@@ -577,6 +607,7 @@ function playTurn(playerMove) {
   const opponentMove = state.currentOpponent.decideMove({ day: state.day, playerHistory: state.playerHistory, opponentHistory: state.opponentHistory });
   state.playerHistory.push(playerMove); state.opponentHistory.push(opponentMove);
   const payoff = PAYOFF_TABLE[`${playerMove}_${opponentMove}`]; state.playerScore += payoff.player; state.opponentScore += payoff.opponent;
+  playRoundResultSound(playerMove, opponentMove);
 
   const turnKey = `${playerMove === SHARE ? "s" : "t"}${opponentMove === SHARE ? "s" : "t"}`;
   gameScreen.className = `card turn-${turnKey}`;
@@ -605,6 +636,7 @@ function playTurn(playerMove) {
 
 function proceedToNextDay() {
   if (!state.turnResolved || state.isProcessingTurn) return;
+  playCardFlipSound();
   if (state.day >= MAX_DAYS) {
     state.isFinished = true;
     showResult();
@@ -714,6 +746,7 @@ function showResult() {
 
 safeStorage = initializeStorage();
 ensureCookieStorageDefaults();
+updateSoundToggleLabel();
 
 function renderOpponentProfile(profile) {
   if (!opponentProfile || !opponentProfileTemperament || !opponentProfileHabit || !opponentProfileMemory) return;
