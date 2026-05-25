@@ -132,6 +132,10 @@ const snackResult = document.getElementById("snack-result");
 const relationshipEnding = document.getElementById("relationship-ending");
 const opponentReveal = document.getElementById("opponent-reveal");
 const opponentText = document.getElementById("opponent-text");
+const opponentProfile = document.getElementById("opponent-profile");
+const opponentProfileTemperament = document.getElementById("opponent-profile-temperament");
+const opponentProfileHabit = document.getElementById("opponent-profile-habit");
+const opponentProfileMemory = document.getElementById("opponent-profile-memory");
 const dayMotionTargets = [dayLabel, dayNote, playerTrack, opponentTrack, message];
 
 const startButton = document.getElementById("start-button");
@@ -172,11 +176,11 @@ const strategies = {
 // - spawnWeight: 将来の出現率調整用（現時点では抽選に未使用）
 // - mask: 現状未使用（将来の正体隠し演出向けに保持）
 const opponents = [
-  { id: "tanuki", name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", strategyKey: "mirrorYesterday", spawnWeight: 1 },
-  { id: "crow", name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", strategyKey: "cautiousCrow", spawnWeight: 1 },
-  { id: "rabbit", name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", strategyKey: "forgetfulRabbit", spawnWeight: 1 },
-  { id: "squirrel", name: "分けつづけるりす", emoji: "🐿️", mask: "⬛", image: "assets/squirrel.webp", description: "いつも分けようとする、疑うことを知らない相手でした。", strategyKey: "alwaysCooperate", spawnWeight: 1 },
-  { id: "wolf", name: "忘れないおおかみ", emoji: "🐺", mask: "⬛", image: "assets/wolf.webp", description: "最初は分けようとするけれど、一度裏切られると最後まで忘れない相手でした。", strategyKey: "grimTrigger", spawnWeight: 1 }
+  { id: "tanuki", name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", strategyKey: "mirrorYesterday", spawnWeight: 1, profile: { temperament: "相手のしたことをよく見て、次の日にそっと返す子です。", habit: "信じてもらえた日は信じ返し、ひとりじめされた日は少し身を守ります。", memory: "あなたの選び方が、そのままこの子の明日の表情になっていました。" } },
+  { id: "crow", name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", strategyKey: "cautiousCrow", spawnWeight: 1, profile: { temperament: "高い枝の上から、相手の動きをよく見ている子です。", habit: "すぐには近づかず、自分のおやつを守るように選びます。", memory: "近づきすぎず、離れすぎず、最後まであなたの出方を見ていました。" } },
+  { id: "rabbit", name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", strategyKey: "forgetfulRabbit", spawnWeight: 1, profile: { temperament: "こわかったことも、時間がたつと少し薄れていく子です。", habit: "昨日のことを全部は抱えきれないので、また分けるほうへ戻りやすくなります。", memory: "何度も迷いながら、それでも次の日には広場へ来てくれました。" } },
+  { id: "squirrel", name: "分けつづけるりす", emoji: "🐿️", mask: "⬛", image: "assets/squirrel.webp", description: "いつも分けようとする、疑うことを知らない相手でした。", strategyKey: "alwaysCooperate", spawnWeight: 1, profile: { temperament: "小さなおやつでも、誰かと分けることを先に考える子です。", habit: "疑うよりも、まず差し出してみることを選びます。", memory: "あなたがどう選んでも、最後まで同じように広場に立っていました。" } },
+  { id: "wolf", name: "忘れないおおかみ", emoji: "🐺", mask: "⬛", image: "assets/wolf.webp", description: "最初は分けようとするけれど、一度裏切られると最後まで忘れない相手でした。", strategyKey: "grimTrigger", spawnWeight: 1, profile: { temperament: "最初は静かに分けようとしますが、一度のことを深く覚える子です。", habit: "傷ついたあとは、もう同じ距離では近づけなくなります。", memory: "最初の信頼が続くかどうかを、最後まで見ていました。" } }
 ];
 
 function validateOpponents() {
@@ -204,6 +208,19 @@ function validateOpponents() {
     if (Object.prototype.hasOwnProperty.call(opponent, "spawnWeight")) {
       if (typeof opponent.spawnWeight !== "number" || opponent.spawnWeight <= 0) {
         console.warn(`[opponents] spawnWeight must be a positive number for id "${opponent.id || `index-${index}`}".`, opponent);
+      }
+    }
+
+    if (Object.prototype.hasOwnProperty.call(opponent, "profile") && opponent.profile != null) {
+      const profileKeys = ["temperament", "habit", "memory"];
+      if (typeof opponent.profile !== "object" || Array.isArray(opponent.profile)) {
+        console.warn(`[opponents] profile must be an object for id "${opponent.id || `index-${index}`}".`, opponent);
+      } else {
+        profileKeys.forEach((key) => {
+          if (Object.prototype.hasOwnProperty.call(opponent.profile, key) && typeof opponent.profile[key] !== "string") {
+            console.warn(`[opponents] profile.${key} must be a string for id "${opponent.id || `index-${index}`}".`, opponent);
+          }
+        });
       }
     }
   });
@@ -475,6 +492,7 @@ function showResult() {
   resultTitle.textContent = `あなたの記録：${result.title}`; resultText.textContent = result.text;
   if (resultStory) resultStory.textContent = generateSevenDayStory(result);
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
+  renderOpponentProfile(state.currentOpponent.profile);
   renderResultOpponent();
   const totalCookies = MAX_DAYS * 6;
   const wastedCookies = totalCookies - state.playerScore - state.opponentScore;
@@ -487,6 +505,25 @@ function showResult() {
     item.style.animationDelay = `${Math.min(index * 0.05, 0.25)}s`;
     triggerMotion(item, "motion-result");
   });
+}
+
+function renderOpponentProfile(profile) {
+  if (!opponentProfile || !opponentProfileTemperament || !opponentProfileHabit || !opponentProfileMemory) return;
+  const hasCompleteProfile = profile
+    && typeof profile.temperament === "string"
+    && typeof profile.habit === "string"
+    && typeof profile.memory === "string";
+  if (!hasCompleteProfile) {
+    opponentProfile.hidden = true;
+    opponentProfileTemperament.textContent = "";
+    opponentProfileHabit.textContent = "";
+    opponentProfileMemory.textContent = "";
+    return;
+  }
+  opponentProfile.hidden = false;
+  opponentProfileTemperament.textContent = profile.temperament;
+  opponentProfileHabit.textContent = profile.habit;
+  opponentProfileMemory.textContent = profile.memory;
 }
 
 function renderResultTracks() {

@@ -227,6 +227,11 @@ h1,
 #result-screen .result-opponent-body{display:flex;align-items:center;gap:12px}
 #result-screen .result-opponent-wrap{display:flex;justify-content:center;align-items:center;margin:0;flex:0 0 auto}
 #result-screen #opponent-text{line-height:1.82;font-size:.99rem;flex:1;color:var(--text-main,var(--ink))}
+#result-screen .result-opponent-texts{display:flex;flex-direction:column;gap:8px;flex:1;min-width:0}
+#result-screen .opponent-profile{padding:9px 10px;border-radius:10px;background:rgba(255,251,242,.7);border:1px solid rgba(85,72,55,.18)}
+#result-screen .opponent-profile h4{margin:0 0 6px;font-size:.95rem;color:#2f281f;letter-spacing:.02em}
+#result-screen .opponent-profile p{margin:0;font-size:.93rem;line-height:1.72;color:#332b21}
+#result-screen .opponent-profile p + p{margin-top:4px}
 #result-screen .result-ending{background:rgba(242,234,219,.8)}
 #result-screen .result-ending #relationship-ending{font-size:1rem;line-height:1.85;color:#2d261d}
 #result-screen .result-stats{display:flex;gap:8px;flex-wrap:wrap}
