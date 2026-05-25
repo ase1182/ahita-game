@@ -851,6 +851,11 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   #forest-life-page .forest-life-toast.is-visible{animation:none;opacity:1;}
 }
 #forest-life-page .forest-life-stats p{margin:0;padding:6px 8px;background:rgba(250,246,232,.75);border-radius:10px;border:1px solid rgba(80,70,55,.15)}
+#forest-life-page .forest-upcoming-note{
+  margin-top:-4px;
+  font-size:.82rem;
+  color:rgba(73,63,49,.82);
+}
 #forest-life-page .forest-day-status{padding:10px 12px;border-radius:12px;background:rgba(39,45,39,.14);border:1px dashed rgba(70,60,50,.28)}
 #forest-life-page .forest-life-ledgers{display:grid;grid-template-columns:1fr;gap:10px}
 #forest-life-page h2{font-size:1.02rem;margin:8px 0 6px}
