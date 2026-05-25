@@ -77,16 +77,9 @@
         </details>
       </section>
 
-      <section id="forest-action-plan-panel" class="forest-action-plan-panel" hidden>
-        <h2 id="forest-action-plan-title">どこにあずけますか？</h2>
-        <div id="forest-action-plan-list" class="forest-action-plan-list"></div>
-        <div class="forest-life-buttons">
-          <button id="forest-close-plan-panel" type="button">やめる</button>
-        </div>
-      </section>
-
       <div class="forest-life-buttons">
         <button id="forest-next-day-button" type="button" disabled>次の日へ</button>
+        <button id="forest-retire-button" type="button" hidden>森を出て、クッキーを貯蔵庫に戻す</button>
         <button id="finish-forest-session" type="button">また明日も会うきみへへ戻る</button>
       </div>
 
@@ -115,6 +108,16 @@
         <ul id="forest-action-log"></ul>
       </section>
     </section>
+
+
+    <div id="action-modal" class="action-modal" hidden>
+      <div class="action-modal__panel" role="dialog" aria-modal="true" aria-labelledby="action-modal-title">
+        <button id="action-modal-close" class="action-modal__close" type="button">閉じる</button>
+        <h2 id="action-modal-title"></h2>
+        <p id="action-modal-description"></p>
+        <div id="action-modal-body" class="forest-action-plan-list"></div>
+      </div>
+    </div>
 
     <section id="forest-life-result-screen" class="forest-life-card" hidden>
       <h2 id="forest-result-title">森で0日分のおやつをまかなえました</h2>
