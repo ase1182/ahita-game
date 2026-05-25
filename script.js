@@ -407,7 +407,9 @@ function showResult() {
   if (resultStory) resultStory.textContent = generateSevenDayStory(result);
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
   renderResultOpponent();
-  snackResult.innerHTML = `<span class="result-chip">あなたのおやつ ${state.playerScore}</span><span class="result-chip">相手のおやつ ${state.opponentScore}</span>`;
+  const totalCookies = MAX_DAYS * 6;
+  const wastedCookies = totalCookies - state.playerScore - state.opponentScore;
+  snackResult.innerHTML = `<span class="result-chip">あなたのおやつ ${state.playerScore}</span><span class="result-chip">相手のおやつ ${state.opponentScore}</span><span class="result-chip">だれにも届かなかったおやつ ${wastedCookies}</span>`;
   relationshipEnding.textContent = `関係の結末：${getRelationshipEnding()}`;
   renderResultTracks();
   renderEndingScene();
