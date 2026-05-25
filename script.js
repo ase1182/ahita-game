@@ -178,7 +178,28 @@ const strategies = {
     if (lastPlayerMove === SHARE) return SHARE;
     return day % 2 === 0 ? SHARE : TAKE;
   },
-  randomMood: () => (Math.random() < 0.5 ? SHARE : TAKE)
+  randomMood: () => (Math.random() < 0.5 ? SHARE : TAKE),
+  suspiciousMirror: ({ day, playerHistory }) => (day === 1 ? TAKE : playerHistory[playerHistory.length - 1]),
+  testerOwl: ({ day, playerHistory }) => {
+    if (day === 1) return SHARE;
+    if (day === 2) return TAKE;
+    const hasTakeHistory = playerHistory.includes(TAKE);
+    if (hasTakeHistory) return SHARE;
+    return day % 2 === 0 ? TAKE : SHARE;
+  },
+  alternator: ({ day }) => (day % 2 === 0 ? TAKE : SHARE),
+  alwaysTake: () => TAKE,
+  twoWarnings: ({ day, playerHistory }) => {
+    if (day === 1 || playerHistory.length < 2) return SHARE;
+    const lastTwoMoves = playerHistory.slice(-2);
+    return lastTwoMoves.every((move) => move === TAKE) ? TAKE : SHARE;
+  },
+  majorityFollower: ({ day, playerHistory }) => {
+    if (day === 1) return SHARE;
+    const takeCount = playerHistory.filter((move) => move === TAKE).length;
+    const shareCount = playerHistory.length - takeCount;
+    return takeCount > shareCount ? TAKE : SHARE;
+  }
 };
 
 // OPPONENT_SCHEMA
@@ -198,7 +219,13 @@ const opponents = [
   { id: "wolf", name: "忘れないおおかみ", emoji: "🐺", mask: "⬛", image: "assets/wolf.webp", description: "最初は分けようとするけれど、一度裏切られると最後まで忘れない相手でした。", strategyKey: "grimTrigger", spawnWeight: 1, profile: { temperament: "最初は静かに分けようとしますが、一度のことを深く覚える子です。", habit: "傷ついたあとは、もう同じ距離では近づけなくなります。", memory: "最初の信頼が続くかどうかを、最後まで見ていました。" } },
   { id: "fox", name: "様子を見るきつね", emoji: "🦊", mask: "⬛", image: "assets/fox.webp", description: "うまくいった日は同じように、うまくいかなかった日は少し選び方を変える相手でした。", strategyKey: "pavlovLike", spawnWeight: 1, profile: { temperament: "相手の声や広場の空気を、じっと見ている子です。", habit: "うまくいった日は同じ道を選び、うまくいかなかった日は少し足を止めます。", memory: "あなたとの7日間で、近づく日と離れる日を何度も測っていました。" } },
   { id: "deer", name: "ゆるしてくれるしか", emoji: "🦌", mask: "⬛", image: "assets/deer.webp", description: "されたことを覚えていても、また分けるほうへ戻ろうとする相手でした。", strategyKey: "generousMirror", spawnWeight: 1, profile: { temperament: "こわかった日があっても、すぐに背を向けきれない子です。", habit: "傷ついたあとでも、ときどきもう一度だけ分けるほうを選びます。", memory: "あなたの選び方を覚えながら、それでも広場に戻る理由を探していました。" } },
-  { id: "cat", name: "気まぐれなねこ", emoji: "🐱", mask: "⬛", image: "assets/cat.webp", description: "その日の気分で、近づいたり離れたりする相手でした。", strategyKey: "randomMood", spawnWeight: 1, profile: { temperament: "近くに来たかと思うと、ふいに別の方を向く子です。", habit: "毎日同じようには選ばず、その日の気分で広場に立ちます。", memory: "あなたのそばにいた日も、少し離れて見ていた日もありました。" } }
+  { id: "cat", name: "気まぐれなねこ", emoji: "🐱", mask: "⬛", image: "assets/cat.webp", description: "その日の気分で、近づいたり離れたりする相手でした。", strategyKey: "randomMood", spawnWeight: 1, profile: { temperament: "近くに来たかと思うと、ふいに別の方を向く子です。", habit: "毎日同じようには選ばず、その日の気分で広場に立ちます。", memory: "あなたのそばにいた日も、少し離れて見ていた日もありました。" } },
+  { id: "hedgehog", name: "疑い深いはりねずみ", emoji: "🦔", mask: "⬛", image: "assets/hedgehog.webp", description: "最初は少し身を守り、そのあとは前の日のあなたをよく見て返す相手でした。", strategyKey: "suspiciousMirror", spawnWeight: 1, profile: { temperament: "近づきたい気持ちと、こわがる気持ちを両方持っている子です。", habit: "最初は少し距離を置き、そのあとはあなたの前の日をそっと返します。", memory: "安心できる足あとが続くと、少しずつ針をおろしていました。" } },
+  { id: "owl", name: "試してくるふくろう", emoji: "🦉", mask: "⬛", image: "assets/owl.webp", description: "静かに見ているだけでなく、ときどき相手の出方を確かめる相手でした。", strategyKey: "testerOwl", spawnWeight: 1, profile: { temperament: "高い枝の上から、広場の小さな変化を見ている子です。", habit: "ただ待つだけではなく、ときどき一歩だけ相手の出方を確かめます。", memory: "あなたがどう返すのかを、静かな目で覚えていました。" } },
+  { id: "woodpecker", name: "交互に選ぶきつつき", emoji: "🐦", mask: "⬛", image: "assets/woodpecker.webp", description: "同じ場所をつつくように、分ける日とひとりじめの日を繰り返す相手でした。", strategyKey: "alternator", spawnWeight: 1, profile: { temperament: "森の幹をたたく音のように、決まった調子を持つ子です。", habit: "近づく日と離れる日を、ひとつずつ繰り返します。", memory: "あなたとの7日間にも、不思議なリズムが残っていました。" } },
+  { id: "boar", name: "いつもひとりじめするいのしし", emoji: "🐗", mask: "⬛", image: "assets/boar.webp", description: "毎日まっすぐにおやつへ向かい、分けることをほとんど考えない相手でした。", strategyKey: "alwaysTake", spawnWeight: 1, profile: { temperament: "目の前のおやつを見ると、まっすぐ走り出す子です。", habit: "分けることよりも、まず自分の手に抱えることを選びます。", memory: "広場には、勢いのある足あとと、少し遠い距離が残っていました。" } },
+  { id: "bear", name: "二度まで待つくま", emoji: "🐻", mask: "⬛", image: "assets/bear.webp", description: "一度だけなら待ってくれるけれど、続くと静かに身を守る相手でした。", strategyKey: "twoWarnings", spawnWeight: 1, profile: { temperament: "大きな体で、すぐには動かずに相手を見ている子です。", habit: "一度のことでは離れませんが、続くと少し距離を置きます。", memory: "待ってくれた日のあとに、あなたがどうするかを見ていました。" } },
+  { id: "monkey", name: "多いほうへ寄るさる", emoji: "🐒", mask: "⬛", image: "assets/monkey.webp", description: "前の日だけでなく、これまでのあなたの選び方を見て寄ってくる相手でした。", strategyKey: "majorityFollower", spawnWeight: 1, profile: { temperament: "枝から枝へ渡るように、まわりの流れをよく見ている子です。", habit: "一日だけで決めず、これまで多かったほうへ少しずつ寄っていきます。", memory: "あなたが重ねた選び方を、森の上から眺めていました。" } }
 ];
 
 function validateOpponents() {

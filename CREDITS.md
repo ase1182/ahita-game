@@ -21,6 +21,12 @@
 | `assets/fox.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
 | `assets/deer.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
 | `assets/cat.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
+| `assets/hedgehog.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
+| `assets/owl.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
+| `assets/woodpecker.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
+| `assets/boar.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
+| `assets/bear.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
+| `assets/monkey.webp` | キャラクター画像 | いらすとや https://www.irasutoya.com/ | 要確認 | 配布元規約の範囲内で商用利用可（要確認） | 使用点数・再配布・素材主体の商品化に注意。 |
 
 ## クレジット表記案
 
