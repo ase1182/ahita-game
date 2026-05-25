@@ -868,7 +868,8 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 #forest-life-page .forest-action-plan-list .label-sub{font-size:.86rem}
 #forest-life-page::before,
 #forest-life-page::after{pointer-events:none}
-#forest-life-page .forest-stat-note{display:block;font-size:.74rem;opacity:.78;margin-top:2px;line-height:1.35}
+#forest-life-page .forest-stat-note,#forest-life-page .forest-stat-help{display:block;font-size:.74rem;opacity:.78;margin-top:2px;line-height:1.35}
+#forest-life-page #forest-black-market-inventory-summary{margin:2px 0 10px;padding:6px 8px;border-radius:10px;background:rgba(250,246,232,.66);border:1px solid rgba(80,70,55,.12);font-size:.86rem;line-height:1.5;word-break:break-word;}
 #forest-life-page .action-modal[hidden]{display:none}
 #forest-life-page .action-modal{position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(24,28,26,.32)}
 #forest-life-page .action-modal__panel{width:min(94vw,520px);max-height:min(84vh,620px);overflow:auto;padding:12px;border-radius:14px;background:rgba(249,244,231,.96);border:1px solid rgba(80,70,55,.2);box-shadow:0 16px 32px rgba(0,0,0,.25)}
