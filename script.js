@@ -815,27 +815,38 @@ function getRelationshipEnding() {
   return "7日目のあと、少し離れたまま、どちらも広場を振り返っていました。";
 }
 
-function buildShareText(resultTypeTitle, opponentName) {
-  const lingeringLines = [
-    "この森では、昨日のことをみんな覚えています。",
-    "今日だけなら、ひとりじめは得だったかもしれない。",
-    "明日も会うなら、選び方は少し変わる。",
-    "信じることも、疑うことも、ちゃんと残っていました。"
-  ];
-  const line = lingeringLines[(state.playerScore + state.opponentScore) % lingeringLines.length];
+function buildShareText(opponentName, playerScore, opponentScore, wastedCookies) {
+  const title = "また明日も会うきみへ";
+  const hashtag = "#また明日も会うきみへ";
+  const fullText = [
+    title,
+    "",
+    `${opponentName}と7日間を過ごしました。`,
+    `あなたのおやつ: ${playerScore}`,
+    `相手のおやつ: ${opponentScore}`,
+    `だれにも届かなかったおやつ: ${wastedCookies}`,
+    "",
+    hashtag
+  ].join("\n");
+
+  if (fullText.length <= 120) return fullText;
+
   return [
-    "「また明日も会うきみへ」で遊びました。",
-    `私の記録は「${resultTypeTitle}」。`,
-    `相手は「${opponentName}」でした。`,
-    line
+    title,
+    "",
+    `${opponentName}と7日間。`,
+    `あなた${playerScore} / 相手${opponentScore} / 届かなかったおやつ${wastedCookies}`,
+    "",
+    hashtag
   ].join("\n");
 }
 
 function shareResult() {
-  const resultTypeTitle = state.resultTypeTitle || getResultType().title;
   const opponentName = state.currentOpponent?.name || "正体不明の相手";
-  const text = buildShareText(resultTypeTitle, opponentName);
-  const url = window.location.href;
+  const totalCookies = MAX_DAYS * 6;
+  const wastedCookies = totalCookies - state.playerScore - state.opponentScore;
+  const text = buildShareText(opponentName, state.playerScore, state.opponentScore, wastedCookies);
+  const url = `${window.location.origin}${window.location.pathname}`;
   window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank", "noopener,noreferrer");
 }
 
