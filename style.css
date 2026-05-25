@@ -674,3 +674,34 @@ h1,
 [hidden]{
   display:none !important;
 }
+
+/* UX/accessibility refinement pass */
+:root{--card:rgba(246,238,222,.94)}
+body{background:linear-gradient(rgba(18,22,18,.3),rgba(18,22,18,.42)),url("assets/bg-forest-dusk.webp") center/cover fixed no-repeat,linear-gradient(180deg,#3f4a3f 0%,#283028 100%)}
+.day-row{padding:10px 12px;background:rgba(250,246,232,.92);border:1px solid rgba(80,70,55,.2);backdrop-filter:blur(4px)}
+.footprint-wrap{margin:0 0 12px;padding:10px;background:rgba(250,246,232,.92);backdrop-filter:blur(4px);gap:6px}
+#message{padding:13px 15px;background:rgba(250,246,232,.95);backdrop-filter:blur(4px);margin-bottom:12px;border:1px solid rgba(80,70,55,.2)}
+button,.button-link{border:1px solid rgba(69,59,46,.42);border-radius:16px;min-height:52px;padding:11px 16px;background:rgba(250,246,232,.96);display:flex;align-items:center;justify-content:center;text-decoration:none}
+.primary-cta{background:rgba(231,240,225,.98);border-color:rgba(58,88,62,.55);font-size:1.05rem}
+a:focus-visible{outline:3px solid var(--focus-ring);outline-offset:3px;border-radius:10px}
+a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-underline-offset:2px}
+#start-screen{gap:10px}
+#start-screen .start-note{padding:10px 14px;font-size:.96rem;line-height:1.7;opacity:.92}
+#result-screen .result-panel{background:rgba(246,238,222,.93);backdrop-filter:blur(4px)}
+#result-screen .result-chip{padding:8px 12px;background:rgba(243,236,222,.98);border:1px solid rgba(85,72,55,.3);font-size:.9rem}
+#result-screen .theory > summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;padding:10px 12px}
+#result-screen .theory details summary{text-shadow:none}
+#result-screen .result-recommend-link{margin-top:6px}
+#result-screen .result-recommend-note{font-size:.86rem;line-height:1.6}
+
+#recommendations-page .recommendations-shell{max-width:760px;margin:0 auto;padding:16px 12px 30px}
+#recommendations-page .recommendations-pr-note{font-size:.85rem;opacity:.9;background:rgba(246,238,222,.92);padding:7px 10px;border-radius:10px;border:1px solid rgba(80,70,55,.2);display:inline-block}
+#recommendations-page .recommendations-panel{background:rgba(246,238,222,.94);border:1px solid rgba(80,70,55,.2);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+#recommendations-page .recommendations-link-note{font-size:.86rem;color:#3b3328}
+#recommendations-page .recommendations-ad-link,#recommendations-page .recommendations-back-link{display:inline-flex;align-items:center;min-height:44px}
+
+@media (max-width:420px){
+  .buttons{gap:8px}
+  button,.button-link{min-height:50px}
+  .bgm-toggle{right:8px;bottom:calc(8px + env(safe-area-inset-bottom));opacity:.92}
+}
