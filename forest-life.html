@@ -48,6 +48,29 @@
         </div>
       </section>
 
+      <section id="forest-black-market-panel" class="forest-black-market-hint" hidden>
+        <p>森の奥で、夜だけ品物を並べます。売れれば大きいですが、約束が残ることがあります。</p>
+        <p id="forest-unease">森のざわめき: 0</p>
+        <p id="forest-black-market-trust">夜の信用: 50</p>
+        <div id="forest-black-market-actions" class="forest-life-buttons"></div>
+        <details>
+          <summary>夜の在庫</summary>
+          <ul id="forest-black-market-inventory"></ul>
+        </details>
+        <details>
+          <summary>夜の帳面</summary>
+          <h3>受け取る約束</h3>
+          <ul id="forest-accounts-receivable"></ul>
+          <h3>支払う約束</h3>
+          <ul id="forest-accounts-payable"></ul>
+        </details>
+        <details>
+          <summary>クッキー工場</summary>
+          <p id="forest-factory-summary">クッキー工場はまだありません。</p>
+          <div class="forest-life-buttons"><button id="forest-build-factory-button" type="button" hidden>クッキー工場を建てる（-50）</button></div>
+        </details>
+      </section>
+
       <section id="forest-action-plan-panel" class="forest-action-plan-panel" hidden>
         <h2 id="forest-action-plan-title">どこにあずけますか？</h2>
         <div id="forest-action-plan-list" class="forest-action-plan-list"></div>

@@ -865,3 +865,13 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 @media (min-width:720px){
   #forest-life-page .forest-life-ledgers{grid-template-columns:1fr 1fr}
 }
+
+#forest-black-market-panel details{
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(248,243,230,.7);
+  border:1px solid rgba(80,70,55,.16);
+}
+#forest-black-market-panel summary{cursor:pointer;font-weight:700}
+#forest-black-market-panel h3{margin:6px 0 2px;font-size:.95rem;color:var(--text-muted)}
