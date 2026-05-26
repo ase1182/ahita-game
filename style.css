@@ -840,6 +840,9 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   text-align:center;
   pointer-events:none;
 }
+#forest-life-page .forest-life-toast strong{display:block;font-size:.98rem;line-height:1.35;}
+#forest-life-page .forest-life-toast small{display:block;margin-top:.2rem;font-size:.86rem;line-height:1.45;}
+#forest-life-page .forest-life-toast.forest-life-toast--event{max-width:min(92vw,460px);padding:.95rem 1.2rem;border-radius:16px;border:1px solid rgba(93,78,58,.28);background:rgba(248,242,224,.96);}
 #forest-life-page .forest-life-toast.is-visible{animation:forestToastFade 1.5s ease both;}
 @keyframes forestToastFade{
   0%{opacity:0;transform:translate(-50%,8px) scale(.98)}
