@@ -900,6 +900,7 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 #forest-black-market-panel h3{margin:6px 0 2px;font-size:.95rem;color:var(--text-muted)}
 
 #forest-life-page .forest-warning{margin-top:2px;padding:6px 8px;border-radius:10px;border:1px solid rgba(177,73,62,.32);background:rgba(255,236,232,.72);color:#9a3f33;font-size:.84rem;line-height:1.5}
+#forest-life-page .forest-warning.forest-warning-caution{border-color:rgba(180,131,42,.35);background:rgba(255,245,217,.78);color:#7a5a1f}
 #forest-life-page .action-modal__body,
 #forest-life-page #action-modal-body{overflow-y:auto}
 
