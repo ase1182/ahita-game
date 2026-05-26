@@ -2,7 +2,7 @@ const SHARE = "わける";
 const TAKE = "ひとりじめ";
 const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
-const BUILD_VERSION = "f5e4a2c";
+const BUILD_VERSION = "f5e4a2c-uihide";
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -146,6 +146,8 @@ const opponentProfileMemory = document.getElementById("opponent-profile-memory")
 const forestCookieBalance = document.getElementById("forest-cookie-balance");
 const grantCookiesButton = document.getElementById("grant-cookies-button");
 const grantCookiesMessage = document.getElementById("grant-cookies-message");
+const resultCookiesPanel = document.querySelector(".result-cookies-panel");
+const resultCookieNotice = document.querySelector(".result-cookie-notice");
 const dayMotionTargets = [dayLabel, dayNote, playerTrack, opponentTrack, message];
 
 const startButton = document.getElementById("start-button");
@@ -224,6 +226,17 @@ function setCurrentRunId(runId) {
 function issueNewRunId() {
   const runId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   setCurrentRunId(runId);
+}
+
+function hideForestCookieUi() {
+  if (resultCookiesPanel) {
+    resultCookiesPanel.hidden = true;
+    resultCookiesPanel.setAttribute("aria-hidden", "true");
+  }
+  if (resultCookieNotice) {
+    resultCookieNotice.hidden = true;
+    resultCookieNotice.setAttribute("aria-hidden", "true");
+  }
 }
 
 function updateCookieGrantUi() {
@@ -726,6 +739,7 @@ function makeStep(move, label) {
 
 function showResult() {
   showResultScreen();
+  hideForestCookieUi();
   if (safeStorage) safeStorage.setItem(STORAGE_KEYS.resultReachedAt, new Date().toISOString());
   updateCookieGrantUi();
   const result = getResultType(); state.resultTypeTitle = result.title;
@@ -748,6 +762,7 @@ function showResult() {
 }
 
 safeStorage = initializeStorage();
+hideForestCookieUi();
 ensureCookieStorageDefaults();
 updateSoundToggleLabel();
 
