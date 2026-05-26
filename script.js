@@ -359,18 +359,18 @@ const strategies = {
 // - spawnWeight: 相手抽選時の重み（selectWeightedOpponent で使用）
 // - mask: 現状未使用（将来の正体隠し演出向けに保持）
 const opponents = [
-  { id: "tanuki", name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", strategyKey: "mirrorYesterday", spawnWeight: 1, profile: { temperament: "相手のしたことをよく見て、次の日にそっと返す子です。", habit: "信じてもらえた日は信じ返し、ひとりじめされた日は少し身を守ります。", memory: "あなたの選び方が、そのままこの子の明日の表情になっていました。" } },
-  { id: "crow", name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", strategyKey: "cautiousCrow", spawnWeight: 1, profile: { temperament: "高い枝の上から、相手の動きをよく見ている子です。", habit: "すぐには近づかず、自分のおやつを守るように選びます。", memory: "近づきすぎず、離れすぎず、最後まであなたの出方を見ていました。" } },
+  { id: "tanuki", name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", strategyKey: "mirrorYesterday", spawnWeight: 1, profile: { temperament: "相手のしたことをよく見て、次の日にそっと返す子です。", habit: "信じてもらえた日は信じ返し、ひとりじめされた日は少し身を守ります。", memory: "あなたの選び方が、そのままこの子の明日の表情になっていました。" }, clueLines: { early: ["草むらの向こうで、こちらの手元をじっと見ていた。", "まだ距離はあるのに、動きだけはよく似て見えた。"], mid: ["昨日のしぐさを、そっと返してくる気配があった。", "あなたの選び方を映すように、相手も手を動かした。", "真似るような間合いで、同じ広場に立っていた。"], late: ["去り際、丸い影がこちらの歩幅をなぞっていった。", "低い足音が重なり、同じ調子のまま夕暮れへ消えた。"] } },
+  { id: "crow", name: "疑い深いカラス", emoji: "🐦‍⬛", mask: "⬛", image: "assets/crow.webp", description: "最初は距離を置く。あなたが分けた日が重なるほど、少しずつ手を伸ばす子でした。", strategyKey: "cautiousCrow", spawnWeight: 1, profile: { temperament: "高い枝の上から、相手の動きをよく見ている子です。", habit: "すぐには近づかず、自分のおやつを守るように選びます。", memory: "近づきすぎず、離れすぎず、最後まであなたの出方を見ていました。" }, clueLines: { early: ["少し高い場所から、こちらを試すような視線があった。", "すぐには降りてこず、距離だけを測っているようだった。"], mid: ["警戒は残したまま、昨日より半歩だけ近づいてきた。", "こちらの出方を見定めるように、動きが慎重だった。", "気を許すかどうかを、枝の影から決めているようだった。"], late: ["頭上で乾いた羽音がして、影がすっと横切った。", "黒い影は枝先で止まり、最後までこちらを見ていた。"] } },
   { id: "porcupine", name: "しばらく覚えるやまあらし", emoji: "🦔", mask: "⬛", image: "assets/porcupine.webp", description: "こわかったことを少しの間だけ覚えて、しばらく身を守る相手でした。", strategyKey: "remembersForTwoDays", spawnWeight: 0.25, profile: { temperament: "近づきたい気持ちはありますが、すぐには針をしまえない子です。", habit: "こわかった日のことが近くにあるうちは、少し距離を置きます。", memory: "安心できる日が続くと、また少しずつ広場へ戻ってきました。" } },
   { id: "raven", name: "多く持つ方を見るからす", emoji: "🐦‍⬛", mask: "⬛", image: "assets/raven.webp", description: "前の日にどちらが多く持っていたかを見て、次の日の距離を変える相手でした。", strategyKey: "followsRichSide", spawnWeight: 0.25, profile: { temperament: "高いところから、広場のおやつの行方をよく見ている子です。", habit: "前の日に多く持っていた方を見て、次の日の近づき方を変えます。", memory: "おやつの偏りを、黒い目で静かに覚えていました。" } },
   { id: "turtle", name: "三日目から変わるかめ", emoji: "🐢", mask: "⬛", image: "assets/turtle.webp", description: "はじめはゆっくり分けながら、途中からこれまでの様子を見て変わる相手でした。", strategyKey: "changesAfterThree", spawnWeight: 0.25, profile: { temperament: "すぐには決めず、ゆっくり広場に慣れていく子です。", habit: "はじめの数日は分けながら、途中から足あとを見て選びます。", memory: "遅い歩みの中に、あなたの7日間が少しずつ残っていました。" } },
   { id: "sheep", name: "まれに手を伸ばすひつじ", emoji: "🐑", mask: "⬛", image: "assets/sheep.webp", description: "ふだんは分けようとするけれど、まれに自分の分へ手を伸ばす相手でした。", strategyKey: "rareTaker", spawnWeight: 0.25, profile: { temperament: "穏やかに見えて、心の中に小さな揺れを持つ子です。", habit: "多くの日は分けますが、ときどき自分の分を先に抱えます。", memory: "静かな足あとに、ふと違う向きの日が混ざっていました。" } },
-  { id: "rabbit", name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", strategyKey: "forgetfulRabbit", spawnWeight: 1, profile: { temperament: "こわかったことも、時間がたつと少し薄れていく子です。", habit: "昨日のことを全部は抱えきれないので、また分けるほうへ戻りやすくなります。", memory: "何度も迷いながら、それでも次の日には広場へ来てくれました。" } },
-  { id: "squirrel", name: "分けつづけるりす", emoji: "🐿️", mask: "⬛", image: "assets/squirrel.webp", description: "いつも分けようとする、疑うことを知らない相手でした。", strategyKey: "alwaysCooperate", spawnWeight: 1, profile: { temperament: "小さなおやつでも、誰かと分けることを先に考える子です。", habit: "疑うよりも、まず差し出してみることを選びます。", memory: "あなたがどう選んでも、最後まで同じように広場に立っていました。" } },
-  { id: "wolf", name: "忘れないおおかみ", emoji: "🐺", mask: "⬛", image: "assets/wolf.webp", description: "最初は分けようとするけれど、一度裏切られると最後まで忘れない相手でした。", strategyKey: "grimTrigger", spawnWeight: 1, profile: { temperament: "最初は静かに分けようとしますが、一度のことを深く覚える子です。", habit: "傷ついたあとは、もう同じ距離では近づけなくなります。", memory: "最初の信頼が続くかどうかを、最後まで見ていました。" } },
-  { id: "fox", name: "様子を見るきつね", emoji: "🦊", mask: "⬛", image: "assets/fox.webp", description: "うまくいった日は同じように、うまくいかなかった日は少し選び方を変える相手でした。", strategyKey: "pavlovLike", spawnWeight: 1, profile: { temperament: "相手の声や広場の空気を、じっと見ている子です。", habit: "うまくいった日は同じ道を選び、うまくいかなかった日は少し足を止めます。", memory: "あなたとの7日間で、近づく日と離れる日を何度も測っていました。" } },
-  { id: "deer", name: "ゆるしてくれるしか", emoji: "🦌", mask: "⬛", image: "assets/deer.webp", description: "されたことを覚えていても、また分けるほうへ戻ろうとする相手でした。", strategyKey: "generousMirror", spawnWeight: 1, profile: { temperament: "こわかった日があっても、すぐに背を向けきれない子です。", habit: "傷ついたあとでも、ときどきもう一度だけ分けるほうを選びます。", memory: "あなたの選び方を覚えながら、それでも広場に戻る理由を探していました。" } },
-  { id: "cat", name: "気まぐれなねこ", emoji: "🐱", mask: "⬛", image: "assets/cat.webp", description: "その日の気分で、近づいたり離れたりする相手でした。", strategyKey: "randomMood", spawnWeight: 1, profile: { temperament: "近くに来たかと思うと、ふいに別の方を向く子です。", habit: "毎日同じようには選ばず、その日の気分で広場に立ちます。", memory: "あなたのそばにいた日も、少し離れて見ていた日もありました。" } },
+  { id: "rabbit", name: "忘れっぽいウサギ", emoji: "🐰", mask: "⬛", image: "assets/rabbit.webp", description: "ふだんはわける。でも、続けて傷つくと少しだけ身を守る。けれど、戻るのも早い子でした。", strategyKey: "forgetfulRabbit", spawnWeight: 1, profile: { temperament: "こわかったことも、時間がたつと少し薄れていく子です。", habit: "昨日のことを全部は抱えきれないので、また分けるほうへ戻りやすくなります。", memory: "何度も迷いながら、それでも次の日には広場へ来てくれました。" }, clueLines: { early: ["軽い足音が近づいたかと思うと、また草むらに消えた。", "さっきの緊張を忘れたように、ふいに距離が縮まった。"], mid: ["こわがっていたのに、次の日にはまた顔を見せていた。", "昨日の重さを置いてきたように、動きが少し軽かった。", "身を守る日があっても、戻る速さは思ったより早かった。"], late: ["夕方の草の間で、長い耳らしき影が小さく揺れた。", "細かな足跡が途切れながらも、また広場へ戻ってきた。"] } },
+  { id: "squirrel", name: "分けつづけるりす", emoji: "🐿️", mask: "⬛", image: "assets/squirrel.webp", description: "いつも分けようとする、疑うことを知らない相手でした。", strategyKey: "alwaysCooperate", spawnWeight: 1, profile: { temperament: "小さなおやつでも、誰かと分けることを先に考える子です。", habit: "疑うよりも、まず差し出してみることを選びます。", memory: "あなたがどう選んでも、最後まで同じように広場に立っていました。" }, clueLines: { early: ["こちらが迷う前に、小さくうなずく気配があった。", "木の根元で、ためらいのない手つきが先に見えた。"], mid: ["分けるしぐさだけは、毎日ぶれずに残っていた。", "広場の空気が重くても、相手の動きはやわらかかった。", "疑うより先に差し出すような、素直な間があった。"], late: ["ふわりとした尻尾の影が、木陰で短く揺れていた。", "細い爪あとが幹に残り、同じ場所へ戻っていた。"] } },
+  { id: "wolf", name: "忘れないおおかみ", emoji: "🐺", mask: "⬛", image: "assets/wolf.webp", description: "最初は分けようとするけれど、一度裏切られると最後まで忘れない相手でした。", strategyKey: "grimTrigger", spawnWeight: 1, profile: { temperament: "最初は静かに分けようとしますが、一度のことを深く覚える子です。", habit: "傷ついたあとは、もう同じ距離では近づけなくなります。", memory: "最初の信頼が続くかどうかを、最後まで見ていました。" }, clueLines: { early: ["静かな気配は近いのに、足取りには慎重さが残っていた。", "一度決めた距離を、簡単には崩さない目をしていた。"], mid: ["昨日のことを置かずに、同じ警戒を持って現れた。", "一度できた溝を測るように、歩幅がずっと一定だった。", "信じる日と守る日を、はっきり分けているようだった。"], late: ["低い唸りにも似た風が通り、鋭い爪あとが残った。", "毛並みの濃い影は離れず、最後まで距離を守っていた。"] } },
+  { id: "fox", name: "様子を見るきつね", emoji: "🦊", mask: "⬛", image: "assets/fox.webp", description: "うまくいった日は同じように、うまくいかなかった日は少し選び方を変える相手でした。", strategyKey: "pavlovLike", spawnWeight: 1, profile: { temperament: "相手の声や広場の空気を、じっと見ている子です。", habit: "うまくいった日は同じ道を選び、うまくいかなかった日は少し足を止めます。", memory: "あなたとの7日間で、近づく日と離れる日を何度も測っていました。" }, clueLines: { early: ["相手はすぐ動かず、広場の空気だけを先に読んでいた。", "細い目線が、こちらの選び方を静かに追っていた。"], mid: ["うまくいった日の次は、同じ歩幅で近づいてきた。", "昨日と違った日は、相手も少しだけ手を変えていた。", "試すように半歩寄って、すぐに様子を見る間があった。"], late: ["夕日に細長い影が伸び、ふさふさした先が揺れた。", "鼻先をかすめる風とともに、軽い足音が遠のいた。"] } },
+  { id: "deer", name: "ゆるしてくれるしか", emoji: "🦌", mask: "⬛", image: "assets/deer.webp", description: "されたことを覚えていても、また分けるほうへ戻ろうとする相手でした。", strategyKey: "generousMirror", spawnWeight: 1, profile: { temperament: "こわかった日があっても、すぐに背を向けきれない子です。", habit: "傷ついたあとでも、ときどきもう一度だけ分けるほうを選びます。", memory: "あなたの選び方を覚えながら、それでも広場に戻る理由を探していました。" }, clueLines: { early: ["少し離れて立ちながらも、視線だけは戻ってきていた。", "警戒のあとに、やわらかな間を残して近づいてきた。"], mid: ["距離ができた次の日でも、また広場に足音があった。", "ためらいを抱えたまま、もう一度だけ手を伸ばしてきた。", "こわさを知っていても、背を向けきらない気配があった。"], late: ["細い足跡が重なり、静かな鼻先が夕風を探っていた。", "長い影は一度離れても、また同じ広場へ戻ってきた。"] } },
+  { id: "cat", name: "気まぐれなねこ", emoji: "🐱", mask: "⬛", image: "assets/cat.webp", description: "その日の気分で、近づいたり離れたりする相手でした。", strategyKey: "randomMood", spawnWeight: 1, profile: { temperament: "近くに来たかと思うと、ふいに別の方を向く子です。", habit: "毎日同じようには選ばず、その日の気分で広場に立ちます。", memory: "あなたのそばにいた日も、少し離れて見ていた日もありました。" }, clueLines: { early: ["近づいたと思えば、次の瞬間には目線を外していた。", "気配は近いのに、気分しだいで距離が揺れていた。"], mid: ["昨日と同じにはならず、今日は別の向きで立っていた。", "すぐそばまで来てから、ふいに草影へ戻っていった。", "機嫌を測るような間があり、手つきが毎日変わっていた。"], late: ["やわらかな毛並みの影が月明かりで細く伸びた。", "しなる尻尾らしき線が揺れ、音もなく遠ざかっていった。"] } },
   { id: "hedgehog", name: "疑い深いはりねずみ", emoji: "🦔", mask: "⬛", image: "assets/hedgehog.webp", description: "最初は少し身を守り、そのあとは前の日のあなたをよく見て返す相手でした。", strategyKey: "suspiciousMirror", spawnWeight: 0.45, profile: { temperament: "近づきたい気持ちと、こわがる気持ちを両方持っている子です。", habit: "最初は少し距離を置き、そのあとはあなたの前の日をそっと返します。", memory: "安心できる足あとが続くと、少しずつ針をおろしていました。" } },
   { id: "owl", name: "試してくるふくろう", emoji: "🦉", mask: "⬛", image: "assets/owl.webp", description: "静かに見ているだけでなく、ときどき相手の出方を確かめる相手でした。", strategyKey: "testerOwl", spawnWeight: 0.45, profile: { temperament: "高い枝の上から、広場の小さな変化を見ている子です。", habit: "ただ待つだけではなく、ときどき一歩だけ相手の出方を確かめます。", memory: "あなたがどう返すのかを、静かな目で覚えていました。" } },
   { id: "woodpecker", name: "交互に選ぶきつつき", emoji: "🐦", mask: "⬛", image: "assets/woodpecker.webp", description: "同じ場所をつつくように、分ける日とひとりじめの日を繰り返す相手でした。", strategyKey: "alternator", spawnWeight: 0.45, profile: { temperament: "森の幹をたたく音のように、決まった調子を持つ子です。", habit: "近づく日と離れる日を、ひとつずつ繰り返します。", memory: "あなたとの7日間にも、不思議なリズムが残っていました。" } },
@@ -416,6 +416,27 @@ function validateOpponents() {
           if (Object.prototype.hasOwnProperty.call(opponent.profile, key) && typeof opponent.profile[key] !== "string") {
             console.warn(`[opponents] profile.${key} must be a string for id "${opponent.id || `index-${index}`}".`, opponent);
           }
+        });
+      }
+    }
+
+    if (Object.prototype.hasOwnProperty.call(opponent, "clueLines") && opponent.clueLines != null) {
+      const cluePhases = ["early", "mid", "late"];
+      if (typeof opponent.clueLines !== "object" || Array.isArray(opponent.clueLines)) {
+        console.warn(`[opponents] clueLines must be an object for id "${opponent.id || `index-${index}`}".`, opponent);
+      } else {
+        cluePhases.forEach((phase) => {
+          if (!Object.prototype.hasOwnProperty.call(opponent.clueLines, phase)) return;
+          const lines = opponent.clueLines[phase];
+          if (!Array.isArray(lines)) {
+            console.warn(`[opponents] clueLines.${phase} must be an array for id "${opponent.id || `index-${index}`}".`, opponent);
+            return;
+          }
+          lines.forEach((line, lineIndex) => {
+            if (typeof line !== "string") {
+              console.warn(`[opponents] clueLines.${phase}[${lineIndex}] must be a string for id "${opponent.id || `index-${index}`}".`, opponent);
+            }
+          });
         });
       }
     }
@@ -631,7 +652,7 @@ function playTurn(playerMove) {
   gameScreen.className = `card turn-${turnKey}`;
   forestStage.classList.add("pulse");
   playerCard.classList.add("nod");
-  message.textContent = pickReactionMessage(playerMove, opponentMove);
+  message.textContent = pickReactionMessage(playerMove, opponentMove, state.currentOpponent, state.day, state);
   triggerMotion(message, "motion-message");
   triggerMotion(message, "motion-trace");
   triggerMotion(snackIcon, "motion-pop");
@@ -697,12 +718,33 @@ function updateContinueButton() {
   if (ready) triggerMotion(continueButton, "motion-advance");
 }
 
-function pickReactionMessage(playerMove, opponentMove) {
+function getCluePhase(day) {
+  const safeDay = Number.isFinite(day) ? day : Number.parseInt(day, 10);
+  if (!(safeDay > 0)) return "early";
+  if (safeDay <= 2) return "early";
+  if (safeDay <= 5) return "mid";
+  return "late";
+}
+
+function pickOpponentClue(opponent, day) {
+  const phase = getCluePhase(day);
+  const lines = opponent?.clueLines?.[phase];
+  if (!Array.isArray(lines) || lines.length === 0) return "";
+  const safeDay = Number.isFinite(day) ? day : Number.parseInt(day, 10);
+  const dayIndex = Math.max(1, safeDay || 1) - 1;
+  const filtered = lines.filter((line) => typeof line === "string" && line.trim().length > 0);
+  if (filtered.length === 0) return "";
+  return filtered[dayIndex % filtered.length];
+}
+
+function pickReactionMessage(playerMove, opponentMove, opponent, day) {
   let candidates = REACTION_MESSAGES.bothTake;
   if (playerMove === SHARE && opponentMove === SHARE) candidates = REACTION_MESSAGES.bothShare;
   else if (playerMove === SHARE && opponentMove === TAKE) candidates = REACTION_MESSAGES.youShareOpponentTakes;
   else if (playerMove === TAKE && opponentMove === SHARE) candidates = REACTION_MESSAGES.youTakeOpponentShares;
-  return candidates[Math.floor(Math.random() * candidates.length)];
+  const baseMessage = candidates[Math.floor(Math.random() * candidates.length)];
+  const clue = pickOpponentClue(opponent, day);
+  return clue ? `${baseMessage} ${clue}` : baseMessage;
 }
 
 function setupOpponentShadow() {
