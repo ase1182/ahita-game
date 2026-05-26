@@ -170,9 +170,11 @@ p{line-height:1.75;margin:0}
 }
 .bgm-toggle{
   position:fixed;
-  right:16px;
-  bottom:calc(16px + env(safe-area-inset-bottom));
-  z-index:1000;
+  right:max(12px, env(safe-area-inset-right));
+  top:max(12px, env(safe-area-inset-top));
+  left:auto;
+  bottom:auto;
+  z-index:1200;
   min-height:44px;
   min-width:44px;
   padding:10px 14px;
@@ -180,8 +182,7 @@ p{line-height:1.75;margin:0}
   font-size:.85rem;
   font-weight:700;
   touch-action:manipulation;
-  position:relative;
-  z-index:2;
+  pointer-events:auto;
   background:rgba(245,241,224,.82);
   border:1px solid rgba(60,50,40,.35);
   color:#2f2a22;
@@ -345,7 +346,7 @@ h1,
   #result-screen .theory{padding:9px 10px}
   #result-screen .theory > p{line-height:1.7}
   #result-screen .theory details summary{padding:8px 0}
-  .bgm-toggle{right:10px;bottom:calc(10px + env(safe-area-inset-bottom));min-height:44px;min-width:44px;padding:9px 12px;font-size:.9rem}
+  .bgm-toggle{right:max(10px, env(safe-area-inset-right));top:max(10px, env(safe-area-inset-top));min-height:44px;min-width:44px;padding:9px 12px;font-size:.9rem}
 }
 
 @media (max-width:900px){body{background-attachment:scroll}}
@@ -765,7 +766,7 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 @media (max-width:420px){
   .buttons{gap:8px}
   button,.button-link{min-height:50px}
-  .bgm-toggle{right:8px;bottom:calc(8px + env(safe-area-inset-bottom));opacity:.92}
+  .bgm-toggle{right:max(8px, env(safe-area-inset-right));top:max(8px, env(safe-area-inset-top));opacity:.92}
 }
 
 @media (prefers-reduced-motion: reduce){
