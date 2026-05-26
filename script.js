@@ -7,7 +7,8 @@ const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
   version: "ahita.cookies.version",
-  currentRunId: "ahita.ahita.currentRunId"
+  currentRunId: "ahita.ahita.currentRunId",
+  resultReachedAt: "ahita.ahita.resultReachedAt"
 };
 
 console.info("また明日も会うきみへ build:", BUILD_VERSION);
@@ -208,6 +209,7 @@ function ensureCookieStorageDefaults() {
   readNumber(STORAGE_KEYS.balance, 0);
   readString(STORAGE_KEYS.lastGrantRunId, "");
   readString(STORAGE_KEYS.currentRunId, "");
+  readString(STORAGE_KEYS.resultReachedAt, "");
 }
 
 function getCurrentRunId() {
@@ -339,7 +341,7 @@ const strategies = {
 // - image: 結果画面の画像パス
 // - description: 結果画面の説明文
 // - strategyKey: strategies のキー
-// - spawnWeight: 将来の出現率調整用（現時点では抽選に未使用）
+// - spawnWeight: 相手抽選時の重み（selectWeightedOpponent で使用）
 // - mask: 現状未使用（将来の正体隠し演出向けに保持）
 const opponents = [
   { id: "tanuki", name: "まねっこタヌキ", emoji: "🦝", mask: "⬛", image: "assets/tanuki.webp", description: "最初はわける。次の日から、あなたの昨日の行動を返してくる子でした。", strategyKey: "mirrorYesterday", spawnWeight: 1, profile: { temperament: "相手のしたことをよく見て、次の日にそっと返す子です。", habit: "信じてもらえた日は信じ返し、ひとりじめされた日は少し身を守ります。", memory: "あなたの選び方が、そのままこの子の明日の表情になっていました。" } },
@@ -724,6 +726,7 @@ function makeStep(move, label) {
 
 function showResult() {
   showResultScreen();
+  if (safeStorage) safeStorage.setItem(STORAGE_KEYS.resultReachedAt, new Date().toISOString());
   updateCookieGrantUi();
   const result = getResultType(); state.resultTypeTitle = result.title;
   resultTitle.textContent = `あなたの記録：${result.title}`; resultText.textContent = result.text;
