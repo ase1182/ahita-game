@@ -2,6 +2,8 @@ const SHARE = "わける";
 const TAKE = "ひとりじめ";
 const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
+const BGM_VOLUME = 0.25;
+const SFX_VOLUME_BASE = 0.52;
 const BUILD_VERSION = "f5e4a2c-uihide";
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
@@ -456,13 +458,14 @@ if (grantCookiesButton) {
   grantCookiesButton.addEventListener("touchend", onGrantCookies, { passive: false });
 }
 if (soundToggleButton) soundToggleButton.addEventListener("click", handleSoundToggle);
-if (bgm) bgm.volume = 0.25;
+if (bgm) bgm.volume = BGM_VOLUME;
 updateSoundToggleLabel();
 document.addEventListener("click", tryPlayBgm, { once: true });
 document.addEventListener("touchend", tryPlayBgm, { once: true, passive: true });
 
 function startGameFromButtonInteraction(event) {
   if (event && event.type === "touchend") event.preventDefault();
+  playCardFlipSound();
   startGame();
 }
 
@@ -507,7 +510,7 @@ function stopBgm() {
   bgm.currentTime = 0;
 }
 
-function playSoundElement(audioElement, volume = 0.45) {
+function playSoundElement(audioElement, volume = SFX_VOLUME_BASE) {
   if (!isSoundEnabled() || !audioElement) return;
   try {
     audioElement.currentTime = 0;
@@ -530,13 +533,13 @@ function handleSoundToggle() {
 }
 
 function playCardFlipSound() {
-  playSoundElement(cardFlipSe, 0.4);
+  playSoundElement(cardFlipSe, 0.48);
 }
 
 function playRoundResultSound(playerChoice, opponentChoice) {
-  if (playerChoice === SHARE && opponentChoice === SHARE) playSoundElement(shareSnackSe, 0.45);
-  else if (playerChoice === TAKE && opponentChoice === TAKE) playSoundElement(woodDropSe, 0.4);
-  else playSoundElement(bushRustleSe, 0.45);
+  if (playerChoice === SHARE && opponentChoice === SHARE) playSoundElement(shareSnackSe, 0.52);
+  else if (playerChoice === TAKE && opponentChoice === TAKE) playSoundElement(woodDropSe, 0.48);
+  else playSoundElement(bushRustleSe, 0.52);
 }
 
 function showGameScreen() {
