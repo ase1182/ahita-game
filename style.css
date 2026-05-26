@@ -957,3 +957,15 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 .event-effects{margin-top:.8rem;padding:.75rem;border-radius:.9rem;background:rgba(90,72,48,.08)}
 .event-effects ul{margin:.35rem 0 0;padding-left:1.2rem}
 @media (max-width:640px){.event-modal{padding:.75rem}.event-modal__panel{width:min(94vw,520px);max-height:84dvh}}
+
+#forest-life-page .forest-plan-help{
+  margin:4px 0 10px;
+  font-size:.86rem;
+  color:var(--text-muted);
+  line-height:1.5;
+}
+#forest-life-page #forest-invest-help,
+#forest-life-page #forest-invest-disabled-reason,
+#forest-life-page #forest-snack-cost-detail{
+  margin-top:4px;
+}

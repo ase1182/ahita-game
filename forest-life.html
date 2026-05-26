@@ -34,7 +34,8 @@
         <p id="forest-session-status">手持ちクッキー: 0</p>
         <p id="forest-upcoming-note" class="forest-upcoming-note" hidden>※ 配当や売掛は届かないことがあります。</p>
         <p id="forest-settlement-warning" class="forest-warning" hidden>このまま一日を終えると、おやつが足りなくなりそうです。</p>
-        <p id="forest-snack-cost">今日のおやつ代: 3</p>
+        <p id="forest-snack-cost">今日使うクッキー: 3枚</p>
+        <p id="forest-snack-cost-detail" class="forest-stat-help">動物たちのおやつ 3枚 + 森のざわめき 0枚</p>
         <p id="forest-actions-left">今日の残り行動回数: 2</p>
         <p id="forest-animals">おやつを待つ動物たち: 3匹</p>
       </div>
@@ -51,10 +52,10 @@
       </section>
 
       <section class="forest-life-stats forest-secondary-card" id="forest-factory-card">
-        <h2>クッキー工場</h2>
-        <p id="forest-factory-summary">所有数: 0 / 毎日の配当: +0 / おやつを待つ動物を減らしている数: 0匹</p>
-        <p id="forest-factory-note" class="forest-stat-help">50枚で建てられます。</p>
-        <div class="forest-life-buttons"><button id="forest-build-factory-button" type="button">クッキー工場を建てる（50枚）</button></div>
+        <h2>クッキー小屋</h2>
+        <p id="forest-factory-summary">クッキー小屋: 0軒 / 小屋の落ち着き効果: 0匹ぶん / 今のおやつ相手: 1匹 / おやつ相手は最低1匹までです</p>
+        <p id="forest-factory-note" class="forest-stat-help">50枚で建てられます。小屋の効果で動物が落ち着くと、おやつが軽くなります。</p>
+        <div class="forest-life-buttons"><button id="forest-build-factory-button" type="button">クッキー小屋を建てる（50枚）</button></div>
       </section>
 
       <p id="forest-day-status" class="forest-day-status">行動を選んでください。</p>
@@ -63,8 +64,10 @@
         <button id="forest-work-button" type="button">森で働く（労働）</button>
         <button id="forest-lend-button" type="button">森の仲間にあずける（貸付）</button>
         <button id="forest-borrow-button" type="button">森の倉庫から前借りする（借り入れ）</button>
-        <button id="forest-invest-button" type="button">あやしいクマさんの話を聞く（投資）</button>
+        <button id="forest-invest-button" type="button">森に預ける（明日のために置く）</button>
       </div>
+      <p id="forest-invest-help" class="forest-stat-help">森に預ける行動は、日数や手持ちクッキーが足りると選べます。押すと、選べる預け先が表示されます。</p>
+      <p id="forest-invest-disabled-reason" class="forest-stat-help" hidden></p>
       <section id="forest-black-market-hint" class="forest-black-market-hint" hidden>
         <p>森の奥に、夜だけ開く市場があるらしい。</p>
         <div class="forest-life-buttons">
