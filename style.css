@@ -279,15 +279,23 @@ h1,
   display:flex;
   align-items:center;
   gap:8px;
+  transition:background-color .18s ease,box-shadow .18s ease,transform .18s ease,color .18s ease;
+}
+#result-screen details.result-panel > summary:hover{background:rgba(255,250,240,.35)}
+#result-screen details.result-panel > summary:active{transform:translateY(1px)}
+#result-screen details.result-panel[open] > summary{
+  background:rgba(251,245,232,.4);
+  box-shadow:inset 0 -1px 0 rgba(89,74,56,.12);
 }
 #result-screen details.result-panel > summary::-webkit-details-marker{display:none}
 #result-screen details.result-panel > summary::before{
   content:"▸";
   color:#5a4a37;
-  transition:transform .18s ease;
+  transition:transform .2s ease;
 }
 #result-screen details.result-panel[open] > summary::before{transform:rotate(90deg)}
 #result-screen details.result-panel > :not(summary){padding:0 13px 12px}
+#result-screen details.result-panel[open] > :not(summary){animation:resultDetailReveal .22s ease both}
 #result-screen .result-opponent-body{display:flex;align-items:center;gap:12px}
 #result-screen .result-opponent-wrap{display:flex;justify-content:center;align-items:center;margin:0;flex:0 0 auto}
 #result-screen #opponent-text{line-height:1.82;font-size:.99rem;flex:1;color:var(--text-main,var(--ink))}
@@ -320,8 +328,15 @@ h1,
 #result-screen .theory h3{margin-bottom:6px}
 #result-screen .theory > p{margin-top:0;color:#342d22;line-height:1.82;font-size:1rem}
 #result-screen .theory details{margin-top:8px;padding-top:8px;border-top:1px dashed rgba(90,77,59,.28)}
-#result-screen .theory details summary{cursor:pointer;font-weight:700;color:#2f261b;text-shadow:0 1px 0 rgba(255,252,242,.28)}
+#result-screen .theory details summary{cursor:pointer;font-weight:700;color:#2f261b;text-shadow:0 1px 0 rgba(255,252,242,.28);transition:color .18s ease,transform .18s ease}
+#result-screen .theory details summary:hover{color:#241d14}
+#result-screen .theory details summary:active{transform:translateY(1px)}
+#result-screen .theory details[open] > :not(summary){animation:resultDetailReveal .22s ease both}
 #result-screen .theory details p{margin-top:8px;color:#342d22;line-height:1.8;font-size:1rem}
+@keyframes resultDetailReveal{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
 @media (max-width:640px){.day-note{font-size:.9rem;max-width:68%}#message{min-height:52px;font-size:1rem}.buttons{bottom:0;padding-bottom:calc(8px + env(safe-area-inset-bottom));z-index:3}.buttons button{position:relative;z-index:4}button{padding:10px 14px}#start-screen{gap:8px}#start-screen .start-intro-card,#start-screen .start-rules-card{padding:13px 14px;line-height:1.78;font-size:1rem}#start-screen .start-rules-list{gap:3px;padding-left:1.1em}#start-screen .cookie-count{font-size:1rem;gap:6px}#start-screen .start-note{padding:9px 12px}#result-screen .result-opponent-body{flex-direction:column;align-items:flex-start;gap:8px}#result-screen .result-opponent-wrap{align-self:center}#result-screen .result-opponent-image{width:110px;height:110px}#result-screen .result-panel{padding:11px 11px}#result-screen .result-primary #result-text{font-size:.98rem}#result-screen .result-buttons{bottom:0}}
 @media (max-width:420px){
   h1{margin:0 0 8px}
@@ -774,6 +789,18 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   body::after{
     animation:none !important;
     transform:none !important;
+  }
+  #result-screen details.result-panel > summary{
+    transition:none;
+  }
+  #result-screen details.result-panel[open] > :not(summary){
+    animation:none;
+  }
+  #result-screen .theory details[open] > :not(summary){
+    animation:none;
+  }
+  #result-screen details.result-panel > summary::before{
+    transition:none;
   }
 }
 
