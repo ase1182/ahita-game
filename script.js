@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.3"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.4"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -121,6 +121,8 @@ const dayNote = document.getElementById("day-note");
 const progressBar = document.getElementById("progress-bar");
 const snackIcon = document.getElementById("snack-icon");
 const message = document.getElementById("message");
+const turnResultLine = document.getElementById("turn-result-line");
+const turnClueLine = document.getElementById("turn-clue-line");
 const opponentName = document.getElementById("opponent-name");
 const playerTrack = document.getElementById("player-track");
 const opponentTrack = document.getElementById("opponent-track");
@@ -171,6 +173,33 @@ if (buildVersionElement) {
   buildVersionElement.textContent = APP_VERSION;
 }
 
+
+const RESULT_LINES = {
+  ss: "あなたに3枚、相手に3枚届きました。",
+  ts: "あなたに5枚、相手に1枚届きました。",
+  st: "あなたに1枚、相手に5枚届きました。",
+  tt: "あなたに1枚、相手に1枚。4枚は森にこぼれました。"
+};
+
+function compactClueLine(line) {
+  if (typeof line !== "string") return "";
+  const trimmed = line.trim();
+  if (!trimmed) return "";
+  if (trimmed.length <= 40) return trimmed;
+  const cut = trimmed.slice(0, 38).replace(/[、,]\s*$/u, "");
+  return `${cut}…`;
+}
+
+function setTurnMessage(resultLine, clueLine = "") {
+  if (turnResultLine && turnClueLine) {
+    turnResultLine.textContent = resultLine;
+    turnClueLine.textContent = clueLine;
+    turnClueLine.hidden = clueLine.length === 0;
+    return;
+  }
+  message.textContent = clueLine ? `${resultLine}
+${clueLine}` : resultLine;
+}
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 };
 let safeStorage = null;
 
@@ -652,7 +681,8 @@ function playTurn(playerMove) {
   gameScreen.className = `card turn-${turnKey}`;
   forestStage.classList.add("pulse");
   playerCard.classList.add("nod");
-  message.textContent = pickReactionMessage(playerMove, opponentMove, state.currentOpponent, state.day, state);
+  const turnMessage = pickReactionMessage(playerMove, opponentMove, state.currentOpponent, state.day);
+  setTurnMessage(turnMessage.resultLine, turnMessage.clueLine);
   triggerMotion(message, "motion-message");
   triggerMotion(message, "motion-trace");
   triggerMotion(snackIcon, "motion-pop");
@@ -703,7 +733,7 @@ function updateScreen() {
   progressBar.style.width = `${(state.day / MAX_DAYS) * 100}%`;
   document.body.setAttribute("data-phase", `day-${state.day}`);
   setupOpponentShadow();
-  message.textContent = "まだ、相手の正体はわかりません。";
+  setTurnMessage("まだ、相手の正体はわかりません。", "");
   dayMotionTargets.forEach((target) => triggerMotion(target, "motion-refresh"));
   updateContinueButton();
   const now = typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
@@ -734,17 +764,15 @@ function pickOpponentClue(opponent, day) {
   const dayIndex = Math.max(1, safeDay || 1) - 1;
   const filtered = lines.filter((line) => typeof line === "string" && line.trim().length > 0);
   if (filtered.length === 0) return "";
-  return filtered[dayIndex % filtered.length];
+  return compactClueLine(filtered[dayIndex % filtered.length]);
 }
 
 function pickReactionMessage(playerMove, opponentMove, opponent, day) {
-  let candidates = REACTION_MESSAGES.bothTake;
-  if (playerMove === SHARE && opponentMove === SHARE) candidates = REACTION_MESSAGES.bothShare;
-  else if (playerMove === SHARE && opponentMove === TAKE) candidates = REACTION_MESSAGES.youShareOpponentTakes;
-  else if (playerMove === TAKE && opponentMove === SHARE) candidates = REACTION_MESSAGES.youTakeOpponentShares;
-  const baseMessage = candidates[Math.floor(Math.random() * candidates.length)];
-  const clue = pickOpponentClue(opponent, day);
-  return clue ? `${baseMessage} ${clue}` : baseMessage;
+  const turnKey = `${playerMove === SHARE ? "s" : "t"}${opponentMove === SHARE ? "s" : "t"}`;
+  return {
+    resultLine: RESULT_LINES[turnKey] || "結果を受け取りました。",
+    clueLine: pickOpponentClue(opponent, day)
+  };
 }
 
 function setupOpponentShadow() {
