@@ -4,7 +4,8 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.28"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.29"; // index.html の #build-version と合わせる
+const SHARE_BASE_URL = "https://mata-ashita.netlify.app/";
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1745,7 +1746,7 @@ function buildShareText(opponentName, resultTitle) {
 function shareResult() {
   const opponentName = state.currentOpponent?.name || "正体不明の相手";
   const text = buildShareText(opponentName, state.resultTypeTitle);
-  const url = `${window.location.origin}${window.location.pathname}`;
+  const url = SHARE_BASE_URL;
   window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank", "noopener,noreferrer");
 }
 
