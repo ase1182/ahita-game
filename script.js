@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.22"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.23"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1018,20 +1018,47 @@ function getRunGameTheoryMetrics() {
   const totalPlaced = MAX_DAYS * 6;
   const delivered = state.playerScore + state.opponentScore;
   const lostTotal = totalPlaced - delivered;
-  return { rows, totalPlaced, delivered, lostTotal, playerTotal: state.playerScore, opponentTotal: state.opponentScore, deliveryRate: Math.round((delivered / totalPlaced) * 100) };
+  const shareShareDays = rows.filter((row) => row.playerMove === SHARE && row.opponentMove === SHARE).length;
+  const playerTakeDays = rows.filter((row) => row.playerMove === TAKE && row.opponentMove === SHARE).length;
+  const opponentTakeDays = rows.filter((row) => row.playerMove === SHARE && row.opponentMove === TAKE).length;
+  const mutualTakeDays = rows.filter((row) => row.playerMove === TAKE && row.opponentMove === TAKE).length;
+  const opponentSharedDays = rows.filter((row) => row.opponentMove === SHARE).length;
+  const pObserved = MAX_DAYS > 0 ? opponentSharedDays / MAX_DAYS : 0;
+  const expectedShare = 1 + (2 * pObserved);
+  const expectedTake = 1 + (4 * pObserved);
+  const playerAvg = MAX_DAYS > 0 ? state.playerScore / MAX_DAYS : 0;
+  const opponentAvg = MAX_DAYS > 0 ? state.opponentScore / MAX_DAYS : 0;
+  const lostAvg = MAX_DAYS > 0 ? lostTotal / MAX_DAYS : 0;
+  const deliveryRate = totalPlaced > 0 ? (delivered / totalPlaced) : 0;
+  const lossRate = totalPlaced > 0 ? (lostTotal / totalPlaced) : 0;
+  return {
+    rows, totalPlaced, delivered, lostTotal,
+    playerTotal: state.playerScore, opponentTotal: state.opponentScore,
+    shareShareDays, playerTakeDays, opponentTakeDays, mutualTakeDays,
+    opponentSharedDays, pObserved, expectedShare, expectedTake,
+    playerAvg, opponentAvg, lostAvg, deliveryRate, lossRate
+  };
 }
 
 function generateGameTheoryRunComment(metrics, storyMetrics) {
-  const notes = [];
-  if (metrics.lostTotal >= 12) notes.push("手元を守る選択が重なり、森にこぼれた枚数が多めに残りました。");
-  else notes.push("こぼれた枚数は抑えられ、ふたりに届く量が比較的保たれた7日間でした。");
-  if (storyMetrics.mutualShareDays >= 4) notes.push("分け合いの日が多く、くり返しの中で協調が続いた回になっています。");
-  else if (storyMetrics.mutualTakeDays >= 3) notes.push("両者がひとりじめを選ぶ日が重なり、全体効率が下がりやすい展開でした。");
-  else if (storyMetrics.playerOnlyTakeDays >= 2 || storyMetrics.opponentOnlyTakeDays >= 2) notes.push("片側が多く持ち帰る日が続き、枚数差としてリザルトに残りました。");
-  if (storyMetrics.lateShiftToShare) notes.push("後半は分ける方向へ寄り、終盤の関係を持ち直す動きが見えます。");
-  else if (storyMetrics.lateShiftToTake) notes.push("後半は手元優先へ寄り、終盤ほど慎重な空気が強まりました。");
-  notes.push(storyMetrics.finalPlayerMove === SHARE ? "最終日はわける選択で締めくくられています。" : "最終日はひとりじめの選択で締めくくられています。");
-  return notes.slice(0,4).join("");
+  const trendText = storyMetrics.mutualShareDays >= 4
+    ? "分け合いの日が多く、やり取りの中で協調が続いた7日間でした。"
+    : storyMetrics.mutualTakeDays >= 3
+      ? "手元を守る選択がぶつかる日が重なり、慎重な空気が残る7日間でした。"
+      : "分け合いと手元優先が混ざり、日ごとの間合いが揺れやすい展開でした。";
+  const expectedGap = metrics.expectedTake - metrics.expectedShare;
+  const expectedLeadText = expectedGap >= 0.4 ? "単純モデルではひとりじめの期待値が高めに見えます。" : "単純モデルでは両選択の期待値差は小さめです。";
+  const actualGap = metrics.playerAvg - metrics.expectedTake;
+  const actualGapText = actualGap >= 0
+    ? "実際の平均は単純期待値と同等以上で、相手との噛み合いが得点に結びついた場面がありました。"
+    : "実際の平均は単純期待値より控えめで、相手の反応変化や日ごとの噛み合いが効いた可能性があります。";
+  const lossText = metrics.lossRate >= 0.3
+    ? "こぼれ率が高めだったため、両者に届く総量が減りやすい回でもありました。"
+    : "こぼれ率は抑えられ、森に置かれたおやつがふたりへ届きやすい回になりました。";
+  const finalLine = storyMetrics.finalPlayerMove === SHARE
+    ? "最終日はわける選択で終わっており、結末は協調側の余韻につながっています。"
+    : "最終日はひとりじめで終わっており、結末には慎重さを残す流れが見えます。";
+  return `${trendText}\n\n相手がわけた比率から計算した短期期待値では、相手の行動が固定なら取り分の見え方は整理できます。${expectedLeadText}${actualGapText}\n\n森全体では到達率${Math.round(metrics.deliveryRate * 100)}%、こぼれ率${Math.round(metrics.lossRate * 100)}%でした。${lossText}${finalLine}`;
 }
 
 function renderGameTheoryRunAnalysis() {
@@ -1049,8 +1076,15 @@ function renderGameTheoryRunAnalysis() {
     const width = Math.max((seg.value / metrics.totalPlaced) * 100, 6);
     return `<span class="run-flow-segment ${seg.key}" style="width:${width}%">${seg.label} ${seg.value}枚</span>`;
   }).join("");
-  const legendHtml = segments.map((seg) => `<span class="run-flow-legend-item ${seg.key}">${seg.label} ${seg.value}枚</span>`).join("");
-  runTheoryAnalysis.innerHTML = `<div class="theory-table-wrap" role="region" aria-label="今回の7日間の行動表"><table class="theory-payoff-table run-theory-table"><thead><tr><th>日</th><th>あなた</th><th>相手</th><th>結果</th><th>あなた</th><th>相手</th><th>こぼれ</th></tr></thead><tbody>${rowsHtml}</tbody></table></div><div class="run-theory-summary"><p>あなたのおやつ: <strong>${metrics.playerTotal}枚</strong></p><p>相手のおやつ: <strong>${metrics.opponentTotal}枚</strong></p><p>こぼれたおやつ: <strong>${metrics.lostTotal}枚</strong></p><p>森に置かれたおやつ: <strong>${metrics.totalPlaced}枚</strong></p><p>ふたりに届いたおやつ: <strong>${metrics.delivered}枚</strong></p><p>森全体の到達率: <strong>${metrics.deliveryRate}%</strong></p></div><div class="run-flow" aria-label="42枚のおやつの配分"><div class="run-flow-bar" role="img" aria-label="あなた${metrics.playerTotal}枚、相手${metrics.opponentTotal}枚、こぼれ${metrics.lostTotal}枚">${barHtml}</div><div class="run-flow-legend">${legendHtml}</div></div><p class="run-theory-comment">${generateGameTheoryRunComment(metrics, storyMetrics)}</p>`;
+  const legendHtml = segments.map((seg) => `<span class="run-flow-legend-item ${seg.key}">${seg.label}: ${seg.value}枚</span>`).join("");
+  const toPercent = (value) => `${Math.round(value * 100)}%`;
+  const toFixed1 = (value) => value.toFixed(1);
+  const runIntro = `<p class="run-theory-intro">今回の7日間を、行動の事実 → 集計 → 期待値 → 解釈の順で整理しています。</p>`;
+  const patternCards = `<div class="run-pattern-grid" aria-label="今回の7日間の形"><p class="run-pattern-card"><span>分け合いの日</span><strong>${metrics.shareShareDays}日</strong></p><p class="run-pattern-card"><span>あなた多めの日</span><strong>${metrics.playerTakeDays}日</strong></p><p class="run-pattern-card"><span>相手多めの日</span><strong>${metrics.opponentTakeDays}日</strong></p><p class="run-pattern-card"><span>こぼれた日</span><strong>${metrics.mutualTakeDays}日</strong></p></div>`;
+  const totals = `<div class="run-theory-summary"><p>あなたのおやつ: <strong>${metrics.playerTotal}枚</strong></p><p>相手のおやつ: <strong>${metrics.opponentTotal}枚</strong></p><p>ふたりに届いた合計: <strong>${metrics.delivered}/${metrics.totalPlaced}枚</strong></p><p>こぼれたおやつ: <strong>${metrics.lostTotal}/${metrics.totalPlaced}枚</strong></p><p>森全体の到達率: <strong>${toPercent(metrics.deliveryRate)}</strong></p><p>森全体のこぼれ率: <strong>${toPercent(metrics.lossRate)}</strong></p></div><p class="run-theory-footnote">到達率が高いほど、森に置かれたおやつがふたりに残った回です。こぼれ率が高いほど、同日に手元を守る選択が重なった影響が大きくなります。</p>`;
+  const expectation = `<div class="run-theory-summary"><p>相手がわけた日: <strong>${metrics.opponentSharedDays}/${MAX_DAYS}日</strong></p><p>観測上の p: <strong>約${toPercent(metrics.pObserved)}</strong></p><p>毎回わけると仮定した1日平均: <strong>約${toFixed1(metrics.expectedShare)}枚</strong></p><p>毎回ひとりじめると仮定した1日平均: <strong>約${toFixed1(metrics.expectedTake)}枚</strong></p></div><p class="run-theory-footnote">この期待値は「相手の行動が変わらない」と仮定した単純モデルです。この森では、相手もあなたの行動を見て次の日を変えることがあります。</p>`;
+  const actualAverages = `<div class="run-theory-summary"><p>あなたの実際の1日平均: <strong>約${toFixed1(metrics.playerAvg)}枚</strong></p><p>相手の実際の1日平均: <strong>約${toFixed1(metrics.opponentAvg)}枚</strong></p><p>こぼれた平均: <strong>約${toFixed1(metrics.lostAvg)}枚</strong></p></div>`;
+  runTheoryAnalysis.innerHTML = `${runIntro}<div class="theory-table-wrap" role="region" aria-label="今回の7日間の行動表"><table class="theory-payoff-table run-theory-table"><thead><tr><th>日</th><th>あなた</th><th>相手</th><th>結果</th><th>あなた</th><th>相手</th><th>こぼれ</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>${patternCards}${totals}<div class="run-flow"><div class="run-flow-bar" role="img" aria-label="あなた${metrics.playerTotal}枚、相手${metrics.opponentTotal}枚、こぼれ${metrics.lostTotal}枚">${barHtml}</div><div class="run-flow-legend">${legendHtml}</div></div>${expectation}${actualAverages}<p class="run-theory-comment">${generateGameTheoryRunComment(metrics, storyMetrics).replaceAll("\n", "<br><br>")}</p>`;
 }
 
 function renderOpponentProfile(profile) {
@@ -1107,7 +1141,11 @@ function generateOpponentPerspectiveDays(opponent) {
 }
 
 function renderOpponentPerspective(opponent) {
-  if (!opponentPerspective || !opponentPerspectiveText) return;
+  if (!opponentPerspective) return;
+  if (!opponentPerspectiveText) {
+    console.warn("opponent thought list element was not found");
+    return;
+  }
   if (!opponent) {
     opponentPerspective.hidden = true;
     opponentPerspective.open = false;
