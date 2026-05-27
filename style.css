@@ -1134,22 +1134,22 @@ body#recommendations-page.is-embedded{margin:0;min-height:auto;background:#f4ecd
 #game-screen #share-button:active,#game-screen #take-button:active,#game-screen #continue-button:active{transform:translateY(1px) scale(.98)}
 #game-screen .buttons button{transition:transform .12s ease-out,background-image .12s ease-out,box-shadow .12s ease-out}
 #game-screen .turn-result-line.motion-turn-result{animation:turnResultReveal .14s ease-out both}
-#game-screen .turn-clue-line.motion-turn-clue{animation:turnClueReveal .18s ease-out .09s both}
-#game-screen #continue-button.motion-advance{animation:continueButtonPop .2s ease-out both}
+#game-screen .turn-clue-line.motion-turn-clue{animation:turnClueReveal .16s ease-out .06s both}
+#game-screen #continue-button.motion-advance{animation:continueButtonPop .17s ease-out both}
 #game-screen .day.motion-day-update{animation:dayLabelReveal .18s ease-out both}
-#game-screen .turn-effect-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:4}
-#game-screen .snack-particle{position:absolute;left:50%;top:58%;width:8px;height:8px;border-radius:999px;background:radial-gradient(circle at 30% 30%,rgba(255,250,230,.96),rgba(238,214,151,.72));opacity:0;transform:translate3d(var(--sx,0),var(--sy,0),0) scale(.88);animation:snackArrive .26s ease-out var(--delay,0ms) both}
-#game-screen .snack-particle.spill{left:53%;top:60%;width:7px;height:7px;background:radial-gradient(circle at 35% 35%,rgba(221,198,142,.72),rgba(121,103,73,.42));animation:snackSpill .28s ease-out var(--delay,0ms) both}
-#game-screen .character-card.mystery.motion-presence{animation:presenceHint .22s ease-out both}
+#game-screen .turn-effect-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
+#game-screen .snack-particle{position:absolute;left:50%;top:57%;width:7px;height:7px;border-radius:999px;background:radial-gradient(circle at 30% 30%,rgba(255,248,225,.88),rgba(232,206,142,.58));opacity:0;transform:translate3d(var(--sx,0),var(--sy,0),0) scale(.88);animation:snackArrive .22s ease-out var(--delay,0ms) both}
+#game-screen .snack-particle.spill{left:52%;top:58%;width:6px;height:6px;background:radial-gradient(circle at 35% 35%,rgba(210,188,136,.58),rgba(112,95,68,.3));animation:snackSpill .24s ease-out var(--delay,0ms) both}
+#game-screen .character-card.mystery.motion-presence{animation:presenceHint .18s ease-out both}
 #game-screen .progress{position:relative}
 #game-screen #progress-bar::after{content:"";position:absolute;right:-7px;top:50%;width:10px;height:10px;border-radius:999px;background:radial-gradient(circle,rgba(255,246,212,.62),rgba(255,246,212,0));transform:translateY(-50%);opacity:0;pointer-events:none}
-#game-screen #progress-bar.motion-refresh::after{animation:progressTipGlow .22s ease-out both}
-#game-screen #continue-button.final-day{box-shadow:0 10px 18px rgba(28,48,34,.28),inset 0 1px 0 rgba(255,255,255,.45)}
+#game-screen #progress-bar.motion-refresh::after{animation:progressTipGlow .2s ease-out both}
+#game-screen #continue-button.final-day{box-shadow:0 9px 16px rgba(28,48,34,.24),inset 0 1px 0 rgba(255,255,255,.42);transform:translateY(0) scale(1.01)}
 
-@keyframes snackArrive{0%{opacity:0;transform:translate3d(var(--sx,0),calc(var(--sy,0) + 3px),0) scale(.82)}55%{opacity:.92}100%{opacity:0;transform:translate3d(calc(var(--sx,0) + 5px),calc(var(--sy,0) - 7px),0) scale(1)}}
-@keyframes snackSpill{0%{opacity:0;transform:translate3d(0,0,0) scale(.9)}40%{opacity:.68}100%{opacity:0;transform:translate3d(1px,12px,0) scale(.82)}}
-@keyframes presenceHint{0%{opacity:.9;transform:translateY(0)}45%{opacity:1;transform:translateY(-1px)}100%{opacity:1;transform:translateY(0)}}
-@keyframes progressTipGlow{0%{opacity:0}45%{opacity:.75}100%{opacity:0}}
+@keyframes snackArrive{0%{opacity:0;transform:translate3d(var(--sx,0),calc(var(--sy,0) + 2px),0) scale(.84)}52%{opacity:.72}100%{opacity:0;transform:translate3d(calc(var(--sx,0) + 3px),calc(var(--sy,0) - var(--travel,6px)),0) scale(.96)}}
+@keyframes snackSpill{0%{opacity:0;transform:translate3d(0,0,0) scale(.88)}45%{opacity:.54}100%{opacity:0;transform:translate3d(1px,9px,0) scale(.8)}}
+@keyframes presenceHint{0%{opacity:.94;transform:translateY(0)}45%{opacity:1;transform:translateY(-0.5px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes progressTipGlow{0%{opacity:0}45%{opacity:.56}100%{opacity:0}}
 
 @keyframes turnResultReveal{
   from{opacity:0;transform:translateY(4px)}
@@ -1161,7 +1161,7 @@ body#recommendations-page.is-embedded{margin:0;min-height:auto;background:#f4ecd
 }
 @keyframes continueButtonPop{
   0%{opacity:0;transform:translateY(4px) scale(.985)}
-  65%{opacity:1;transform:translateY(0) scale(1.02)}
+  65%{opacity:1;transform:translateY(0) scale(1.012)}
   100%{opacity:1;transform:translateY(0) scale(1)}
 }
 @keyframes dayLabelReveal{

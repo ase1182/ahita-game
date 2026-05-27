@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.16"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.17"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -862,6 +862,7 @@ function triggerSnackEffect(snackCount, spilled = false) {
 
   const particleCount = getSnackEffectLevel(snackCount);
   const totalCount = spilled ? particleCount + 1 : particleCount;
+  const intensity = particleCount === 3 ? 1 : particleCount === 2 ? 0.72 : 0.46;
   let removedCount = 0;
   const handleDone = (node) => {
     if (node.parentNode) node.parentNode.removeChild(node);
@@ -872,9 +873,12 @@ function triggerSnackEffect(snackCount, spilled = false) {
   for (let i = 0; i < particleCount; i += 1) {
     const particle = document.createElement("span");
     particle.className = "snack-particle";
-    particle.style.setProperty("--sx", `${-10 + (i * 10)}px`);
-    particle.style.setProperty("--sy", `${6 - (i * 3)}px`);
-    particle.style.setProperty("--delay", `${i * 28}ms`);
+    const spreadX = ((i - ((particleCount - 1) / 2)) * 12) * intensity;
+    const startY = (6 - (i * 2.2)) * intensity;
+    particle.style.setProperty("--sx", `${spreadX.toFixed(2)}px`);
+    particle.style.setProperty("--sy", `${startY.toFixed(2)}px`);
+    particle.style.setProperty("--delay", `${Math.round(i * 22)}ms`);
+    particle.style.setProperty("--travel", `${(4.5 + (intensity * 4.2)).toFixed(2)}px`);
     particle.addEventListener("animationend", () => handleDone(particle), { once: true });
     turnEffectLayer.appendChild(particle);
   }
@@ -882,7 +886,7 @@ function triggerSnackEffect(snackCount, spilled = false) {
   if (spilled) {
     const spill = document.createElement("span");
     spill.className = "snack-particle spill";
-    spill.style.setProperty("--delay", "22ms");
+    spill.style.setProperty("--delay", "16ms");
     spill.addEventListener("animationend", () => handleDone(spill), { once: true });
     turnEffectLayer.appendChild(spill);
   }
