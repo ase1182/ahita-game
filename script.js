@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.26"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.27"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1546,6 +1546,87 @@ function getRelationshipEndingSeed() {
   return hash;
 }
 
+const relationshipEndingVoiceMap = {
+  tanuki: {
+    warm: "近づいたあとにも、試すような余白がそっと残りました。",
+    guarded: "寄ったようで、まだ影のぶんだけ距離を残していました。"
+  },
+  rabbit: {
+    warm: "安心できた日の気配が、軽い足音みたいに残りました。",
+    guarded: "驚いた日の記憶が、最後の距離に小さく残りました。"
+  },
+  crow: {
+    balanced: "最後まで、あなたの癖を静かに見届けていたようでした。",
+    guarded: "近づくより先に、観察するまなざしが残りました。"
+  },
+  squirrel: {
+    warm: "小さな安心が、次の日へ持ち越されるように残りました。",
+    balanced: "やわらかな日も迷う日も、小さな記憶として積もりました。"
+  },
+  wolf: {
+    guarded: "一度できた境界は、最後まで静かに守られていました。",
+    lost: "こぼれた日の重さが、距離を深くして残りました。"
+  },
+  fox: {
+    balanced: "読み合いの余韻だけが、夕方まで細く続いていました。",
+    tilted: "試し合いの温度差が、最後の間合いに残りました。"
+  },
+  deer: {
+    warm: "離れきらない気配が、静かな戻り道として残りました。",
+    guarded: "近づき急がないまま、森の奥へ引く余韻が残りました。"
+  },
+  cat: {
+    balanced: "近づいた日と離れた日が、読めないまま並んで残りました。",
+    guarded: "最後まで、するりと届かない距離感が残りました。"
+  },
+  hedgehog: {
+    warm: "触れたい気配と守る気配が、やわらかく並んで残りました。",
+    guarded: "近づく気配はあっても、守りの姿勢が最後まで残りました。"
+  },
+  owl: {
+    balanced: "夜のような静けさで、やりとりの輪郭だけが残りました。"
+  },
+  woodpecker: {
+    balanced: "同じ拍と違う拍が、関係のリズムとして残りました。"
+  },
+  boar: {
+    guarded: "まっすぐ進む気配のまま、距離の線をはっきり残しました。"
+  },
+  bear: {
+    guarded: "待っていたぶんだけ、最後の境界が重く残りました。"
+  },
+  monkey: {
+    balanced: "試して返すやりとりが、揺れる余韻として残りました。"
+  },
+  porcupine: {
+    warm: "寄りたい気配と守る気配が、同じ場所に残りました。",
+    guarded: "身を守りながら近づく、そのためらいが最後まで残りました。"
+  },
+  raven: {
+    balanced: "偏りを見ていた視線が、静かな記憶として残りました。"
+  },
+  turtle: {
+    warm: "ゆっくり進んだぶんだけ、関係の跡が長く残りました。",
+    guarded: "急がない歩幅のまま、距離の線が静かに残りました。"
+  },
+  sheep: {
+    warm: "安心できた日の空気が、やわらかく残りました。",
+    balanced: "寄りたい気持ちと迷いが、同じ足あとに残りました。"
+  },
+  default: {
+    warm: "最後には、少しだけ近い空気が残りました。",
+    guarded: "近づききらないまま、静かな距離が残りました。",
+    balanced: "言い切れないまま、ふたりぶんの余白が残りました。",
+    lost: "届かなかった分だけ、言葉にならない影が残りました。",
+    tilted: "ふたりの重心のずれが、最後の間合いに残りました。"
+  }
+};
+
+function getRelationshipEndingVoice(opponentId, category) {
+  const voiceSet = relationshipEndingVoiceMap[opponentId] || relationshipEndingVoiceMap.default;
+  return voiceSet[category] || voiceSet.balanced || relationshipEndingVoiceMap.default[category] || "";
+}
+
 function getRelationshipEnding() {
   const metrics = getRelationshipMetrics();
   const story = getStoryMetrics();
@@ -1556,56 +1637,71 @@ function getRelationshipEnding() {
   const endings = [
     {
       when: story.lostTotal >= 16 && story.mutualTakeDays >= 3,
-      text: "【森にこぼれた7日間】ふたりが守ろうとした分だけ、森にこぼれたものも多くなりました。届かなかったおやつが、この関係の静かな影になりました。"
+      category: "lost",
+      text: "【森にこぼれた7日間】守ろうとしたぶん、届かなかったものも増えました。届かなかったおやつが、この関係の静かな影になりました。"
     },
     {
       when: (story.recoveredLate || story.lateShiftToShare) && story.finalPlayerMove === SHARE,
-      text: "【後半で戻ってきた距離】途中までは距離がありました。それでも後半、ふたりの間には少しだけ戻ってくる道ができました。"
+      category: "warm",
+      text: "【後半で戻ってきた距離】途中までは距離がありました。それでも後半、ふたりの間には少しだけ戻る道ができました。"
     },
     {
       when: story.collapsedLate || story.lateShiftToTake,
-      text: "【後半で閉じた関係】はじめに近づいた日があっても、後半になるほど手元を守る日が増えました。関係は静かに閉じていきました。"
+      category: "guarded",
+      text: "【後半で閉じた関係】はじめに近づいた日があっても、後半ほど手元を守る日が増えました。関係は静かに閉じていきました。"
     },
     {
       when: story.playerTotal - story.opponentTotal >= 10 && story.playerOnlyTakeDays >= 2,
+      category: "tilted",
       text: "【自分の手元に残った7日間】あなたの手元には多く残りました。その分、相手との距離は少し離れたまま終わりました。"
     },
     {
       when: story.opponentTotal - story.playerTotal >= 10 && story.opponentOnlyTakeDays >= 2,
+      category: "tilted",
       text: "【相手に多く届いた7日間】相手に多く届く日が続きました。あなたの手元には少なくても、その選び方は相手の側に長く残ったようです。"
     },
     {
       when: story.mutualShareDays >= 4 && story.lostTotal <= 8,
-      text: "【あたたかな分け合い】おやつは、ふたりの間を何度も行き来しました。多くは失われず、最後には同じ広場にやわらかな余白が残りました。"
+      category: "warm",
+      text: "【あたたかな分け合い】おやつは、ふたりの間を何度も行き来しました。多くは失われず、同じ広場にやわらかな余白が残りました。"
     },
     {
       when: story.mutualTakeDays >= 4,
-      text: "【守られた距離】ふたりとも手元を守る日が続き、近づくよりも距離を確かめる時間が長く残りました。"
+      category: "guarded",
+      text: "【守られた距離】ふたりとも手元を守る日が続き、近づくより距離を確かめる時間が長く残りました。"
     },
     {
       when: isFixed,
-      text: "【崩れない調子の相手】この子は、あなたの選び方を見ながらも、自分の調子を大きく変えませんでした。近づくにも離れるにも、少し時間のかかる相手でした。"
+      category: "balanced",
+      text: "【崩れない調子の相手】あなたの選び方を見ながらも、相手は自分の調子を大きく変えませんでした。"
     },
     {
       when: isReactive,
-      text: "【返ってくる関係】この子は、あなたの選び方をよく見ていました。分けた日も、守った日も、次の日の距離に少しずつ残っていました。"
+      category: "balanced",
+      text: "【返ってくる関係】あなたの選び方は、次の日の距離へ少しずつ返ってきていました。"
     },
     {
       when: story.finalPlayerMove === SHARE,
-      text: "【最後に分けた手】最後の日、あなたは分ける方へ手を伸ばしました。その一手は、関係の終わりに小さな余白を残しました。"
+      category: "warm",
+      text: "【最後に分けた手】最後の日、あなたは分ける方へ手を伸ばしました。その一手は、終わりに小さな余白を残しました。"
     },
     {
       when: story.finalPlayerMove === TAKE,
-      text: "【最後に守った手】最後の日、あなたは手元を守りました。関係は近づくよりも、それぞれの場所を確かめる形で終わりました。"
+      category: "guarded",
+      text: "【最後に守った手】最後の日、あなたは手元を守りました。関係は近づくより、それぞれの場所を確かめる形で終わりました。"
     },
     {
       when: metrics.scoreDiff <= 2 && metrics.sharedDays >= 2 && metrics.mutualTakeDays <= 2,
-      text: "【不思議な均衡】多すぎも少なすぎもせず、ふたりの間には不思議な釣り合いが残りました。近すぎないまま、それでも7日間は途切れませんでした。"
+      category: "balanced",
+      text: "【不思議な均衡】多すぎも少なすぎもせず、ふたりの間には不思議な釣り合いが残りました。"
     }
   ];
 
   const matched = endings.find((ending) => ending.when);
-  if (matched) return matched.text;
+  if (matched) {
+    const voice = getRelationshipEndingVoice(state.currentOpponent?.id, matched.category);
+    return voice ? `${matched.text}${voice}` : matched.text;
+  }
 
   const fallback = [
     "近づききらず、離れきらず、静かな距離が残りました。",
@@ -1615,7 +1711,9 @@ function getRelationshipEnding() {
   ];
 
   const seed = getRelationshipEndingSeed();
-  return fallback[seed % fallback.length];
+  const base = fallback[seed % fallback.length];
+  const voice = getRelationshipEndingVoice(state.currentOpponent?.id, "balanced");
+  return voice ? `${base}${voice}` : base;
 }
 
 function buildShareText(opponentName, resultTitle) {
