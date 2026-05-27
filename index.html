@@ -14,7 +14,7 @@
   <meta name="twitter:title" content="また明日も会うきみへ" />
   <meta name="twitter:description" content="森の広場で、7日間だけ同じ相手と出会う小さな選択の物語。" />
   <meta name="twitter:image" content="https://ase1182.github.io/ahita-game/assets/bg-forest-dusk.webp" />
-  <link rel="stylesheet" href="style.css?v=0.3.1" />
+  <link rel="stylesheet" href="style.css?v=0.3.2" />
 </head>
 <body data-phase="day-1" class="has-image-assets">
   <audio id="bgm" src="assets/forest-bgm.mp3" loop preload="none"></audio>
@@ -27,19 +27,20 @@
 
     <section id="start-screen" class="card" aria-label="開始画面">
       <div class="start-intro-card" aria-label="導入">
-        <p>森の広場には、毎日<strong>6枚</strong>のクッキーが置かれます。</p>
-        <p><strong>7日間</strong>、同じ相手と出会い、<strong>「わける」</strong>か<strong>「ひとりじめ」</strong>を選びます。</p>
+        <p>森の広場に、毎日<strong>6枚</strong>のおやつが置かれます。</p>
+        <p>多く持ち帰るか、相手に分けるか。取り合えば、だれにも届かないおやつも生まれます。</p>
+        <p><strong>7日間</strong>の選び方が、最後の相手との関係を変えていきます。</p>
       </div>
 
       <section class="start-rules-card" aria-label="ゲームルール">
         <ul class="start-rules-list">
-          <li>2人とも<strong>「わける」</strong>なら、仲よく分け合います。</li>
-          <li>どちらかが<strong>「ひとりじめ」</strong>すると、もらえる枚数と相手との距離が変わります。</li>
-          <li><strong>7日後</strong>、選び方と関係から結末が決まります。</li>
+          <li>毎日、<strong>「わける」</strong>か<strong>「ひとりじめ」</strong>を選びます。</li>
+          <li>2人とも<strong>「わける」</strong>と、ふたりに3枚ずつ届きます。</li>
+          <li>取り合うほど、森にこぼれて届かないおやつが増えます。</li>
         </ul>
       </section>
 
-      <p class="start-note">相手の正体は、最後までわかりません。毎日の反応には、小さな手がかりが残ります。</p>
+      <p class="start-note">相手の正体は、最後までわかりません。毎日の反応を手がかりに、7日間向き合います。</p>
       <button id="start-button" class="primary-cta" type="button">7日間をはじめる</button>
     </section>
 
@@ -201,9 +202,9 @@
   </main>
   <button id="sound-toggle" class="bgm-toggle" type="button">音を消す</button>
   <!-- Temporary build marker for cache/deploy debugging -->
-  <small id="build-version" class="build-version" aria-hidden="true">v0.3.1</small>
+  <small id="build-version" class="build-version" aria-hidden="true">v0.3.2</small>
 
-  <script src="script.js?v=0.3.1"></script>
+  <script src="script.js?v=0.3.2"></script>
   <p class="credits-entry-link-wrap"><a class="credits-entry-link" href="credits.html">素材クレジット</a></p>
 </body>
 </html>
