@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.18"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.19"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -149,6 +149,8 @@ const opponentProfile = document.getElementById("opponent-profile");
 const opponentProfileTemperament = document.getElementById("opponent-profile-temperament");
 const opponentProfileHabit = document.getElementById("opponent-profile-habit");
 const opponentProfileMemory = document.getElementById("opponent-profile-memory");
+const opponentPerspective = document.getElementById("opponent-perspective");
+const opponentPerspectiveText = document.getElementById("opponent-perspective-text");
 const forestCookieBalance = document.getElementById("forest-cookie-balance");
 const grantCookiesButton = document.getElementById("grant-cookies-button");
 const grantCookiesMessage = document.getElementById("grant-cookies-message");
@@ -978,6 +980,7 @@ function showResult() {
   if (resultStory) resultStory.textContent = generateSevenDayStory(result);
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
   renderOpponentProfile(state.currentOpponent.profile);
+  renderOpponentPerspective(state.currentOpponent);
   renderResultOpponent();
   const totalCookies = MAX_DAYS * 6;
   const wastedCookies = totalCookies - state.playerScore - state.opponentScore;
@@ -1015,6 +1018,51 @@ function renderOpponentProfile(profile) {
   opponentProfileTemperament.textContent = profile.temperament;
   opponentProfileHabit.textContent = profile.habit;
   opponentProfileMemory.textContent = profile.memory;
+}
+
+function generateOpponentPerspective(opponent, metrics) {
+  const playerHistory = state.playerHistory.slice();
+  const opponentHistory = state.opponentHistory.slice();
+  const recentPlayer = playerHistory.slice(-3);
+  const recentShare = recentPlayer.filter((move) => move === SHARE).length;
+  const recentTake = recentPlayer.filter((move) => move === TAKE).length;
+  const echoedCount = opponentHistory.slice(1).filter((move, idx) => move === playerHistory[idx]).length;
+  const staticLikely = new Set(opponentHistory).size <= 1;
+  const likelyRandom = opponent?.strategyKey === "randomMood";
+  const reactiveKeys = new Set(["mirrorYesterday", "generousMirror", "suspiciousMirror", "grimTrigger", "pavlovLike", "testerOwl", "majorityFollower", "twoWarnings", "followsRichSide", "cautiousCrow", "remembersForTwoDays", "changesAfterThree", "forgetfulRabbit"]);
+  const fixedKeys = new Set(["alwaysShare", "alwaysTake", "alternator"]);
+  const lines = [];
+
+  if (fixedKeys.has(opponent?.strategyKey) || staticLikely) lines.push("この子は、あなたの選び方を見ながらも、自分の調子を大きく変えずに7日間を歩いたようです。");
+  else if (likelyRandom) lines.push("この子は、あなたの手元を気にしていた気配はありつつ、最後まで気まぐれな歩幅を残したのかもしれません。");
+  else if (reactiveKeys.has(opponent?.strategyKey) || echoedCount >= 3) lines.push("この子は、最初の数日であなたの選び方を見て、少しずつ距離の取り方を変えていたようです。");
+  else lines.push("この子は、広場の空気とあなたのしぐさの両方を見ながら、慎重に7日間を過ごしていたのかもしれません。");
+
+  if (metrics.sharedDays >= 4) lines.push("分け合えた日には、相手も安心して近づける日が増えていったように見えます。");
+  else if (metrics.mutualTakeDays >= 4) lines.push("手元を守る日が重なるほど、相手も身を守る姿勢を崩しにくくなっていったようです。");
+  else if (metrics.playerOnlyTakeDays + metrics.opponentOnlyTakeDays >= 4) lines.push("どちらかだけが多く取る日が続いたぶん、近づきかけては離れるような、すれ違いの気配も残りました。");
+
+  if (recentShare >= 2) lines.push("最後の3日では、あなたが分ける方へ寄ったことを、この子もやわらかく受け取っていたのかもしれません。");
+  else if (recentTake >= 2) lines.push("最後の3日では、あなたが手元を守る選び方を続けたことを、この子もはっきり覚えていたようです。");
+
+  if (metrics.lostTotal >= 14) lines.push("こぼれたおやつが多かった日は、ふたりの間に言葉にならない迷いも残っていたのかもしれません。");
+  else if (metrics.scoreDiff >= 8) lines.push("手元の差が大きかったぶん、この子にはあなたの選び方の癖が強く印象に残ったようです。");
+
+  lines.push("この子は、こう見ていたのかもしれません。");
+  return lines.slice(0, 5).join("");
+}
+
+function renderOpponentPerspective(opponent) {
+  if (!opponentPerspective || !opponentPerspectiveText) return;
+  if (!opponent) {
+    opponentPerspective.hidden = true;
+    opponentPerspective.open = false;
+    opponentPerspectiveText.textContent = "";
+    return;
+  }
+  opponentPerspective.hidden = false;
+  opponentPerspective.open = false;
+  opponentPerspectiveText.textContent = generateOpponentPerspective(opponent, getRelationshipMetrics());
 }
 
 function renderResultTracks() {
@@ -1082,6 +1130,11 @@ function resetResultOpponentProfile() {
   if (opponentProfileTemperament) opponentProfileTemperament.textContent = "";
   if (opponentProfileHabit) opponentProfileHabit.textContent = "";
   if (opponentProfileMemory) opponentProfileMemory.textContent = "";
+  if (opponentPerspective) {
+    opponentPerspective.open = false;
+    opponentPerspective.hidden = true;
+  }
+  if (opponentPerspectiveText) opponentPerspectiveText.textContent = "";
 
   if (resultOpponentImage) {
     resultOpponentImage.hidden = true;
