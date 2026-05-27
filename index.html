@@ -14,7 +14,7 @@
   <meta name="twitter:title" content="また明日も会うきみへ" />
   <meta name="twitter:description" content="森の広場で、7日間だけ同じ相手と出会う小さな選択の物語。" />
   <meta name="twitter:image" content="https://ase1182.github.io/ahita-game/assets/bg-forest-dusk.webp" />
-  <link rel="stylesheet" href="style.css?v=0.3.2" />
+  <link rel="stylesheet" href="style.css?v=0.3.3" />
 </head>
 <body data-phase="day-1" class="has-image-assets">
   <audio id="bgm" src="assets/forest-bgm.mp3" loop preload="none"></audio>
@@ -32,11 +32,12 @@
         <p><strong>7日間</strong>の選び方が、最後の相手との関係を変えていきます。</p>
       </div>
 
-      <section class="start-rules-card" aria-label="ゲームルール">
+      <section class="start-rules-card" aria-label="配分ルール">
+        <p>毎日、あなたと相手は<strong>「わける」</strong>か<strong>「ひとりじめ」</strong>を選びます。</p>
         <ul class="start-rules-list">
-          <li>毎日、<strong>「わける」</strong>か<strong>「ひとりじめ」</strong>を選びます。</li>
-          <li>2人とも<strong>「わける」</strong>と、ふたりに3枚ずつ届きます。</li>
-          <li>取り合うほど、森にこぼれて届かないおやつが増えます。</li>
+          <li>2人とも「わける」なら、3枚ずつ届きます。</li>
+          <li>片方だけ「ひとりじめ」なら、5枚と1枚に分かれます。</li>
+          <li>2人とも「ひとりじめ」なら、1枚ずつ。残り4枚は森にこぼれます。</li>
         </ul>
       </section>
 
@@ -202,9 +203,9 @@
   </main>
   <button id="sound-toggle" class="bgm-toggle" type="button">音を消す</button>
   <!-- Temporary build marker for cache/deploy debugging -->
-  <small id="build-version" class="build-version" aria-hidden="true">v0.3.2</small>
+  <small id="build-version" class="build-version" aria-hidden="true">v0.3.3</small>
 
-  <script src="script.js?v=0.3.2"></script>
+  <script src="script.js?v=0.3.3"></script>
   <p class="credits-entry-link-wrap"><a class="credits-entry-link" href="credits.html">素材クレジット</a></p>
 </body>
 </html>
