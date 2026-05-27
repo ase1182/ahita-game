@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.15"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.16"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -167,6 +167,7 @@ const closeRecommendationsOverlayButton = document.getElementById("close-recomme
 const recommendationsFrame = document.getElementById("recommendations-frame");
 const newOpponentButton = document.getElementById("new-opponent-button");
 const continueButton = document.getElementById("continue-button");
+const turnEffectLayer = document.getElementById("turn-effect-layer");
 const bgm = document.getElementById("bgm");
 const soundToggleButton = document.getElementById("sound-toggle");
 const cardFlipSe = document.getElementById("se-card-flip");
@@ -743,10 +744,12 @@ function playTurn(playerMove) {
   playerCard.classList.add("nod");
   const turnMessage = pickReactionMessage(playerMove, opponentMove, state.currentOpponent, state.day);
   setTurnMessage(turnMessage.resultLine, turnMessage.clueLine);
+  triggerSnackEffect(payoff.player, playerMove === TAKE && opponentMove === TAKE);
   triggerMotion(message, "motion-message");
   triggerMotion(message, "motion-trace");
   triggerMotion(snackIcon, "motion-pop");
   triggerMotion(opponentName, "motion-approach");
+  if (turnMessage.clueLine) triggerMotion(opponentName, "motion-presence");
   renderTracks();
   triggerMotion(playerTrack, "motion-refresh");
   triggerMotion(opponentTrack, "motion-refresh");
@@ -828,6 +831,7 @@ function updateScreen() {
   triggerMotion(dayLabel, "motion-day-update");
   document.body.setAttribute("data-phase", `day-${state.day}`);
   setupOpponentShadow();
+  clearTurnEffects();
   setTurnMessage("まだ、相手の正体はわかりません。", "");
   dayMotionTargets.forEach((target) => triggerMotion(target, "motion-refresh"));
   updateContinueButton();
@@ -835,11 +839,62 @@ function updateScreen() {
   state.turnStartedAt = now;
 }
 
+
+
+function getSnackEffectLevel(snackCount) {
+  if (snackCount >= 5) return 3;
+  if (snackCount >= 3) return 2;
+  return 1;
+}
+
+function clearTurnEffects() {
+  if (!turnEffectLayer) return;
+  while (turnEffectLayer.firstChild) {
+    turnEffectLayer.removeChild(turnEffectLayer.firstChild);
+  }
+}
+
+function triggerSnackEffect(snackCount, spilled = false) {
+  if (!turnEffectLayer) return;
+  clearTurnEffects();
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReducedMotion) return;
+
+  const particleCount = getSnackEffectLevel(snackCount);
+  const totalCount = spilled ? particleCount + 1 : particleCount;
+  let removedCount = 0;
+  const handleDone = (node) => {
+    if (node.parentNode) node.parentNode.removeChild(node);
+    removedCount += 1;
+    if (removedCount >= totalCount) clearTurnEffects();
+  };
+
+  for (let i = 0; i < particleCount; i += 1) {
+    const particle = document.createElement("span");
+    particle.className = "snack-particle";
+    particle.style.setProperty("--sx", `${-10 + (i * 10)}px`);
+    particle.style.setProperty("--sy", `${6 - (i * 3)}px`);
+    particle.style.setProperty("--delay", `${i * 28}ms`);
+    particle.addEventListener("animationend", () => handleDone(particle), { once: true });
+    turnEffectLayer.appendChild(particle);
+  }
+
+  if (spilled) {
+    const spill = document.createElement("span");
+    spill.className = "snack-particle spill";
+    spill.style.setProperty("--delay", "22ms");
+    spill.addEventListener("animationend", () => handleDone(spill), { once: true });
+    turnEffectLayer.appendChild(spill);
+  }
+}
+
 function updateContinueButton() {
   const ready = state.turnResolved && !state.isProcessingTurn;
+  const isFinalDay = state.day >= MAX_DAYS;
   continueButton.hidden = !ready;
   continueButton.disabled = !ready;
-  continueButton.textContent = state.day >= MAX_DAYS ? "結果を見る" : "次の日へ";
+  continueButton.textContent = isFinalDay ? "結果を見る" : "次の日へ";
+  continueButton.classList.toggle("final-day", isFinalDay && ready);
   if (ready) triggerMotion(continueButton, "motion-advance");
 }
 
