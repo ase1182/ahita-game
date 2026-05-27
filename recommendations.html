@@ -42,24 +42,33 @@
       const KEY_BGM_WAS_PLAYING = "ahita.recommendations.bgmWasPlaying";
       const KEY_BGM_TIME = "ahita.recommendations.bgmTime";
       const backLink = document.querySelector(".recommendations-back-link");
+      const params = new URLSearchParams(window.location.search);
+      const overlayMode = params.get("mode") === "overlay";
       if (!backLink) return;
       const fromResult = sessionStorage.getItem(KEY_FROM) === "true";
       if (fromResult) {
+        if (overlayMode) {
+          backLink.href = "#";
+        }
         backLink.textContent = "結果に戻る";
         backLink.addEventListener("click", function (event) {
           event.preventDefault();
-          if (document.referrer && document.referrer.includes("index.html")) {
+          if (overlayMode && window.parent && window.parent !== window) {
+            window.parent.postMessage("ahita.closeRecommendationsOverlay", window.location.origin);
+            return;
+          }
+          if (history.length > 1) {
             history.back();
             return;
           }
-          window.location.href = "index.html?return=result";
+          window.location.href = "index.html";
         });
       } else {
         backLink.href = "index.html";
       }
       const soundEnabled = localStorage.getItem(KEY_BGM) !== "false";
       const wasPlaying = sessionStorage.getItem(KEY_BGM_WAS_PLAYING) === "true";
-      if (fromResult && soundEnabled && wasPlaying) {
+      if (!overlayMode && fromResult && soundEnabled && wasPlaying) {
         const bgm = new Audio("assets/forest-bgm.mp3");
         bgm.loop = true;
         bgm.volume = 0.25;
