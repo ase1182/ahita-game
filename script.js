@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.20"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.21"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1020,36 +1020,67 @@ function renderOpponentProfile(profile) {
   opponentProfileMemory.textContent = profile.memory;
 }
 
-function generateOpponentPerspective(opponent, metrics) {
+const FIXED_STRATEGY_KEYS = new Set(["alwaysCooperate", "alwaysTake", "alternator"]);
+const RANDOM_STRATEGY_KEYS = new Set(["randomMood", "rareTaker"]);
+const REACTIVE_STRATEGY_KEYS = new Set(["mirrorYesterday", "generousMirror", "suspiciousMirror", "grimTrigger", "pavlovLike", "testerOwl", "majorityFollower", "twoWarnings", "followsRichSide", "cautiousCrow", "remembersForTwoDays", "changesAfterThree", "forgetfulRabbit"]);
+
+function describePrevDayLink(prevType, styleType) {
+  if (!prevType || styleType === "fixed") return "";
+  if (prevType === "SHARE-SHARE") return "昨日の分け合いを覚えていたようでした。";
+  if (prevType === "TAKE-TAKE") return "昨日の静けさを少し引きずっていました。";
+  if (prevType === "TAKE-SHARE") return "昨日の手元を守る選び方を見て、距離を測っていました。";
+  return "自分が多く持ち帰った日のあと、あなたの反応を見ていました。";
+}
+
+function generateOpponentPerspectiveDays(opponent, storyMetrics) {
   const playerHistory = state.playerHistory.slice();
   const opponentHistory = state.opponentHistory.slice();
-  const recentPlayer = playerHistory.slice(-3);
-  const recentShare = recentPlayer.filter((move) => move === SHARE).length;
-  const recentTake = recentPlayer.filter((move) => move === TAKE).length;
-  const echoedCount = opponentHistory.slice(1).filter((move, idx) => move === playerHistory[idx]).length;
-  const staticLikely = new Set(opponentHistory).size <= 1;
-  const likelyRandom = opponent?.strategyKey === "randomMood";
-  const reactiveKeys = new Set(["mirrorYesterday", "generousMirror", "suspiciousMirror", "grimTrigger", "pavlovLike", "testerOwl", "majorityFollower", "twoWarnings", "followsRichSide", "cautiousCrow", "remembersForTwoDays", "changesAfterThree", "forgetfulRabbit"]);
-  const fixedKeys = new Set(["alwaysShare", "alwaysTake", "alternator"]);
-  const lines = [];
+  const styleType = FIXED_STRATEGY_KEYS.has(opponent?.strategyKey) ? "fixed" : RANDOM_STRATEGY_KEYS.has(opponent?.strategyKey) ? "random" : "reactive";
 
-  if (fixedKeys.has(opponent?.strategyKey) || staticLikely) lines.push("この子は、あなたの選び方を見ながらも、自分の調子を大きく変えずに7日間を歩いたようです。");
-  else if (likelyRandom) lines.push("この子は、あなたの手元を気にしていた気配はありつつ、最後まで気まぐれな歩幅を残したのかもしれません。");
-  else if (reactiveKeys.has(opponent?.strategyKey) || echoedCount >= 3) lines.push("この子は、最初の数日であなたの選び方を見て、少しずつ距離の取り方を変えていたようです。");
-  else lines.push("この子は、広場の空気とあなたのしぐさの両方を見ながら、慎重に7日間を過ごしていたのかもしれません。");
+  return playerHistory.map((playerMove, dayIndex) => {
+    const opponentMove = opponentHistory[dayIndex] || SHARE;
+    const isFinalDay = dayIndex === MAX_DAYS - 1;
+    const outcomeType = `${playerMove}-${opponentMove}`;
+    const prevType = dayIndex > 0 ? `${playerHistory[dayIndex - 1]}-${opponentHistory[dayIndex - 1]}` : "";
+    const prevLink = describePrevDayLink(prevType, styleType);
 
-  if (metrics.sharedDays >= 4) lines.push("分け合えた日には、相手も安心して近づける日が増えていったように見えます。");
-  else if (metrics.mutualTakeDays >= 4) lines.push("手元を守る日が重なるほど、相手も身を守る姿勢を崩しにくくなっていったようです。");
-  else if (metrics.playerOnlyTakeDays + metrics.opponentOnlyTakeDays >= 4) lines.push("どちらかだけが多く取る日が続いたぶん、近づきかけては離れるような、すれ違いの気配も残りました。");
+    let text = "";
+    if (isFinalDay) {
+      if (outcomeType === "SHARE-SHARE") text = "最後の日、分けられたおやつを、終わりの合図のように受け取っていました。";
+      else if (outcomeType === "TAKE-TAKE") text = "最後の日、ふたりとも手元を守り、広場には届かなかったものが残りました。";
+      else text = "最後の日、手元を守る選び方を、静かに見届けていました。";
+    } else if (outcomeType === "SHARE-SHARE") {
+      text = styleType === "fixed"
+        ? "分けられたおやつを受け取りながらも、この子は自分の調子を崩しませんでした。"
+        : "分けられたおやつを、静かに受け取っていました。";
+    } else if (outcomeType === "TAKE-SHARE") {
+      text = styleType === "reactive"
+        ? "あなたの手が自分の方へ戻るのを見て、少し距離を取りました。"
+        : "あなたの手が自分の方へ戻るのを、少し離れて見ていました。";
+    } else if (outcomeType === "SHARE-TAKE") {
+      if (styleType === "fixed") text = "その日は、自分の調子のまま手元を守りました。";
+      else if (styleType === "random") text = "多くを持ち帰りながらも、その日の気分のまま揺れていました。";
+      else text = "この子は多くを持ち帰り、あなたの反応を確かめていました。";
+    } else {
+      text = styleType === "fixed"
+        ? "ふたりとも手元を守る形が続き、この子は同じ調子を保っていました。"
+        : "ふたりとも手元を守り、広場には少し静けさが残りました。";
+    }
 
-  if (recentShare >= 2) lines.push("最後の3日では、あなたが分ける方へ寄ったことを、この子もやわらかく受け取っていたのかもしれません。");
-  else if (recentTake >= 2) lines.push("最後の3日では、あなたが手元を守る選び方を続けたことを、この子もはっきり覚えていたようです。");
+    if (!isFinalDay && dayIndex > 0 && styleType !== "fixed" && dayIndex % 2 === 1) {
+      text = `${prevLink}${text}`;
+    }
 
-  if (metrics.lostTotal >= 14) lines.push("こぼれたおやつが多かった日は、ふたりの間に言葉にならない迷いも残っていたのかもしれません。");
-  else if (metrics.scoreDiff >= 8) lines.push("手元の差が大きかったぶん、この子にはあなたの選び方の癖が強く印象に残ったようです。");
+    if (!isFinalDay && styleType === "fixed" && dayIndex >= 4) {
+      text = `${text}変わらず自分の順番で選んでいました。`;
+    }
 
-  lines.push("この子は、こう見ていたのかもしれません。");
-  return lines.slice(0, 5).join("");
+    if (!isFinalDay && styleType === "random" && dayIndex >= 3 && storyMetrics.mismatch >= 3) {
+      text = `${text}近づいたり離れたりする揺れが残っていました。`;
+    }
+
+    return { day: dayIndex + 1, text };
+  });
 }
 
 function renderOpponentPerspective(opponent) {
@@ -1057,12 +1088,15 @@ function renderOpponentPerspective(opponent) {
   if (!opponent) {
     opponentPerspective.hidden = true;
     opponentPerspective.open = false;
-    opponentPerspectiveText.textContent = "";
+    opponentPerspectiveText.innerHTML = "";
     return;
   }
+
+  const storyMetrics = getStoryMetrics();
+  const dayThoughts = generateOpponentPerspectiveDays(opponent, storyMetrics);
   opponentPerspective.hidden = false;
   opponentPerspective.open = false;
-  opponentPerspectiveText.textContent = generateOpponentPerspective(opponent, getRelationshipMetrics());
+  opponentPerspectiveText.innerHTML = dayThoughts.map((entry) => `<li><span class="opponent-thought-day">${entry.day}日目</span><span class="opponent-thought-text">${entry.text}</span></li>`).join("");
 }
 
 function renderResultTracks() {
@@ -1134,7 +1168,7 @@ function resetResultOpponentProfile() {
     opponentPerspective.open = false;
     opponentPerspective.hidden = true;
   }
-  if (opponentPerspectiveText) opponentPerspectiveText.textContent = "";
+  if (opponentPerspectiveText) opponentPerspectiveText.innerHTML = "";
 
   if (resultOpponentImage) {
     resultOpponentImage.hidden = true;
@@ -1440,34 +1474,59 @@ function getRelationshipEndingSeed() {
 
 function getRelationshipEnding() {
   const metrics = getRelationshipMetrics();
+  const story = getStoryMetrics();
+  const strategyKey = state.currentOpponent?.strategyKey;
+  const isFixed = FIXED_STRATEGY_KEYS.has(strategyKey);
+  const isReactive = REACTIVE_STRATEGY_KEYS.has(strategyKey);
+
   const endings = [
     {
-      when: metrics.lostTotal >= 18,
-      text: "【森にこぼれた7日間】7日間で、たくさんのおやつが誰にも届かないまま、森にこぼれていきました。得たものよりも、届かなかったものの気配が、最後まで広場に残りました。"
+      when: story.lostTotal >= 16 && story.mutualTakeDays >= 3,
+      text: "【森にこぼれた7日間】ふたりが守ろうとした分だけ、森にこぼれたものも多くなりました。届かなかったおやつが、この関係の静かな影になりました。"
     },
     {
-      when: metrics.playerTotal >= 22 && metrics.opponentTotal <= 10,
-      text: "【たくさん持ち帰ったけれど】あなたの手元には、たくさんのおやつが残りました。けれど、広場の向こうには、少し長い沈黙も残っていました。"
+      when: (story.recoveredLate || story.lateShiftToShare) && story.finalPlayerMove === SHARE,
+      text: "【後半で戻ってきた距離】途中までは距離がありました。それでも後半、ふたりの間には少しだけ戻ってくる道ができました。"
     },
     {
-      when: metrics.playerTotal >= 14 && metrics.opponentTotal >= 14 && metrics.lostTotal <= 8 && metrics.sharedDays >= 4,
-      text: "【あたたかな分け合い】おやつは、ふたりの間を何度も行き来しました。多くは失われず、最後には、相手もあなたのそばにいることを怖がらなくなっていました。"
+      when: story.collapsedLate || story.lateShiftToTake,
+      text: "【後半で閉じた関係】はじめに近づいた日があっても、後半になるほど手元を守る日が増えました。関係は静かに閉じていきました。"
     },
     {
-      when: metrics.scoreDiff >= 10,
-      text: "【片側に傾いた関係】7日間のあいだに、おやつはどちらか一方へ大きく傾いていきました。近づいたようで、ふたりの距離は少し斜めのままでした。"
+      when: story.playerTotal - story.opponentTotal >= 10 && story.playerOnlyTakeDays >= 2,
+      text: "【自分の手元に残った7日間】あなたの手元には多く残りました。その分、相手との距離は少し離れたまま終わりました。"
     },
     {
-      when: metrics.lostTotal >= 14 && metrics.sharedDays <= 2,
-      text: "【静かなすれ違い】何度か、おやつは誰の手にも届かず、森の土の上に静かに残りました。ふたりは出会っていたのに、少しずつすれ違っていたのかもしれません。"
+      when: story.opponentTotal - story.playerTotal >= 10 && story.opponentOnlyTakeDays >= 2,
+      text: "【相手に多く届いた7日間】相手に多く届く日が続きました。あなたの手元には少なくても、その選び方は相手の側に長く残ったようです。"
+    },
+    {
+      when: story.mutualShareDays >= 4 && story.lostTotal <= 8,
+      text: "【あたたかな分け合い】おやつは、ふたりの間を何度も行き来しました。多くは失われず、最後には同じ広場にやわらかな余白が残りました。"
+    },
+    {
+      when: story.mutualTakeDays >= 4,
+      text: "【守られた距離】ふたりとも手元を守る日が続き、近づくよりも距離を確かめる時間が長く残りました。"
+    },
+    {
+      when: isFixed,
+      text: "【崩れない調子の相手】この子は、あなたの選び方を見ながらも、自分の調子を大きく変えませんでした。近づくにも離れるにも、少し時間のかかる相手でした。"
+    },
+    {
+      when: isReactive,
+      text: "【返ってくる関係】この子は、あなたの選び方をよく見ていました。分けた日も、守った日も、次の日の距離に少しずつ残っていました。"
+    },
+    {
+      when: story.finalPlayerMove === SHARE,
+      text: "【最後に分けた手】最後の日、あなたは分ける方へ手を伸ばしました。その一手は、関係の終わりに小さな余白を残しました。"
+    },
+    {
+      when: story.finalPlayerMove === TAKE,
+      text: "【最後に守った手】最後の日、あなたは手元を守りました。関係は近づくよりも、それぞれの場所を確かめる形で終わりました。"
     },
     {
       when: metrics.scoreDiff <= 2 && metrics.sharedDays >= 2 && metrics.mutualTakeDays <= 2,
       text: "【不思議な均衡】多すぎも少なすぎもせず、ふたりの間には不思議な釣り合いが残りました。近すぎないまま、それでも7日間は途切れませんでした。"
-    },
-    {
-      when: metrics.mutualTakeDays >= 3 && metrics.conflictDays <= 2,
-      text: "【守られた距離】ふたりは何度も、自分のぶんを守ろうとしました。近づきすぎない距離のまま、それでも同じ広場に来つづけた7日間でした。"
     }
   ];
 
@@ -1478,11 +1537,7 @@ function getRelationshipEnding() {
     "近づききらず、離れきらず、静かな距離が残りました。",
     "森の出口で、ふたりは少しだけ振り返りました。",
     "まだ言葉にならないまま、次の日の余白が残りました。",
-    "はっきりした答えは出ないまま、広場の音だけが残りました。",
-    "ふたりの距離は、大きく変わらず、少しだけ揺れていました。",
-    "また会うかどうかを、森の風だけが知っていました。",
-    "帰り道には、近さよりも静けさが残っていました。",
-    "ふたりはそれぞれの歩幅で、森をあとにしました。"
+    "はっきりした答えは出ないまま、広場の音だけが残りました。"
   ];
 
   const seed = getRelationshipEndingSeed();
