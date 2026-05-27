@@ -352,6 +352,12 @@ h1,
 #result-screen .theory details summary:hover{color:#241d14}
 #result-screen .theory details summary:active{transform:translateY(1px)}
 #result-screen .theory details[open] > :not(summary){animation:resultDetailReveal .22s ease both}
+#result-screen details.result-panel[open] > :not(summary),
+#result-screen .opponent-profile[open] > :not(summary){animation:resultDetailReveal .22s ease both}
+#result-screen .opponent-profile > summary{cursor:pointer;font-weight:700;color:#2f261b;text-shadow:0 1px 0 rgba(255,252,242,.28);transition:color .18s ease,transform .18s ease;-webkit-tap-highlight-color:transparent;tap-highlight-color:transparent}
+@media (hover:hover) and (pointer:fine){#result-screen .opponent-profile > summary:hover{color:#241d14}}
+#result-screen .opponent-profile > summary:active{transform:translateY(1px)}
+
 #result-screen .theory details p{margin-top:8px;color:#342d22;line-height:1.8;font-size:1rem}
 @keyframes resultDetailReveal{
   from{opacity:0;transform:translateY(4px)}
@@ -1059,7 +1065,7 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   .turn-clue-line{font-size:.86rem}
 }
 
-@media (hover:none){#result-screen details.result-panel > summary:active{background:rgba(251,245,232,.32);box-shadow:none;transform:translateY(0)}}
+@media (hover:none){#result-screen details.result-panel > summary:active,#result-screen .opponent-profile > summary:active{background:rgba(251,245,232,.32);box-shadow:none;transform:translateY(0)}}
 
 
 #result-screen{display:flex;flex-direction:column;gap:10px;padding-bottom:8px}
@@ -1090,12 +1096,12 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 #result-screen .result-share-button:active{background:#182d26;transform:translateY(1px)}
 .recommendations-overlay{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:12px}
 .recommendations-overlay-backdrop{position:absolute;inset:0;background:rgba(10,16,13,.68)}
-.recommendations-overlay-dialog{position:relative;width:min(920px,100%);height:min(92dvh,760px);background:#f4ecd4;border:1px solid rgba(62,47,30,.45);border-radius:16px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:0 20px 50px rgba(0,0,0,.35)}
-.recommendations-overlay-close{position:sticky;top:0;z-index:2;margin:10px 10px 8px auto;min-height:42px;padding:8px 13px}
+.recommendations-overlay-dialog{position:relative;width:min(920px,100%);height:min(92dvh,760px);background:#f4ecd4;border:1px solid rgba(62,47,30,.45);border-radius:16px;overflow:hidden;display:grid;grid-template-rows:minmax(0,1fr) auto;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.recommendations-overlay-close{position:sticky;bottom:0;z-index:2;margin:8px;justify-self:stretch;min-height:44px;padding:10px 13px;padding-bottom:max(10px, calc(10px + env(safe-area-inset-bottom)));width:calc(100% - 16px)}
 #recommendations-frame{display:block;border:0;width:100%;height:100%;background:#f4ecd4}
 body#recommendations-page.is-embedded{margin:0;min-height:auto;background:#f4ecd4}
 #recommendations-page.is-embedded .recommendations-shell{max-width:none;padding:12px 12px 18px}
 #recommendations-page.is-embedded h1{font-size:1.36rem}
 #recommendations-page.is-embedded .recommendations-panel{margin-bottom:8px}
 #recommendations-page.is-embedded .recommendations-back-wrap{display:none}
-@media (max-width:600px){.recommendations-overlay{padding:0}.recommendations-overlay-dialog{width:100%;height:100dvh;border-radius:0}.recommendations-overlay-close{margin:8px 8px 6px auto}}
+@media (max-width:600px){.recommendations-overlay{padding:0}.recommendations-overlay-dialog{width:100%;height:100dvh;border-radius:0}.recommendations-overlay-close{margin:8px;width:calc(100% - 16px)}}

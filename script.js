@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.11"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.12"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -778,16 +778,19 @@ function proceedToNextDay() {
 
 
 function getDayNote(currentState) {
+  if (!currentState || typeof currentState !== "object") return "まだ、何も決まっていません。";
   const pools = {
     early: [
       "まだ、何も決まっていません。",
       "最初の選び方が残ります。",
       "今日は、どちらに手を伸ばしますか。",
+      "相手はまだ遠くにいます。",
       "手がかりは、まだ少しだけです。"
     ],
     mid: [
       "昨日の選び方が残っています。",
       "近づくか、離れるかの途中です。",
+      "相手も、あなたを見ています。",
       "同じ選び方で、よいのでしょうか。",
       "少しずつ、距離が変わっています。",
       "こぼれたものも、残っています。"
@@ -797,6 +800,7 @@ function getDayNote(currentState) {
       "もう少しで、正体が見えます。",
       "関係は、静かに固まりつつあります。",
       "今日の選び方も、最後に残ります。",
+      "取り戻せないものもあります。",
       "それでも、まだ選べます。"
     ]
   };
