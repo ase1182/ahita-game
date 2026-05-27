@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.6"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.8"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -130,7 +130,6 @@ const resultPlayerTrack = document.getElementById("result-player-track");
 const resultOpponentTrack = document.getElementById("result-opponent-track");
 const forestStage = document.getElementById("forest-stage");
 const playerCard = document.getElementById("player-card");
-const endingScene = document.getElementById("ending-scene");
 const opponentImage = document.getElementById("opponent-image");
 const opponentFallback = document.getElementById("opponent-fallback");
 const resultOpponentImage = document.getElementById("result-opponent-image");
@@ -728,18 +727,40 @@ function proceedToNextDay() {
   updateScreen();
 }
 
-function updateScreen() {
-  const dayNotes = {
-    1: "手がかりはまだありません。",
-    2: "昨日の気配が残っています。",
-    3: "少しずつ見えてきました。",
-    4: "少しずつ見えてきました。",
-    5: "少しずつ見えてきました。",
-    6: "もうすぐ正体がわかります。",
-    7: "もうすぐ正体がわかります。"
+
+function getDayNote(currentState) {
+  const pools = {
+    early: [
+      "まだ、何も決まっていません。",
+      "最初の選び方が残ります。",
+      "今日は、どちらに手を伸ばしますか。",
+      "手がかりは、まだ少しだけです。"
+    ],
+    mid: [
+      "昨日の選び方が残っています。",
+      "近づくか、離れるかの途中です。",
+      "同じ選び方で、よいのでしょうか。",
+      "少しずつ、距離が変わっています。",
+      "こぼれたものも、残っています。"
+    ],
+    late: [
+      "最後の選び方が近づいています。",
+      "もう少しで、正体が見えます。",
+      "関係は、静かに固まりつつあります。",
+      "今日の選び方も、最後に残ります。",
+      "それでも、まだ選べます。"
+    ]
   };
+  const phase = currentState.day <= 2 ? "early" : currentState.day <= 5 ? "mid" : "late";
+  const notes = pools[phase];
+  const idSeed = (currentState.currentOpponent?.id || "unknown").split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  const seed = (currentState.day * 17) + (currentState.shareCount * 11) + (currentState.takeCount * 13) + idSeed;
+  return notes[Math.abs(seed) % notes.length];
+}
+
+function updateScreen() {
   dayLabel.textContent = `${state.day}日目`;
-  dayNote.textContent = dayNotes[state.day] || dayNotes[1];
+  dayNote.textContent = getDayNote(state);
   progressBar.style.width = `${(state.day / MAX_DAYS) * 100}%`;
   document.body.setAttribute("data-phase", `day-${state.day}`);
   setupOpponentShadow();
@@ -833,11 +854,10 @@ function showResult() {
   renderResultOpponent();
   const totalCookies = MAX_DAYS * 6;
   const wastedCookies = totalCookies - state.playerScore - state.opponentScore;
-  snackResult.innerHTML = `<span class="result-chip">あなたのおやつ ${state.playerScore}</span><span class="result-chip">相手のおやつ ${state.opponentScore}</span><span class="result-chip">だれにも届かなかったおやつ ${wastedCookies}</span>`;
+  snackResult.innerHTML = `<span class="result-chip"><span>あなたのおやつ</span><strong>${state.playerScore}</strong></span><span class="result-chip"><span>相手のおやつ</span><strong>${state.opponentScore}</strong></span><span class="result-chip"><span>こぼれたおやつ</span><strong>${wastedCookies}</strong></span>`;
   relationshipEnding.textContent = `関係の結末：${getRelationshipEnding()}`;
   renderResultTracks();
-  renderEndingScene();
-  const resultItems = resultScreen.querySelectorAll(".result-panel, .result-stats, .ending-scene, .result-buttons");
+  const resultItems = resultScreen.querySelectorAll(".result-panel, .result-stats, .result-buttons");
   resultItems.forEach((item, index) => {
     item.style.animationDelay = `${Math.min(index * 0.05, 0.25)}s`;
     triggerMotion(item, "motion-result");
@@ -901,17 +921,6 @@ function renderResultOpponent() {
     resultOpponentFallback.textContent = emoji;
   }
 }
-
-function renderEndingScene() {
-  const coop = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === SHARE).length;
-  const clash = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === TAKE).length;
-  const recover = state.playerHistory.some((m, i) => i > 0 && m === SHARE && state.playerHistory[i - 1] === TAKE);
-  let tone = "far";
-  if (coop >= 4) tone = "close"; else if (clash >= 3) tone = "tense"; else if (recover) tone = "repair";
-  endingScene.className = `ending-scene ${tone}`;
-  endingScene.innerHTML = `<span class="left">◯</span><span class="middle">🍪</span><span class="right">${state.currentOpponent.emoji}</span>`;
-}
-
 
 function getMostHesitatedDay(decisionTimes) {
   if (!decisionTimes.length) return 0;

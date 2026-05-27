@@ -14,7 +14,7 @@
   <meta name="twitter:title" content="また明日も会うきみへ" />
   <meta name="twitter:description" content="森の広場で、7日間だけ同じ相手と出会う小さな選択の物語。" />
   <meta name="twitter:image" content="https://ase1182.github.io/ahita-game/assets/bg-forest-dusk.webp" />
-  <link rel="stylesheet" href="style.css?v=0.3.6" />
+  <link rel="stylesheet" href="style.css?v=0.3.8" />
 </head>
 <body data-phase="day-1" class="has-image-assets">
   <audio id="bgm" src="assets/forest-bgm.mp3" loop preload="none"></audio>
@@ -120,6 +120,15 @@
         </div>
       </section>
 
+      <section class="result-panel result-ending" aria-label="関係の結末">
+        <p id="relationship-ending" class="sub-result"></p>
+      </section>
+
+      <details class="result-panel story-panel" aria-label="7日間の物語">
+        <summary>7日間の物語を読む</summary>
+        <p id="result-story"></p>
+      </details>
+
       <details class="result-panel result-history" aria-label="7日間の足あと">
         <summary>7日間の足あとを見る</summary>
         <div class="footprint-wrap result-footprint-wrap" aria-label="結果の足あと">
@@ -133,19 +142,6 @@
           </div>
         </div>
       </details>
-
-      <section class="result-panel result-ending" aria-label="関係の結末">
-        <p id="relationship-ending" class="sub-result"></p>
-      </section>
-
-      <details class="result-panel story-panel" aria-label="7日間の物語">
-        <summary>7日間の物語を読む</summary>
-        <p id="result-story"></p>
-      </details>
-
-      <div id="ending-scene" class="ending-scene"><span class="left">◯</span><span class="middle">🍪</span><span class="right">❓</span></div>
-
-      <div class="result-actions-divider" aria-hidden="true"></div>
 
       <section class="result-panel result-cookies-panel" aria-label="フォレストクッキー" hidden aria-hidden="true">
         <h3>フォレストクッキー</h3>
@@ -206,9 +202,9 @@
   </main>
   <button id="sound-toggle" class="bgm-toggle" type="button">音を消す</button>
   <!-- Temporary build marker for cache/deploy debugging -->
-  <small id="build-version" class="build-version" aria-hidden="true">v0.3.6</small>
+  <small id="build-version" class="build-version" aria-hidden="true">v0.3.8</small>
 
-  <script src="script.js?v=0.3.6"></script>
+  <script src="script.js?v=0.3.8"></script>
   <p class="credits-entry-link-wrap"><a class="credits-entry-link" href="credits.html">素材クレジット</a></p>
 </body>
 </html>
