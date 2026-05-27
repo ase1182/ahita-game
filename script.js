@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.4"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.5"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -175,10 +175,10 @@ if (buildVersionElement) {
 
 
 const RESULT_LINES = {
-  ss: "あなたに3枚、相手に3枚届きました。",
-  ts: "あなたに5枚、相手に1枚届きました。",
-  st: "あなたに1枚、相手に5枚届きました。",
-  tt: "あなたに1枚、相手に1枚。4枚は森にこぼれました。"
+  ss: "ふたりで分けました。あなたに3枚届きました。",
+  ts: "あなたは多く持ち帰りました。手元に5枚残りました。",
+  st: "相手が多く持ち帰りました。あなたには1枚届きました。",
+  tt: "ふたりとも手元を守りました。あなたに届いたのは1枚だけでした。"
 };
 
 function compactClueLine(line) {
@@ -186,8 +186,18 @@ function compactClueLine(line) {
   const trimmed = line.trim();
   if (!trimmed) return "";
   if (trimmed.length <= 40) return trimmed;
-  const cut = trimmed.slice(0, 38).replace(/[、,]\s*$/u, "");
-  return `${cut}…`;
+
+  const sentence = trimmed.split(/[。！？!?]/u)[0]?.trim() || trimmed;
+  if (sentence.length <= 34) return sentence;
+
+  const shortCut = sentence.slice(0, 34);
+  const boundary = Math.max(
+    shortCut.lastIndexOf("、"),
+    shortCut.lastIndexOf(" "),
+    shortCut.lastIndexOf("　")
+  );
+  const safeCut = (boundary >= 18 ? shortCut.slice(0, boundary) : shortCut).replace(/[、\s　]+$/u, "");
+  return `${safeCut}…`;
 }
 
 function setTurnMessage(resultLine, clueLine = "") {

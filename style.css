@@ -1028,3 +1028,33 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
   #start-screen .start-rules-card,
   #start-screen .start-note{font-size:.94rem;line-height:1.65}
 }
+
+
+/* Play UI compact adjustments for smartphone */
+@media (max-width:520px){
+  .game{padding:10px 10px 14px}
+  .day-row{padding:6px 8px;margin-bottom:0}
+  .day{font-size:.98rem;line-height:1.2}
+  .day-note{font-size:.83rem;max-width:62%;line-height:1.28}
+  .progress{margin:6px 0 8px;height:7px}
+  .footprint-wrap{margin:0 0 8px;padding:7px;gap:4px}
+  .forest-stage{height:176px;margin-bottom:7px}
+  .character-card{bottom:32px;min-width:80px;padding:5px}
+  .character-image{width:76px;height:76px}
+  .player-silhouette{width:38px;height:38px;margin:1px auto 3px}
+  .stump{bottom:41px;width:84px;height:56px}
+  #snack-icon{font-size:1.6rem}
+  #message{min-height:0;padding:8px 10px;margin-bottom:7px}
+  #message.turn-message{line-height:1.58;margin-bottom:8px}
+  .turn-result-line{font-size:.96rem}
+  .turn-clue-line{margin-top:.22rem;font-size:.89rem;line-height:1.45}
+  .buttons{gap:7px;min-height:0;position:static;bottom:auto;padding-bottom:0}
+  button{min-height:46px;padding:9px 12px}
+}
+
+@media (max-width:420px){
+  .forest-stage{height:166px}
+  .character-card{bottom:29px}
+  #message{padding:7px 9px}
+  .turn-clue-line{font-size:.86rem}
+}
