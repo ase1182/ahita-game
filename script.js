@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.19"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.20"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1204,11 +1204,48 @@ function getStoryMetrics() {
   const playerOnlyTake = history.filter((m, i) => m === TAKE && opponentHistory[i] === SHARE).length;
   const opponentOnlyTake = history.filter((m, i) => m === SHARE && opponentHistory[i] === TAKE).length;
 
+  const firstHalf = history.slice(0, 3);
+  const secondHalf = history.slice(3);
+  const firstHalfShareCount = firstHalf.filter((m) => m === SHARE).length;
+  const firstHalfTakeCount = firstHalf.filter((m) => m === TAKE).length;
+  const secondHalfShareCount = secondHalf.filter((m) => m === SHARE).length;
+  const secondHalfTakeCount = secondHalf.filter((m) => m === TAKE).length;
+
+  const matchedDays = history.filter((m, i) => m === opponentHistory[i]).length;
+  const mismatchedDays = mismatch;
+  const mutualShareDays = coop;
+  const mutualTakeDays = clash;
+  const playerOnlyTakeDays = playerOnlyTake;
+  const opponentOnlyTakeDays = opponentOnlyTake;
+
   let recover = 0;
   let forgive = 0;
   let retaliate = 0;
   let afterTakingReturn = 0;
   let afterTakingContinue = 0;
+  let playerShareStreakMax = 0;
+  let playerTakeStreakMax = 0;
+  let mutualShareStreakMax = 0;
+  let mutualTakeStreakMax = 0;
+  let shareStreak = 0;
+  let takeStreak = 0;
+  let mutualShareStreak = 0;
+  let mutualTakeStreak = 0;
+
+  history.forEach((move, i) => {
+    const oppMove = opponentHistory[i];
+
+    shareStreak = move === SHARE ? shareStreak + 1 : 0;
+    takeStreak = move === TAKE ? takeStreak + 1 : 0;
+    playerShareStreakMax = Math.max(playerShareStreakMax, shareStreak);
+    playerTakeStreakMax = Math.max(playerTakeStreakMax, takeStreak);
+
+    mutualShareStreak = move === SHARE && oppMove === SHARE ? mutualShareStreak + 1 : 0;
+    mutualTakeStreak = move === TAKE && oppMove === TAKE ? mutualTakeStreak + 1 : 0;
+    mutualShareStreakMax = Math.max(mutualShareStreakMax, mutualShareStreak);
+    mutualTakeStreakMax = Math.max(mutualTakeStreakMax, mutualTakeStreak);
+  });
+
   for (let i = 1; i < history.length; i += 1) {
     if (history[i - 1] === TAKE && history[i] === SHARE) recover += 1;
     if (opponentHistory[i - 1] === TAKE && history[i] === SHARE) forgive += 1;
@@ -1217,8 +1254,26 @@ function getStoryMetrics() {
     if (history[i - 1] === TAKE && history[i] === TAKE) afterTakingContinue += 1;
   }
 
+  const finalPlayerMove = history[history.length - 1] || SHARE;
+  const finalOpponentMove = opponentHistory[opponentHistory.length - 1] || SHARE;
+  const finalOutcomeType = `${finalPlayerMove}-${finalOpponentMove}`;
+
   const totalCookies = state.playerScore + state.opponentScore;
   const lostPotential = (MAX_DAYS * 6) - totalCookies;
+  const playerTotal = state.playerScore;
+  const opponentTotal = state.opponentScore;
+  const lostTotal = lostPotential;
+  const scoreDiff = playerTotal - opponentTotal;
+
+  const lateShiftToShare = firstHalfTakeCount >= 2 && secondHalfShareCount >= 3 && secondHalfShareCount > secondHalfTakeCount;
+  const lateShiftToTake = firstHalfShareCount >= 2 && secondHalfTakeCount >= 3 && secondHalfTakeCount > secondHalfShareCount;
+  const recoveredLate = history.length >= 4
+    && history.slice(-3).filter((m) => m === SHARE).length >= 2
+    && history.slice(0, Math.max(0, history.length - 3)).includes(TAKE);
+  const collapsedLate = history.length >= 4
+    && history.slice(-3).filter((m) => m === TAKE).length >= 2
+    && history.slice(0, Math.max(0, history.length - 3)).includes(SHARE);
+
   const decisionTotal = decisionTimes.reduce((sum, sec) => sum + sec, 0);
   const averageDecisionTime = decisionTimes.length ? decisionTotal / decisionTimes.length : 0;
   const maxDecisionTime = decisionTimes.length ? Math.max(...decisionTimes) : 0;
@@ -1232,62 +1287,63 @@ function getStoryMetrics() {
     lostPotential, scoreDiff: state.playerScore - state.opponentScore, switchCount: countSwitches(history),
     longestShareStreak: countStreak(history, SHARE), longestTakeStreak: countStreak(history, TAKE),
     recover, forgive, retaliate, afterTakingReturn, afterTakingContinue,
-    lastDayChanged: history.length >= 2 && history[history.length - 1] !== history[history.length - 2]
+    lastDayChanged: history.length >= 2 && history[history.length - 1] !== history[history.length - 2],
+    firstHalfShareCount, firstHalfTakeCount, secondHalfShareCount, secondHalfTakeCount,
+    finalPlayerMove, finalOpponentMove, finalOutcomeType,
+    playerShareStreakMax, playerTakeStreakMax, mutualShareStreakMax, mutualTakeStreakMax,
+    lateShiftToShare, lateShiftToTake, recoveredLate, collapsedLate,
+    matchedDays, mismatchedDays, mutualShareDays, mutualTakeDays, playerOnlyTakeDays, opponentOnlyTakeDays,
+    lostTotal, playerTotal, opponentTotal
   };
 }
 
 function generateSevenDayStory(result) {
   const metrics = getStoryMetrics();
-  const lines = [];
-  const maxLines = 6;
 
-  if (metrics.firstMove === SHARE) {
-    lines.push("正体のわからない相手と出会った1日目、あなたは最初に手をひらきました。");
+  let intro = "";
+  if (metrics.lateShiftToShare || metrics.recoveredLate) {
+    intro = "はじめは手元を守る日が多かったけれど、後半になるにつれて、あなたは少しずつ相手の方へおやつを置くようになりました。";
+  } else if (metrics.lateShiftToTake || metrics.collapsedLate) {
+    intro = "はじめは分けようとしていた日もありました。けれど後半になるほど、あなたの手は少しずつ自分の方へ戻っていきました。";
+  } else if (metrics.shareCount >= 5) {
+    intro = "7日間を通して、あなたは何度も相手のための場所を残しました。その選び方は、森の広場に静かな道のように残りました。";
+  } else if (metrics.takeCount >= 5) {
+    intro = "あなたは何度も、自分の手元を守りました。それは冷たさというより、この森で迷わないための形だったのかもしれません。";
   } else {
-    lines.push("正体のわからない相手と出会った1日目、あなたはまず自分の分を守りました。");
+    intro = "7日間、あなたの選び方はひとつの形に決まりきりませんでした。分ける日も、手元を守る日もあり、そのたびに相手との距離は少しずつ揺れました。";
   }
 
-  const mixedPlay = (metrics.coop >= 2 && metrics.clash >= 2)
-    || (metrics.coop >= 2 && metrics.mismatch >= 3)
-    || (metrics.clash >= 2 && metrics.mismatch >= 3);
-
-  if (mixedPlay) addUniqueLine(lines, "分け合えた日も、守り合った日もありました。", maxLines);
-  else if (metrics.coop >= 4) addUniqueLine(lines, "分け合えた日が重なり、広場にはやわらかい時間が残りました。", maxLines);
-  else if (metrics.clash >= 3) addUniqueLine(lines, "守る選択が重なり、広場にはかたい沈黙が残りました。", maxLines);
-  else if (metrics.mismatch >= 4) addUniqueLine(lines, "同じ広場にいながら、選び方が反対になる日が多くありました。", maxLines);
-
-  if (metrics.switchCount >= 5) addUniqueLine(lines, "選び方は一つに定まらず、広場の空気に合わせて揺れました。", maxLines);
-  else if (metrics.switchCount >= 4) addUniqueLine(lines, "信じる日と守る日が交互に現れ、あなたは様子を見ながら進みました。", maxLines);
-
-  if (metrics.recover >= 2) addUniqueLine(lines, "一度離れたあとも、あなたは何度か分ける道へ戻りました。", maxLines);
-  else if (metrics.forgive > 0) addUniqueLine(lines, "受け取れなかった次の日にも、あなたの手は前に出ました。", maxLines);
-  else if (metrics.recover > 0) addUniqueLine(lines, "一度距離ができたあと、あなたはもう一度分ける道を選びました。", maxLines);
-  else if (metrics.retaliate > 0) addUniqueLine(lines, "戻ってこない日のあと、あなたは次の日に自分の分を守りました。", maxLines);
-  else if (metrics.lastDayChanged) addUniqueLine(lines, "最後の日、あなたの手はそれまでと違うほうへ動きました。", maxLines);
-
-  const cookieLines = [];
-  if (metrics.lostPotential >= 12) cookieLines.push("残せたかもしれないクッキーも、いくつか森にこぼれていきました。");
-  if (metrics.totalCookies >= 34) cookieLines.push("ふたりで残したクッキーは多く、広場には実りがありました。");
-  if (metrics.playerScore >= 24) cookieLines.push("7日間で、あなたの手元には多くのクッキーが残りました。");
-  if (metrics.playerScore <= 10) cookieLines.push("7日間で、手元に残ったクッキーは多くありませんでした。");
-  if (metrics.scoreDiff >= 8) cookieLines.push("手元の多さは、相手との距離も少し映していました。");
-  if (metrics.scoreDiff <= -8) cookieLines.push("手元の少なさは、差し出した日の数も映していました。");
-
-  cookieLines.slice(0, 2).forEach((line) => addUniqueLine(lines, line, maxLines));
-
-  if (lines.length < maxLines && metrics.maxDecisionTime >= 8) addUniqueLine(lines, metrics.mostHesitatedDay === 7
-    ? "最後の日、あなたは少し長く立ち止まりました。"
-    : "いちばん長く迷った日、あなたの手はすぐには動きませんでした。", maxLines);
-  else if (metrics.averageDecisionTime < 2.5) addUniqueLine(lines, "選択は早く、迷いはあまり長く残りませんでした。", maxLines);
-  else if (metrics.averageDecisionTime >= 6) addUniqueLine(lines, "あなたは何度も考えてから、手を動かしました。", maxLines);
-
-  while (lines.length > maxLines - 1) lines.pop();
-  while (lines.length < 4) {
-    if (!addUniqueLine(lines, "同じ7日間でも、選び方の重さは毎日少しずつ変わっていきました。", maxLines)) break;
+  let middle = "";
+  if (metrics.mutualTakeDays >= 3 || metrics.lostTotal >= 12) {
+    middle = "ふたりとも手元を守った日は、おやつが森の足元へこぼれていきました。届かなかったものも、7日間の一部として残っています。";
+  } else if (metrics.mutualShareDays >= 3 || metrics.mutualShareStreakMax >= 2) {
+    middle = "ふたりが同じように分けた日は、森の広場が少しだけ静かになりました。おやつはこぼれず、ふたりの間に届いていました。";
+  } else if (metrics.playerOnlyTakeDays >= 3 || metrics.opponentOnlyTakeDays >= 3 || Math.abs(metrics.scoreDiff) >= 8) {
+    middle = "どちらか一方に多く届く日が続きました。おやつの枚数だけでなく、ふたりの距離も少しずつ片方へ傾いていきました。";
+  } else {
+    middle = "噛み合う日も、すれ違う日もありました。届いたものと届かなかったものが、同じ広場の上に重なって残りました。";
   }
 
-  lines[lines.length - 1] = `森はその7日間を、「${result.title}」として覚えています。`;
-  return lines.join(" ");
+  let ending = "";
+  if (metrics.finalPlayerMove === SHARE) {
+    ending = "最後の日、あなたは分ける方へ手を伸ばしました。その一手が、すべてを変えたわけではありません。でも、最後に残る光の向きは少し変わりました。";
+  } else {
+    ending = "最後の日、あなたは手元を守りました。それまでの7日間を抱えたまま、森の広場は静かに終わりへ向かいました。";
+  }
+
+  if (!metrics.lateShiftToShare && !metrics.lateShiftToTake && !metrics.recoveredLate && !metrics.collapsedLate
+    && metrics.mutualTakeDays < 3 && metrics.lostTotal < 12 && metrics.mutualShareDays < 3
+    && metrics.playerOnlyTakeDays < 3 && metrics.opponentOnlyTakeDays < 3 && Math.abs(metrics.scoreDiff) < 8
+    && metrics.shareCount >= 2 && metrics.takeCount >= 2) {
+    intro = "7日間、あなたの選び方はひとつの形に決まりきりませんでした。分ける日も、手元を守る日もあり、そのたびに相手との距離は少しずつ揺れました。";
+    middle = "はっきりした答えは出なかったかもしれません。それでも、森の広場にはあなたが迷いながら選んだ跡が残っています。";
+  }
+
+  return `${intro}
+
+${middle}
+
+${ending}`;
 }
 
 function getResultType() {
