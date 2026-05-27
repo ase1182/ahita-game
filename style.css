@@ -160,13 +160,16 @@ p{line-height:1.75;margin:0}
 .buttons{display:flex;flex-direction:column;gap:10px;position:sticky;bottom:8px;min-height:176px;justify-content:flex-start}
 .build-version{
   position:fixed;
-  left:8px;
-  bottom:calc(8px + env(safe-area-inset-bottom));
-  z-index:1000;
-  font-size:10px;
-  opacity:.45;
-  color:rgba(255,255,255,.8);
+  left:max(10px, env(safe-area-inset-left));
+  bottom:max(8px, env(safe-area-inset-bottom));
+  z-index:900;
+  font-size:.72rem;
+  line-height:1;
+  letter-spacing:.02em;
+  opacity:.55;
+  color:rgba(255,255,255,.82);
   pointer-events:none;
+  user-select:none;
 }
 .bgm-toggle{
   position:fixed;
