@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.17"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.18"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -583,10 +583,12 @@ function startGameFromButtonInteraction(event) {
 function startGame() { resetGame(true); }
 
 function restartWithSameOpponent() {
+  resetResultOpponentProfile();
   resetGame(false);
 }
 
 function restartWithDifferentOpponent() {
+  resetResultOpponentProfile();
   selectNewOpponent();
   resetGame(false);
 }
@@ -670,6 +672,7 @@ function showResultScreen() {
 function resetGame(newOpponent) {
   Object.assign(state, { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 });
   issueNewRunId();
+  resetResultOpponentProfile();
   if (newOpponent || !state.currentOpponent) state.currentOpponent = selectWeightedOpponent();
   showGameScreen();
   setChoiceDisabled(false); updateScreen(); renderTracks();
@@ -965,6 +968,7 @@ function makeStep(move, label) {
 }
 
 function showResult() {
+  resetResultOpponentProfile();
   showResultScreen();
   hideForestCookieUi();
   if (safeStorage) safeStorage.setItem(STORAGE_KEYS.resultReachedAt, new Date().toISOString());
@@ -1026,22 +1030,69 @@ function renderResultTracks() {
 
 function renderResultOpponent() {
   const { name, image, emoji } = state.currentOpponent;
-  resultOpponentImage.hidden = false;
-  resultOpponentFallback.hidden = true;
-  resultOpponentImage.alt = name;
-  resultOpponentImage.src = image || "";
-  resultOpponentImage.onerror = () => {
-    resultOpponentImage.hidden = true;
-    resultOpponentFallback.hidden = false;
-    resultOpponentFallback.textContent = emoji;
-  };
-  resultOpponentImage.onload = () => {
+  const targetImage = typeof image === "string" ? image : "";
+  const targetOpponentId = state.currentOpponent ? state.currentOpponent.id : "";
+
+  resultOpponentImage.hidden = true;
+  resultOpponentFallback.hidden = false;
+  resultOpponentFallback.textContent = emoji || "❓";
+  resultOpponentImage.alt = name || "";
+  resultOpponentImage.src = "";
+  resultOpponentImage.onerror = null;
+  resultOpponentImage.onload = null;
+
+  if (!targetImage) return;
+
+  const loader = new Image();
+  loader.decoding = "async";
+  loader.src = targetImage;
+
+  const applyLoadedImage = () => {
+    if (!state.currentOpponent || state.currentOpponent.id !== targetOpponentId) return;
+    if (state.currentOpponent.image !== targetImage) return;
+    resultOpponentImage.src = targetImage;
+    resultOpponentImage.hidden = false;
     resultOpponentFallback.hidden = true;
   };
-  if (!image) {
+
+  const handleLoadError = () => {
     resultOpponentImage.hidden = true;
     resultOpponentFallback.hidden = false;
-    resultOpponentFallback.textContent = emoji;
+    resultOpponentFallback.textContent = emoji || "❓";
+  };
+
+  loader.onerror = handleLoadError;
+  loader.onload = () => {
+    if (typeof loader.decode === "function") {
+      loader.decode().catch(() => {}).finally(applyLoadedImage);
+      return;
+    }
+    applyLoadedImage();
+  };
+}
+
+function resetResultOpponentProfile() {
+  if (opponentReveal) opponentReveal.textContent = "";
+  if (opponentText) opponentText.textContent = "";
+
+  if (opponentProfile) {
+    opponentProfile.open = false;
+    opponentProfile.hidden = true;
+  }
+  if (opponentProfileTemperament) opponentProfileTemperament.textContent = "";
+  if (opponentProfileHabit) opponentProfileHabit.textContent = "";
+  if (opponentProfileMemory) opponentProfileMemory.textContent = "";
+
+  if (resultOpponentImage) {
+    resultOpponentImage.hidden = true;
+    resultOpponentImage.alt = "";
+    resultOpponentImage.src = "";
+    resultOpponentImage.onload = null;
+    resultOpponentImage.onerror = null;
+  }
+  if (resultOpponentFallback) {
+    resultOpponentFallback.hidden = false;
+    resultOpponentFallback.textContent = "❓";
   }
 }
 
