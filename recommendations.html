@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>この森が好きな人へ</title>
   <meta name="description" content="「また明日も会うきみへ」の余韻に合う本や音声コンテンツの紹介ページです。" />
-  <link rel="stylesheet" href="style.css?v=0.3.9" />
+  <link rel="stylesheet" href="style.css?v=0.3.11" />
 </head>
 <body id="recommendations-page">
   <main class="recommendations-shell" aria-label="おすすめ紹介ページ">
@@ -44,6 +44,8 @@
       const backLink = document.querySelector(".recommendations-back-link");
       const params = new URLSearchParams(window.location.search);
       const overlayMode = params.get("mode") === "overlay";
+      const embeddedMode = overlayMode || params.get("embedded") === "1";
+      if (embeddedMode) document.body.classList.add("is-embedded");
       if (!backLink) return;
       const fromResult = sessionStorage.getItem(KEY_FROM) === "true";
       if (fromResult) {
