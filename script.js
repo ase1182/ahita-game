@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.13"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.14"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -783,17 +783,17 @@ function getDayNote(currentState) {
     early: [
       "まだ、何も決まっていません。",
       "最初の選び方が残ります。",
-      "今日は、どちらに手を伸ばしますか。",
       "相手はまだ遠くにいます。",
-      "手がかりは、まだ少しだけです。"
+      "手がかりは、まだ少しだけです。",
+      "今日の一手が、はじまりです。"
     ],
     mid: [
       "昨日の選び方が残っています。",
-      "近づくか、離れるかの途中です。",
-      "相手も、あなたを見ています。",
       "同じ選び方で、よいのでしょうか。",
       "少しずつ、距離が変わっています。",
-      "こぼれたものも、残っています。"
+      "相手も、あなたを見ています。",
+      "こぼれたものも、残っています。",
+      "近づくか、離れるかの途中です。"
     ],
     late: [
       "最後の選び方が近づいています。",
@@ -804,11 +804,19 @@ function getDayNote(currentState) {
       "それでも、まだ選べます。"
     ]
   };
-  const phase = currentState.day <= 2 ? "early" : currentState.day <= 5 ? "mid" : "late";
-  const notes = pools[phase];
-  const idSeed = (currentState.currentOpponent?.id || "unknown").split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
-  const seed = (currentState.day * 17) + (currentState.shareCount * 11) + (currentState.takeCount * 13) + idSeed;
-  return notes[Math.abs(seed) % notes.length];
+
+  const safeDay = Number.parseInt(currentState.day, 10);
+  const phase = safeDay <= 2 ? "early" : safeDay <= 5 ? "mid" : "late";
+  const notes = pools[phase] || pools.mid;
+  const history = Array.isArray(currentState.playerHistory) ? currentState.playerHistory : [];
+  const shareCount = history.filter((move) => move === SHARE).length;
+  const takeCount = history.filter((move) => move === TAKE).length;
+  const idSeed = String(currentState.currentOpponent?.id || "unknown")
+    .split("")
+    .reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  const seed = (safeDay * 17) + (shareCount * 11) + (takeCount * 13) + idSeed;
+  const note = notes[Math.abs(seed) % notes.length];
+  return note || "まだ、何も決まっていません。";
 }
 
 function updateScreen() {

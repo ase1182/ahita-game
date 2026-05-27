@@ -1113,3 +1113,40 @@ body#recommendations-page.is-embedded{margin:0;min-height:auto;background:#f4ecd
 #recommendations-page.is-embedded .recommendations-panel{margin-bottom:8px}
 #recommendations-page.is-embedded .recommendations-back-wrap{display:none}
 @media (max-width:600px){.recommendations-overlay{padding:0}.recommendations-overlay-dialog{width:100%;height:100dvh;border-radius:0}.recommendations-overlay-close{margin:8px;width:calc(100% - 16px)}}
+
+
+/* v0.3.14 Play UX tuning (in-game only) */
+#game-screen .day-row{padding:8px 10px;gap:10px;align-items:baseline}
+#game-screen .day{font-size:1rem;line-height:1.2}
+#game-screen .day-note{max-width:68%;font-size:.9rem;font-weight:560;opacity:.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35}
+#game-screen .progress{margin:7px 0 9px;height:7px}
+#game-screen .forest-stage{height:198px;margin-bottom:8px}
+#game-screen .character-card{bottom:38px;min-width:88px;padding:6px 7px}
+#game-screen .character-image{width:82px;height:82px}
+#game-screen .stump{bottom:48px;width:86px;height:56px}
+#game-screen #snack-icon{font-size:1.7rem;opacity:.96}
+#game-screen #message{min-height:74px;padding:10px 12px;margin-bottom:9px}
+#game-screen .turn-result-line{font-size:.98rem;line-height:1.52}
+#game-screen .turn-clue-line{margin-top:.26rem;font-size:.9rem;line-height:1.48}
+#game-screen .buttons{gap:8px;min-height:168px;position:sticky;bottom:6px}
+#game-screen .buttons button{touch-action:manipulation;-webkit-tap-highlight-color:rgba(90,120,95,.16)}
+#game-screen #continue-button{font-weight:800;box-shadow:0 8px 16px rgba(30,50,34,.24);border-color:rgba(52,80,58,.5)}
+#game-screen #share-button:active,#game-screen #take-button:active,#game-screen #continue-button:active{transform:translateY(1px) scale(.997)}
+
+@media (max-width:520px){
+  #game-screen{padding:10px 10px 12px}
+  #game-screen .day-row{padding:6px 8px}
+  #game-screen .day-note{font-size:.84rem;max-width:64%}
+  #game-screen .progress{margin:6px 0 7px}
+  #game-screen .footprint-wrap{margin:0 0 7px;padding:7px}
+  #game-screen .forest-stage{height:164px;margin-bottom:7px}
+  #game-screen .character-card{bottom:28px;min-width:76px;padding:5px}
+  #game-screen .character-image{width:70px;height:70px}
+  #game-screen .stump{bottom:36px;width:76px;height:50px}
+  #game-screen #snack-icon{font-size:1.5rem}
+  #game-screen #message{min-height:62px;padding:8px 9px;margin-bottom:7px}
+  #game-screen .turn-result-line{font-size:.94rem}
+  #game-screen .turn-clue-line{font-size:.86rem}
+  #game-screen .buttons{position:static;min-height:152px;gap:7px;bottom:auto;padding-bottom:0}
+  #game-screen .buttons button{min-height:48px}
+}
