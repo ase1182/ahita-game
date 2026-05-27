@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.25"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.26"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1099,15 +1099,37 @@ const RANDOM_STRATEGY_KEYS = new Set(["randomMood", "rareTaker"]);
 const REACTIVE_STRATEGY_KEYS = new Set(["mirrorYesterday", "generousMirror", "suspiciousMirror", "grimTrigger", "pavlovLike", "testerOwl", "majorityFollower", "twoWarnings", "followsRichSide", "cautiousCrow", "remembersForTwoDays", "changesAfterThree", "forgetfulRabbit"]);
 
 const opponentPerspectiveVoices = {
-  default: { mutualShare: "分け合えたので、次も様子を見ながら近づく判断をしました。", playerTook: "あなたが多く取ったので、次は距離を置いて警戒しました。", opponentTook: "その日は自分が多く取り、あなたの反応を確かめました。", mutualTake: "ふたりで守り合ったので、次も慎重に距離を保ちました。" },
-  tanuki: { mutualShare: "分け合えたので、次も同じ歩幅で試してみようとしました。", playerTook: "あなたが多く取ったので、次は様子見を強める判断にしました。" },
-  rabbit: { mutualShare: "分けられたので、少しだけ近づいてもよいと見ました。", mutualTake: "守り合いになったので、すぐ半歩ぶん距離を置きました。" },
-  crow: { playerTook: "あなたの守り方を覚え、次は枝の上から警戒を強めました。", opponentTook: "自分が多く取った日は、あなたの返し方を観察しました。" },
-  squirrel: { mutualShare: "分けてもらえたので、その記憶を次の手がかりにしました。" },
-  wolf: { playerTook: "手元を守る選び方を見て、次は距離を保つ方を選びました。", mutualTake: "守り合いが続くと見て、警戒を解かない判断にしました。" },
-  fox: { opponentTook: "その日は試しに多く取り、あなたの反応を見極めました。" },
-  deer: { mutualShare: "分け合えたので、静かに近づく余地があると見ました。", mutualTake: "守り合いを見て、次も静かに距離を残す判断にしました。" },
-  cat: { mutualShare: "分け合えた日でも、気分の揺れを残して近づきました。", opponentTook: "見てはいましたが、その日の気分で多く取る方へ寄りました。" }
+  default: {
+    mutualShare: "分け合えたので、次も同じ空気を試してみました。",
+    playerTook: "あなたが守ったので、次は少し距離を置きました。",
+    opponentTook: "その日は自分が多く取り、返し方を見ました。",
+    mutualTake: "守り合いになったので、次も慎重に構えました。",
+    afterPlayerShared: "前日に分けてもらえた記憶を、次の手がかりにしました。",
+    afterPlayerTook: "前日に守られた感触を覚え、次は警戒を残しました。",
+    finalShare: "最後は分け合えたので、この距離を静かに持ち帰りました。",
+    finalTake: "最後は守り合いになり、余白を残して広場を離れました。",
+    fixedTone: "見てはいても、その日も自分の順番を保ちました。",
+    reactiveTone: "その日の出来事を、次の日の判断へきちんと回しました。",
+    randomTone: "様子は見つつも、気分の揺れを少し混ぜて選びました。"
+  },
+  tanuki: { mutualShare: "分けられたので、もう一歩だけ近づいて試しました。", playerTook: "あなたが守ったので、次は様子見を少し濃くしました。", opponentTook: "その日は多めに取り、あなたの返しをそっと見ました。", mutualTake: "守り合ったので、深追いせず距離を残しました。", reactiveTone: "昨日の空気を覚えつつ、近づきすぎない形にしました。" },
+  rabbit: { mutualShare: "分けられたので、少し安心して近づきました。", playerTook: "あなたが守ったので、すぐ半歩ぶん離れました。", opponentTook: "その日は多く取りつつ、あなたの顔色を見ました。", mutualTake: "守り合った日は、近づくのをいったんやめました。", reactiveTone: "昨日の反応を受けて、すぐ次の距離を決めました。" },
+  crow: { mutualShare: "分けた日を覚え、あなたの癖として記録しました。", playerTook: "あなたが守った日を、次の判断材料にしました。", opponentTook: "自分が多く取った日は、返し方を観察しました。", mutualTake: "守り合ったので、次はさらに慎重に読みました。" },
+  squirrel: { mutualShare: "分けられた日を、小さな安心としてためました。", playerTook: "あなたが守った日は、警戒の記憶にしまいました。", opponentTook: "その日は多く取り、反応を小さく覚えました。", mutualTake: "守り合った日のこわさを、次の日まで残しました。" },
+  wolf: { mutualShare: "分けられても、すぐには距離を詰めませんでした。", playerTook: "あなたが守ったので、警戒を強めて保ちました。", opponentTook: "多く取った日も、あなたとの距離を見ていました。", mutualTake: "守り合ったので、近づかない方を選びました。" },
+  fox: { mutualShare: "分けられたので、次も試せる余地があると見ました。", playerTook: "あなたが守ったので、反応を変えて探りました。", opponentTook: "自分が多く取り、あなたの返し方を試しました。", mutualTake: "守り合った日は、互いを読む時間にしました。" },
+  deer: { mutualShare: "分けられたので、距離を少しだけゆるめました。", playerTook: "あなたが守ったので、静かに離れる方を選びました。", opponentTook: "多く取ったあとも、近づきすぎず距離を測りました。", mutualTake: "守り合った日は、森の奥へ引く気持ちになりました。" },
+  cat: { mutualShare: "分けられて、今日は少し近づく気になりました。", playerTook: "あなたが守ったので、今日は離れることにしました。", opponentTook: "自分が多く取っても、気分はまだ揺れていました。", mutualTake: "守り合った日も、少し他人事みたいに眺めました。" },
+  hedgehog: { mutualShare: "分けてもらえたので、針を少しだけおろしました。", playerTook: "あなたが守ったので、また身を丸めて距離を取りました。" },
+  owl: { mutualShare: "分けた日を静かに覚え、次の確かめに使いました。", opponentTook: "その日は試しに多く取り、返しを夜目で見ました。" },
+  woodpecker: { mutualShare: "分けた日は、次も同じ調子で刻むと決めました。", mutualTake: "守り合った日は、次で拍を切り替えるつもりでした。", fixedTone: "その日も決めたリズムを崩さずに選びました。" },
+  boar: { mutualShare: "分けられた日でも、進み方はまっすぐ保ちました。", playerTook: "あなたが守っても、立ち止まらず自分の形で進みました。", fixedTone: "見えていた変化より、いつもの勢いを優先しました。" },
+  bear: { mutualShare: "分けられた日は、もう少し待てると判断しました。", playerTook: "あなたが守ったので、次は静かに身を守る側へ寄せました。" },
+  monkey: { mutualShare: "分けられたので、次の手も試せると見ました。", opponentTook: "その日は多く取り、どんな返しが来るか試しました。" },
+  porcupine: { mutualShare: "分けられたので、警戒を少しだけゆるめました。", playerTook: "あなたが守ったので、しばらく針を立てて構えました。" },
+  raven: { mutualShare: "分け合いの日を記録し、重さの偏りを見続けました。", playerTook: "あなたが守ったので、次は有利な流れを探りました。" },
+  turtle: { mutualShare: "分けられた感触を持って、同じ歩幅で進みました。", playerTook: "あなたが守った日は、遅れて警戒を強めました。" },
+  sheep: { mutualShare: "分けられたので、安心して同じ空気に寄りました。", playerTook: "あなたが守ったので、少し迷いながら距離を置きました。", randomTone: "見てはいたけれど、その日の揺れも混ざっていました。" }
 };
 
 function pickVoice(opponentId, key){ return (opponentPerspectiveVoices[opponentId] && opponentPerspectiveVoices[opponentId][key]) || opponentPerspectiveVoices.default[key] || opponentPerspectiveVoices.default.mutualShare; }
@@ -1116,11 +1138,17 @@ function generateOpponentPerspectiveDays(opponent) {
   const styleType = FIXED_STRATEGY_KEYS.has(opponent?.strategyKey) ? "fixed" : RANDOM_STRATEGY_KEYS.has(opponent?.strategyKey) ? "random" : "reactive";
   return playerHistory.map((playerMove, dayIndex) => {
     const opponentMove = opponentHistory[dayIndex] || SHARE;
+    const isFinalDay = dayIndex === (playerHistory.length - 1);
+    const prevPlayerMove = dayIndex > 0 ? playerHistory[dayIndex - 1] : null;
     const outcomeKey = playerMove===SHARE && opponentMove===SHARE?"mutualShare":playerMove===TAKE && opponentMove===SHARE?"playerTook":playerMove===SHARE && opponentMove===TAKE?"opponentTook":"mutualTake";
+    const styleKey = styleType === "fixed" ? "fixedTone" : styleType === "reactive" ? "reactiveTone" : "randomTone";
+    const prevKey = prevPlayerMove == null ? null : prevPlayerMove === SHARE ? "afterPlayerShared" : "afterPlayerTook";
+    const finalKey = isFinalDay ? (outcomeKey === "mutualShare" ? "finalShare" : "finalTake") : null;
     let text = pickVoice(opponent.id, outcomeKey);
-    if (styleType === "fixed") text += " その日も自分の順番を崩しませんでした。";
-    else if (styleType === "reactive") text += dayIndex === 0 ? " まずは様子を見て、次に備えました。" : " その判断を次の日の距離に反映しました。";
-    else text += " あなたを見つつも、その日の気分が混ざりました。";
+    if (isFinalDay) text = pickVoice(opponent.id, finalKey);
+    else if (dayIndex > 0 && styleType === "reactive") text = pickVoice(opponent.id, prevKey);
+    if (!text) text = pickVoice(opponent.id, outcomeKey);
+    if (!isFinalDay) text += ` ${pickVoice(opponent.id, styleKey)}`;
     const oneSentence = `${text.replace(/\s+/g, "").split("。").filter(Boolean)[0]}。`;
     return { day: dayIndex + 1, text: oneSentence };
   });
