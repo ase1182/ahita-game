@@ -1137,6 +1137,19 @@ body#recommendations-page.is-embedded{margin:0;min-height:auto;background:#f4ecd
 #game-screen .turn-clue-line.motion-turn-clue{animation:turnClueReveal .18s ease-out .09s both}
 #game-screen #continue-button.motion-advance{animation:continueButtonPop .2s ease-out both}
 #game-screen .day.motion-day-update{animation:dayLabelReveal .18s ease-out both}
+#game-screen .turn-effect-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:4}
+#game-screen .snack-particle{position:absolute;left:50%;top:58%;width:8px;height:8px;border-radius:999px;background:radial-gradient(circle at 30% 30%,rgba(255,250,230,.96),rgba(238,214,151,.72));opacity:0;transform:translate3d(var(--sx,0),var(--sy,0),0) scale(.88);animation:snackArrive .26s ease-out var(--delay,0ms) both}
+#game-screen .snack-particle.spill{left:53%;top:60%;width:7px;height:7px;background:radial-gradient(circle at 35% 35%,rgba(221,198,142,.72),rgba(121,103,73,.42));animation:snackSpill .28s ease-out var(--delay,0ms) both}
+#game-screen .character-card.mystery.motion-presence{animation:presenceHint .22s ease-out both}
+#game-screen .progress{position:relative}
+#game-screen #progress-bar::after{content:"";position:absolute;right:-7px;top:50%;width:10px;height:10px;border-radius:999px;background:radial-gradient(circle,rgba(255,246,212,.62),rgba(255,246,212,0));transform:translateY(-50%);opacity:0;pointer-events:none}
+#game-screen #progress-bar.motion-refresh::after{animation:progressTipGlow .22s ease-out both}
+#game-screen #continue-button.final-day{box-shadow:0 10px 18px rgba(28,48,34,.28),inset 0 1px 0 rgba(255,255,255,.45)}
+
+@keyframes snackArrive{0%{opacity:0;transform:translate3d(var(--sx,0),calc(var(--sy,0) + 3px),0) scale(.82)}55%{opacity:.92}100%{opacity:0;transform:translate3d(calc(var(--sx,0) + 5px),calc(var(--sy,0) - 7px),0) scale(1)}}
+@keyframes snackSpill{0%{opacity:0;transform:translate3d(0,0,0) scale(.9)}40%{opacity:.68}100%{opacity:0;transform:translate3d(1px,12px,0) scale(.82)}}
+@keyframes presenceHint{0%{opacity:.9;transform:translateY(0)}45%{opacity:1;transform:translateY(-1px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes progressTipGlow{0%{opacity:0}45%{opacity:.75}100%{opacity:0}}
 
 @keyframes turnResultReveal{
   from{opacity:0;transform:translateY(4px)}
@@ -1180,4 +1193,6 @@ body#recommendations-page.is-embedded{margin:0;min-height:auto;background:#f4ecd
   #game-screen .turn-clue-line.motion-turn-clue,
   #game-screen #continue-button.motion-advance,
   #game-screen .day.motion-day-update{animation:none}
+  #game-screen .character-card.mystery.motion-presence{animation:none}
+  #game-screen .snack-particle{animation:none;opacity:0}
 }
