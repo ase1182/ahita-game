@@ -1093,6 +1093,30 @@ function getResultType() {
   return { title: matched.title, text: matched.text };
 }
 
+function getRelationshipMetrics() {
+  const playerTotal = state.playerScore;
+  const opponentTotal = state.opponentScore;
+  const lostTotal = (MAX_DAYS * 6) - playerTotal - opponentTotal;
+  const sharedDays = state.playerHistory.filter((move, i) => move === SHARE && state.opponentHistory[i] === SHARE).length;
+  const playerOnlyTakeDays = state.playerHistory.filter((move, i) => move === TAKE && state.opponentHistory[i] === SHARE).length;
+  const opponentOnlyTakeDays = state.playerHistory.filter((move, i) => move === SHARE && state.opponentHistory[i] === TAKE).length;
+  const mutualTakeDays = state.playerHistory.filter((move, i) => move === TAKE && state.opponentHistory[i] === TAKE).length;
+  const conflictDays = playerOnlyTakeDays + opponentOnlyTakeDays;
+  const scoreDiff = Math.abs(playerTotal - opponentTotal);
+
+  return {
+    playerTotal,
+    opponentTotal,
+    lostTotal,
+    sharedDays,
+    conflictDays,
+    mutualTakeDays,
+    playerOnlyTakeDays,
+    opponentOnlyTakeDays,
+    scoreDiff
+  };
+}
+
 function getRelationshipEndingSeed() {
   const historyKey = [
     state.currentOpponent?.id || "unknown",
@@ -1108,96 +1132,54 @@ function getRelationshipEndingSeed() {
 }
 
 function getRelationshipEnding() {
-  const coop = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === SHARE).length;
-  const clash = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === TAKE).length;
-  const youTakeOnly = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === SHARE).length;
-  const opponentTakeOnly = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === TAKE).length;
-  const sameChoices = state.playerHistory.filter((m, i) => m === state.opponentHistory[i]).length;
-  const lastIndex = state.playerHistory.length - 1;
-  const lastSame = lastIndex >= 0 && state.playerHistory[lastIndex] === state.opponentHistory[lastIndex];
-  const lastBothShare = lastIndex >= 0 && state.playerHistory[lastIndex] === SHARE && state.opponentHistory[lastIndex] === SHARE;
-  const lastBothTake = lastIndex >= 0 && state.playerHistory[lastIndex] === TAKE && state.opponentHistory[lastIndex] === TAKE;
+  const metrics = getRelationshipMetrics();
+  const endings = [
+    {
+      when: metrics.lostTotal >= 18,
+      text: "【森にこぼれた7日間】7日間で、たくさんのおやつが誰にも届かないまま、森にこぼれていきました。得たものよりも、届かなかったものの気配が、最後まで広場に残りました。"
+    },
+    {
+      when: metrics.playerTotal >= 22 && metrics.opponentTotal <= 10,
+      text: "【たくさん持ち帰ったけれど】あなたの手元には、たくさんのおやつが残りました。けれど、広場の向こうには、少し長い沈黙も残っていました。"
+    },
+    {
+      when: metrics.playerTotal >= 14 && metrics.opponentTotal >= 14 && metrics.lostTotal <= 8 && metrics.sharedDays >= 4,
+      text: "【あたたかな分け合い】おやつは、ふたりの間を何度も行き来しました。多くは失われず、最後には、相手もあなたのそばにいることを怖がらなくなっていました。"
+    },
+    {
+      when: metrics.scoreDiff >= 10,
+      text: "【片側に傾いた関係】7日間のあいだに、おやつはどちらか一方へ大きく傾いていきました。近づいたようで、ふたりの距離は少し斜めのままでした。"
+    },
+    {
+      when: metrics.lostTotal >= 14 && metrics.sharedDays <= 2,
+      text: "【静かなすれ違い】何度か、おやつは誰の手にも届かず、森の土の上に静かに残りました。ふたりは出会っていたのに、少しずつすれ違っていたのかもしれません。"
+    },
+    {
+      when: metrics.scoreDiff <= 2 && metrics.sharedDays >= 2 && metrics.mutualTakeDays <= 2,
+      text: "【不思議な均衡】多すぎも少なすぎもせず、ふたりの間には不思議な釣り合いが残りました。近すぎないまま、それでも7日間は途切れませんでした。"
+    },
+    {
+      when: metrics.mutualTakeDays >= 3 && metrics.conflictDays <= 2,
+      text: "【守られた距離】ふたりは何度も、自分のぶんを守ろうとしました。近づきすぎない距離のまま、それでも同じ広場に来つづけた7日間でした。"
+    }
+  ];
 
-  let category = "quiet";
-  if (coop >= 4) {
-    category = "close";
-  } else if (clash >= 3) {
-    category = "guarded";
-  } else if (youTakeOnly >= 3) {
-    category = "oneSidedYou";
-  } else if (opponentTakeOnly >= 3) {
-    category = "oneSidedOpponent";
-  } else if (sameChoices <= 2) {
-    category = "uncertain";
-  }
+  const matched = endings.find((ending) => ending.when);
+  if (matched) return matched.text;
 
-  const endings = {
-    close: [
-      "また会えそうな距離まで、少し近づきました。",
-      "次に会う日も、広場へ向かえそうです。",
-      "ふたりの足あとが、しばらく同じ方へ続いていました。",
-      "おやつを分けた日の空気が、帰り道にも残っていました。",
-      "明日も同じ広場で会えそうな、やわらかい距離です。",
-      "言葉にしなくても、次の日の約束が少し見えました。",
-      "ふたりのあいだに、急がなくても消えない近さが残りました。",
-      "森を出るころ、相手の足音はまだ近くにありました。"
-    ],
-    guarded: [
-      "ふたりとも、少し距離を置いたまま森を出ました。",
-      "近づきたい気持ちより、身を守る気持ちが強く残りました。",
-      "広場には、言葉にしない警戒だけが少し残りました。",
-      "おやつの数よりも、互いの目線が少し遠くなりました。",
-      "足あとは残りましたが、並んではいませんでした。",
-      "次に会うなら、少し離れた場所から始まりそうです。",
-      "森の帰り道で、ふたりは別々の音を聞いていました。",
-      "近づく前に、まず身を守る気持ちが立っていました。"
-    ],
-    oneSidedYou: [
-      "おやつは多く手に入りましたが、相手の足音は少し遠くなりました。",
-      "たくさん抱えたぶん、広場には静かな距離が残りました。",
-      "手の中のおやつと引き換えに、相手の目線は少し離れました。",
-      "あなたの手は満ちていて、相手の足もとは少し後ろにありました。",
-      "多くを持ち帰った帰り道に、少しだけ沈黙が混ざりました。",
-      "おやつは残りましたが、次の日の近さは少し薄くなりました。",
-      "相手は何も言わず、広場の端で立ち止まっていました。",
-      "手にしたものの重さが、ふたりの距離にも少し乗りました。"
-    ],
-    oneSidedOpponent: [
-      "相手の足もとは近く、あなたの手もとは少し軽いままでした。",
-      "分けようとした気持ちは、相手に届ききらない日もありました。",
-      "広場に立つあなたのそばを、少し冷たい風が通りました。",
-      "差し出した手の先で、おやつは別の方へ運ばれました。",
-      "あなたの足あとだけが、少し長く広場に残っていました。",
-      "近づこうとした分だけ、帰り道が少し静かになりました。",
-      "相手の手にはおやつがあり、あなたの中には問いが残りました。",
-      "分けたかった気持ちは、森の奥で少しだけ揺れていました。"
-    ],
-    uncertain: [
-      "近づいた日も、離れた日もあり、まだ名前のつかない距離です。",
-      "ふたりの足あとには、同じ向きと違う向きが混ざっていました。",
-      "次に会えば、また違う距離から始まりそうです。",
-      "広場には、近さとも遠さとも言えない空気が残りました。",
-      "どの日が本当だったのか、森だけが静かに覚えています。",
-      "ふたりのあいだには、まだ決まらない余白がありました。",
-      "近づきかけては立ち止まる、そんな7日間でした。",
-      "もう一度会えば、違う足あとが残るかもしれません。"
-    ],
-    quiet: [
-      "近づききらず、離れきらず、静かな距離が残りました。",
-      "森の出口で、ふたりは少しだけ振り返りました。",
-      "まだ言葉にならないまま、次の日の余白が残りました。",
-      "はっきりした答えは出ないまま、広場の音だけが残りました。",
-      "ふたりの距離は、大きく変わらず、少しだけ揺れていました。",
-      "また会うかどうかを、森の風だけが知っていました。",
-      "帰り道には、近さよりも静けさが残っていました。",
-      "ふたりはそれぞれの歩幅で、森をあとにしました。"
-    ]
-  };
+  const fallback = [
+    "近づききらず、離れきらず、静かな距離が残りました。",
+    "森の出口で、ふたりは少しだけ振り返りました。",
+    "まだ言葉にならないまま、次の日の余白が残りました。",
+    "はっきりした答えは出ないまま、広場の音だけが残りました。",
+    "ふたりの距離は、大きく変わらず、少しだけ揺れていました。",
+    "また会うかどうかを、森の風だけが知っていました。",
+    "帰り道には、近さよりも静けさが残っていました。",
+    "ふたりはそれぞれの歩幅で、森をあとにしました。"
+  ];
 
-
-  const candidates = endings[category] || endings.quiet;
   const seed = getRelationshipEndingSeed();
-  return candidates[seed % candidates.length];
+  return fallback[seed % fallback.length];
 }
 
 function buildShareText(opponentName, resultTitle) {
