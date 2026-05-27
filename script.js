@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.1"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.2"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1017,79 +1017,52 @@ function generateSevenDayStory(result) {
 }
 
 function getResultType() {
-  const shareCount = state.playerHistory.filter((m) => m === SHARE).length;
-  const takeCount = state.playerHistory.filter((m) => m === TAKE).length;
-  const coop = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === SHARE).length;
-  const clash = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === TAKE).length;
-  const mismatch = state.playerHistory.filter((m, i) => m !== state.opponentHistory[i]).length;
-  const playerOnlyTake = state.playerHistory.filter((m, i) => m === TAKE && state.opponentHistory[i] === SHARE).length;
-  const opponentOnlyTake = state.playerHistory.filter((m, i) => m === SHARE && state.opponentHistory[i] === TAKE).length;
-  const opponentTookFromPlayer = opponentOnlyTake * 5;
-  const playerOnlyTakeCookies = playerOnlyTake * 5;
-  const mutualShareCookies = coop * 3;
-  const mutualTakeCookies = clash * 1;
-
-  let recover = 0;
-  let forgive = 0;
-  let alternating = 0;
-  for (let i = 1; i < state.playerHistory.length; i += 1) {
-    if (state.playerHistory[i - 1] === TAKE && state.playerHistory[i] === SHARE) recover += 1;
-    if (state.opponentHistory[i - 1] === TAKE && state.playerHistory[i] === SHARE) forgive += 1;
-    if (state.playerHistory[i - 1] !== state.playerHistory[i]) alternating += 1;
-  }
-
-  const earlyMoves = state.playerHistory.slice(0, 3);
-  const lateMoves = state.playerHistory.slice(-3);
-  const earlyShares = earlyMoves.filter((m) => m === SHARE).length;
-  const lateShares = lateMoves.filter((m) => m === SHARE).length;
-  const earlyTakes = earlyMoves.filter((m) => m === TAKE).length;
-  const lateTakes = lateMoves.filter((m) => m === TAKE).length;
-
-  const decisionTimes = state.decisionTimes.slice(0, state.playerHistory.length);
-  const decisionTotal = decisionTimes.reduce((sum, sec) => sum + sec, 0);
-  const averageDecisionTime = decisionTimes.length > 0 ? decisionTotal / decisionTimes.length : 0;
-  const maxDecisionTime = decisionTimes.length > 0 ? Math.max(...decisionTimes) : 0;
-  const quickDecisions = decisionTimes.filter((sec) => sec < 2).length;
-  const slowDecisions = decisionTimes.filter((sec) => sec >= 6).length;
+  const metrics = getRelationshipMetrics();
 
   const resultTypes = [
-    { when: shareCount === MAX_DAYS, title: "最後まで分けた人", text: "7日間、分けることを続けました。相手がどう動いても、その手つきは変わりませんでした。" },
-    { when: takeCount === MAX_DAYS, title: "最後まで守った人", text: "7日間、自分の分を守り続けました。手元には多く残り、広場には距離も残りました。" },
-    { when: shareCount >= 5 && averageDecisionTime < 2.5, title: "すばやく信じた人", text: "あまり迷わず、分ける道を選びました。その早さにも、ひとつの信じ方がありました。" },
-    { when: takeCount >= 5 && averageDecisionTime < 2.5, title: "すばやく取りにいく人", text: "目の前のクッキーを、すばやく選び取りました。迷いの少なさも、森には残っています。" },
-    { when: shareCount >= 5 && averageDecisionTime >= 6, title: "立ち止まって分ける人", text: "あなたは考えてから、分ける道を選びました。迷った時間ごと、広場に残っています。" },
-    { when: takeCount >= 5 && averageDecisionTime >= 6, title: "立ち止まって守る人", text: "あなたは考えてから、自分の分を守りました。急がない選択にも、理由があったのかもしれません。" },
-    { when: forgive > 0, title: "それでも差し出す人", text: "受け取れない日があっても、もう一度差し出しました。その選択は、すぐに報われなくても残ります。" },
-    { when: recover > 0, title: "仲直りを試す人", text: "一度離れたあとも、もう一度分ける道を選びました。戻ろうとする選択も、森には残ります。" },
-    { when: lateShares > earlyShares && lateShares >= 2, title: "静かに信じ直す人", text: "後半のあなたは、少しずつ分けるほうへ戻っていきました。広場の空気も、少しだけやわらいでいます。" },
-    { when: lateTakes > earlyTakes && lateTakes >= 2, title: "距離を測る人", text: "後半のあなたは、少し距離を置く選び方をしました。守ることにも、理由があったのかもしれません。" },
-    { when: coop >= 4, title: "同じ歩幅の人", text: "あなたと相手は、何度も同じ選び方で並びました。分け合った日の静けさが、広場に残っています。" },
-    { when: clash >= 3, title: "針をしまえない人", text: "身を守る選択が重なりました。そのぶん、広場には近づききれない空気も残りました。" },
-    { when: mismatch >= 4, title: "すれ違いを抱えた人", text: "あなたと相手の選び方は、何度もすれ違いました。それでも7日間、同じ広場に戻ってきました。" },
-    { when: mutualShareCookies >= 12, title: "分け合いを積んだ人", text: "分け合えた日は、クッキーだけでなく空気もやわらげました。積み重ねは、数字より先に広場へ残ります。" },
-    { when: mutualTakeCookies >= 4, title: "守りを重ねた人", text: "おたがいに身を守る日が続きました。近づききれない距離も、7日間の記録のひとつです。" },
-    { when: state.playerScore >= 24, title: "多くを持ち帰る人", text: "手元には、たくさんのクッキーが残りました。その多さの向こうに、明日の空気も並んでいます。" },
-    { when: state.playerScore <= 12 && shareCount >= 4, title: "少なくても残した人", text: "手元のクッキーは多くありませんでした。それでも、分けた日の記憶は広場に残っています。" },
-    { when: opponentTookFromPlayer >= 10 && shareCount >= 4, title: "差し出し続けた人", text: "差し出しても戻らない日がありました。それでも、あなたの手は何度か前に出ました。" },
-    { when: opponentTookFromPlayer >= 10 && playerOnlyTakeCookies >= 10, title: "行き来の多い人", text: "差し出した日と受け取った日、その両方が目立ちました。やり取りの濃さも、広場に残る記録です。" },
-    { when: playerOnlyTake >= 3, title: "甘さを集めた人", text: "クッキーはあなたの側に多く集まりました。今日の甘さと、少しの距離が残っています。" },
-    { when: alternating >= 4 && averageDecisionTime >= 4, title: "慎重に変える人", text: "あなたは何度も立ち止まり、選び方を変えました。迷いも、この森ではひとつの記録です。" },
-    { when: alternating >= 4, title: "風に揺れる人", text: "あなたの選び方は、何度か揺れました。広場の空気を見ながら、手を変えていきました。" },
-    { when: quickDecisions >= 5, title: "早足の人", text: "あなたの選択は、迷いなく早く積もりました。森は、その速さも覚えています。" },
-    { when: slowDecisions >= 4, title: "長く考える人", text: "あなたは何度も長く考えてから選びました。その間も、相手は広場で待っていました。" },
-    { when: maxDecisionTime >= 9, title: "深呼吸して決める人", text: "ときどき長く立ち止まり、深呼吸してから手を選びました。その間の沈黙も、森は覚えています。" },
-    { when: state.playerScore >= 20 && shareCount >= 2 && takeCount >= 2, title: "今日と明日の間にいる人", text: "あなたは得ることと関係を残すことの間で選びました。今日の多さと、明日の空気が並んでいます。" },
-    { when: shareCount >= 5, title: "明日を信じる人", text: "迷いながらも、分け合う道を多く選びました。明日がある場所では、その選び方が静かに残ります。" },
-    { when: takeCount >= 5, title: "今日を取りにいく人", text: "目の前のクッキーを取りこぼしませんでした。ただ、相手も昨日のことを覚えています。" },
-    { when: shareCount >= 3 && takeCount >= 3, title: "様子を見る人", text: "あなたは相手の出方を見ながら、選び方を変えました。広場では、迷いもひとつの記録です。" },
-    { when: true, title: "迷いながら選ぶ人", text: "信じることと守ることの間で、何度も立ち止まりました。森は、その揺れも覚えています。" }
+    {
+      when: metrics.lostTotal >= 16,
+      title: "こぼれたものを見送った人",
+      text: "7日間で、だれにも届かなかったおやつがいくつもありました。あなたの選び方は、得たものだけでなく、こぼれたものの多さも残しました。"
+    },
+    {
+      when: metrics.playerTotal >= 22,
+      title: "たくさん持ち帰った人",
+      text: "あなたの手元には、たくさんのおやつが残りました。7日間の選び方は、まず自分を守ることに向いていたようです。"
+    },
+    {
+      when: metrics.lostTotal <= 8 && metrics.sharedDays >= 4 && metrics.shareCount >= 4,
+      title: "森を見ていた人",
+      text: "あなたは、自分の手元だけでなく、ふたりに届くおやつの行き先も気にしていました。森の広場には、こぼれずに渡ったものが多く残りました。"
+    },
+    {
+      when: (metrics.opponentTotal - metrics.playerTotal) >= 8 && metrics.shareCount >= 4,
+      title: "相手に差し出した人",
+      text: "あなたは、何度も相手へおやつを差し出しました。手元に残った数は多くなくても、広場の向こうにはやわらかな気配が残りました。"
+    },
+    {
+      when: metrics.takeCount >= 5 && metrics.playerTotal < 22,
+      title: "手元を守った人",
+      text: "あなたは、何度も自分の手元を守ろうとしました。広場に残った距離は、その選び方の静かな跡のようでした。"
+    },
+    {
+      when: metrics.shareCount >= 5 && metrics.lostTotal > 8,
+      title: "近づこうとした人",
+      text: "あなたは、何度も近づこうとしました。けれど、おやつがうまく届かない日もあり、そのたびに広場には少しだけ静けさが残りました。"
+    },
+    {
+      when: metrics.shareCount >= 2 && metrics.takeCount >= 2 && metrics.scoreDiff <= 6 && metrics.lostTotal < 16,
+      title: "迷いながら選んだ人",
+      text: "あなたは、分ける日も、持ち帰る日もありました。はっきりとは決めきらないまま、それでも7日間、相手を見つづけていました。"
+    },
+    {
+      when: true,
+      title: "7日間を見つづけた人",
+      text: "あなたは、毎日の反応を確かめながら手を選びました。7日間の選び方は、手元と相手と広場の空気に、静かに残っています。"
+    }
   ];
 
   const matched = resultTypes.find((result) => result.when);
-  if (!matched) {
-    return { title: "迷いながら選ぶ人", text: "信じることと守ることの間で、何度も立ち止まりました。森は、その揺れも覚えています。" };
-  }
-
   return { title: matched.title, text: matched.text };
 }
 
@@ -1103,6 +1076,8 @@ function getRelationshipMetrics() {
   const mutualTakeDays = state.playerHistory.filter((move, i) => move === TAKE && state.opponentHistory[i] === TAKE).length;
   const conflictDays = playerOnlyTakeDays + opponentOnlyTakeDays;
   const scoreDiff = Math.abs(playerTotal - opponentTotal);
+  const shareCount = state.playerHistory.filter((move) => move === SHARE).length;
+  const takeCount = state.playerHistory.filter((move) => move === TAKE).length;
 
   return {
     playerTotal,
@@ -1113,7 +1088,9 @@ function getRelationshipMetrics() {
     mutualTakeDays,
     playerOnlyTakeDays,
     opponentOnlyTakeDays,
-    scoreDiff
+    scoreDiff,
+    shareCount,
+    takeCount
   };
 }
 
