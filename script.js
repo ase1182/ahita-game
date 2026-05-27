@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.12"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.13"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
