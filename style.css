@@ -367,6 +367,13 @@ h1,
 #result-screen .opponent-profile > summary:active{transform:translateY(1px)}
 
 #result-screen .theory details p{margin-top:8px;color:#342d22;line-height:1.8;font-size:1rem}
+#result-screen .theory .theory-table-wrap{margin-top:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid rgba(85,72,55,.18);border-radius:10px;background:rgba(255,250,240,.62)}
+#result-screen .theory .theory-payoff-table{width:100%;min-width:520px;border-collapse:collapse;font-size:.92rem;line-height:1.55}
+#result-screen .theory .theory-payoff-table th,
+#result-screen .theory .theory-payoff-table td{padding:8px 9px;border:1px solid rgba(90,77,59,.18);vertical-align:top;color:#31291f}
+#result-screen .theory .theory-payoff-table thead th{background:rgba(236,225,203,.72);font-weight:700}
+#result-screen .theory .theory-payoff-table tbody th{background:rgba(246,238,222,.62);font-weight:700;white-space:nowrap}
+#result-screen .opponent-perspective p{margin:0;font-size:.93rem;line-height:1.72;color:#332b21}
 @keyframes resultDetailReveal{
   from{opacity:0;transform:translateY(4px)}
   to{opacity:1;transform:translateY(0)}
@@ -396,6 +403,7 @@ h1,
   #result-screen .theory{padding:9px 10px}
   #result-screen .theory > p{line-height:1.7}
   #result-screen .theory details summary{padding:8px 0}
+  #result-screen .theory .theory-payoff-table{font-size:.84rem;min-width:480px}
   .bgm-toggle{right:max(10px, env(safe-area-inset-right));top:max(10px, env(safe-area-inset-top));min-height:44px;min-width:44px;padding:9px 12px;font-size:.9rem}
 }
 
