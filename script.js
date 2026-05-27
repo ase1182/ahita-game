@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.21"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.22"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -150,7 +150,8 @@ const opponentProfileTemperament = document.getElementById("opponent-profile-tem
 const opponentProfileHabit = document.getElementById("opponent-profile-habit");
 const opponentProfileMemory = document.getElementById("opponent-profile-memory");
 const opponentPerspective = document.getElementById("opponent-perspective");
-const opponentPerspectiveText = document.getElementById("opponent-perspective-text");
+const opponentPerspectiveText = document.getElementById("opponent-thought-days");
+const runTheoryAnalysis = document.getElementById("run-theory-analysis");
 const forestCookieBalance = document.getElementById("forest-cookie-balance");
 const grantCookiesButton = document.getElementById("grant-cookies-button");
 const grantCookiesMessage = document.getElementById("grant-cookies-message");
@@ -981,6 +982,7 @@ function showResult() {
   opponentReveal.textContent = `相手の正体：${state.currentOpponent.name} ${state.currentOpponent.emoji}`; opponentText.textContent = state.currentOpponent.description;
   renderOpponentProfile(state.currentOpponent.profile);
   renderOpponentPerspective(state.currentOpponent);
+  renderGameTheoryRunAnalysis();
   renderResultOpponent();
   const totalCookies = MAX_DAYS * 6;
   const wastedCookies = totalCookies - state.playerScore - state.opponentScore;
@@ -998,6 +1000,58 @@ safeStorage = initializeStorage();
 hideForestCookieUi();
 ensureCookieStorageDefaults();
 updateSoundToggleLabel();
+
+function getRunGameTheoryMetrics() {
+  const rows = state.playerHistory.map((playerMove, index) => {
+    const opponentMove = state.opponentHistory[index] || SHARE;
+    const payoff = PAYOFF_TABLE[`${playerMove}_${opponentMove}`] || { player: 0, opponent: 0 };
+    const lost = Math.max(0, 6 - payoff.player - payoff.opponent);
+    const outcomeLabel = playerMove === SHARE && opponentMove === SHARE
+      ? "分け合い"
+      : playerMove === TAKE && opponentMove === SHARE
+        ? "あなた多め"
+        : playerMove === SHARE && opponentMove === TAKE
+          ? "相手多め"
+          : "こぼれた日";
+    return { day: index + 1, playerMove, opponentMove, outcomeLabel, player: payoff.player, opponent: payoff.opponent, lost };
+  });
+  const totalPlaced = MAX_DAYS * 6;
+  const delivered = state.playerScore + state.opponentScore;
+  const lostTotal = totalPlaced - delivered;
+  return { rows, totalPlaced, delivered, lostTotal, playerTotal: state.playerScore, opponentTotal: state.opponentScore, deliveryRate: Math.round((delivered / totalPlaced) * 100) };
+}
+
+function generateGameTheoryRunComment(metrics, storyMetrics) {
+  const notes = [];
+  if (metrics.lostTotal >= 12) notes.push("手元を守る選択が重なり、森にこぼれた枚数が多めに残りました。");
+  else notes.push("こぼれた枚数は抑えられ、ふたりに届く量が比較的保たれた7日間でした。");
+  if (storyMetrics.mutualShareDays >= 4) notes.push("分け合いの日が多く、くり返しの中で協調が続いた回になっています。");
+  else if (storyMetrics.mutualTakeDays >= 3) notes.push("両者がひとりじめを選ぶ日が重なり、全体効率が下がりやすい展開でした。");
+  else if (storyMetrics.playerOnlyTakeDays >= 2 || storyMetrics.opponentOnlyTakeDays >= 2) notes.push("片側が多く持ち帰る日が続き、枚数差としてリザルトに残りました。");
+  if (storyMetrics.lateShiftToShare) notes.push("後半は分ける方向へ寄り、終盤の関係を持ち直す動きが見えます。");
+  else if (storyMetrics.lateShiftToTake) notes.push("後半は手元優先へ寄り、終盤ほど慎重な空気が強まりました。");
+  notes.push(storyMetrics.finalPlayerMove === SHARE ? "最終日はわける選択で締めくくられています。" : "最終日はひとりじめの選択で締めくくられています。");
+  return notes.slice(0,4).join("");
+}
+
+function renderGameTheoryRunAnalysis() {
+  if (!runTheoryAnalysis) return;
+  const metrics = getRunGameTheoryMetrics();
+  const storyMetrics = getStoryMetrics();
+  const segments = [
+    { key: "player", label: "あなた", value: metrics.playerTotal },
+    { key: "opponent", label: "相手", value: metrics.opponentTotal },
+    { key: "lost", label: "こぼれ", value: metrics.lostTotal }
+  ];
+  const rowsHtml = metrics.rows.map((row) => `<tr><th>${row.day}</th><td>${row.playerMove}</td><td>${row.opponentMove}</td><td>${row.outcomeLabel}</td><td>${row.player}枚</td><td>${row.opponent}枚</td><td>${row.lost}枚</td></tr>`).join("");
+  const barHtml = segments.map((seg) => {
+    if (seg.value <= 0) return "";
+    const width = Math.max((seg.value / metrics.totalPlaced) * 100, 6);
+    return `<span class="run-flow-segment ${seg.key}" style="width:${width}%">${seg.label} ${seg.value}枚</span>`;
+  }).join("");
+  const legendHtml = segments.map((seg) => `<span class="run-flow-legend-item ${seg.key}">${seg.label} ${seg.value}枚</span>`).join("");
+  runTheoryAnalysis.innerHTML = `<div class="theory-table-wrap" role="region" aria-label="今回の7日間の行動表"><table class="theory-payoff-table run-theory-table"><thead><tr><th>日</th><th>あなた</th><th>相手</th><th>結果</th><th>あなた</th><th>相手</th><th>こぼれ</th></tr></thead><tbody>${rowsHtml}</tbody></table></div><div class="run-theory-summary"><p>あなたのおやつ: <strong>${metrics.playerTotal}枚</strong></p><p>相手のおやつ: <strong>${metrics.opponentTotal}枚</strong></p><p>こぼれたおやつ: <strong>${metrics.lostTotal}枚</strong></p><p>森に置かれたおやつ: <strong>${metrics.totalPlaced}枚</strong></p><p>ふたりに届いたおやつ: <strong>${metrics.delivered}枚</strong></p><p>森全体の到達率: <strong>${metrics.deliveryRate}%</strong></p></div><div class="run-flow" aria-label="42枚のおやつの配分"><div class="run-flow-bar" role="img" aria-label="あなた${metrics.playerTotal}枚、相手${metrics.opponentTotal}枚、こぼれ${metrics.lostTotal}枚">${barHtml}</div><div class="run-flow-legend">${legendHtml}</div></div><p class="run-theory-comment">${generateGameTheoryRunComment(metrics, storyMetrics)}</p>`;
+}
 
 function renderOpponentProfile(profile) {
   if (!opponentProfile || !opponentProfileTemperament || !opponentProfileHabit || !opponentProfileMemory) return;
@@ -1024,62 +1078,31 @@ const FIXED_STRATEGY_KEYS = new Set(["alwaysCooperate", "alwaysTake", "alternato
 const RANDOM_STRATEGY_KEYS = new Set(["randomMood", "rareTaker"]);
 const REACTIVE_STRATEGY_KEYS = new Set(["mirrorYesterday", "generousMirror", "suspiciousMirror", "grimTrigger", "pavlovLike", "testerOwl", "majorityFollower", "twoWarnings", "followsRichSide", "cautiousCrow", "remembersForTwoDays", "changesAfterThree", "forgetfulRabbit"]);
 
-function describePrevDayLink(prevType, styleType) {
-  if (!prevType || styleType === "fixed") return "";
-  if (prevType === "SHARE-SHARE") return "昨日の分け合いを覚えていたようでした。";
-  if (prevType === "TAKE-TAKE") return "昨日の静けさを少し引きずっていました。";
-  if (prevType === "TAKE-SHARE") return "昨日の手元を守る選び方を見て、距離を測っていました。";
-  return "自分が多く持ち帰った日のあと、あなたの反応を見ていました。";
-}
+const opponentPerspectiveVoices = {
+  default: { mutualShare:["互いに分けた日は、少しだけ肩の力を抜いていました。"], playerTook:["あなたが多く持ち帰ると、次の間合いを慎重に測っていました。"], opponentTook:["その日は自分の分を先に抱え、反応を静かに見ていました。"], mutualTake:["守り合う選択が重なり、広場の空気は少しかたくなりました。"], afterPlayerShared:["前日に分けてもらえた記憶が、判断をやわらげていました。"], afterPlayerTook:["前日のひとりじめを覚え、身を守る気配が強まっていました。"], finalShare:["最後は分けられたおやつを、静かな区切りとして受け取っていました。"], finalTake:["最後は手元を守る選択を、そのまま終わりの形にしていました。"] },
+  tanuki:{mutualShare:["分け合えた日は、様子見の目つきが少しやわらいでいました。"],playerTook:["多く持ち帰る手つきを見て、次は同じ歩幅で返そうとしていました。"]},
+  rabbit:{mutualShare:["分けてもらえた日は、耳を伏せるようにほっとしていました。"],mutualTake:["守り合いになると、すぐ一歩ぶん距離を取りました。"]},
+  crow:{opponentTook:["有利な日でも浮かれず、次の損得を枝上で計っていました。"]},
+  squirrel:{afterPlayerShared:["前日の分け方を小さく覚え、今日は安心寄りに選んでいました。"]},
+  wolf:{afterPlayerTook:["前日の取り合いを強く覚え、警戒を解かずに判断していました。"]},
+  fox:{opponentTook:["今日は試しの一手として多めに取り、返し方を読んでいました。"]},
+  deer:{mutualTake:["取り合いの気配が重なると、森の奥へ引くように選んでいました。"]},
+  cat:{opponentTook:["気分の波に乗るように多めに取り、次の間合いは決めきりませんでした。"]}
+};
 
-function generateOpponentPerspectiveDays(opponent, storyMetrics) {
-  const playerHistory = state.playerHistory.slice();
-  const opponentHistory = state.opponentHistory.slice();
+function pickVoice(opponentId, key){ const bank=(opponentPerspectiveVoices[opponentId]&&opponentPerspectiveVoices[opponentId][key])||opponentPerspectiveVoices.default[key]||[""]; return bank[Math.floor(Math.random()*bank.length)]||""; }
+function getStrategyTone(styleType){return styleType==="fixed"?"同じ調子を崩さず選んでいました。":styleType==="random"?"その日の気分の揺れを残した判断でした。":"昨日までの流れを見て選んでいました。";}
+function generateOpponentPerspectiveDays(opponent) {
+  const playerHistory = state.playerHistory.slice(); const opponentHistory = state.opponentHistory.slice();
   const styleType = FIXED_STRATEGY_KEYS.has(opponent?.strategyKey) ? "fixed" : RANDOM_STRATEGY_KEYS.has(opponent?.strategyKey) ? "random" : "reactive";
-
   return playerHistory.map((playerMove, dayIndex) => {
-    const opponentMove = opponentHistory[dayIndex] || SHARE;
-    const isFinalDay = dayIndex === MAX_DAYS - 1;
-    const outcomeType = `${playerMove}-${opponentMove}`;
-    const prevType = dayIndex > 0 ? `${playerHistory[dayIndex - 1]}-${opponentHistory[dayIndex - 1]}` : "";
-    const prevLink = describePrevDayLink(prevType, styleType);
-
-    let text = "";
-    if (isFinalDay) {
-      if (outcomeType === "SHARE-SHARE") text = "最後の日、分けられたおやつを、終わりの合図のように受け取っていました。";
-      else if (outcomeType === "TAKE-TAKE") text = "最後の日、ふたりとも手元を守り、広場には届かなかったものが残りました。";
-      else text = "最後の日、手元を守る選び方を、静かに見届けていました。";
-    } else if (outcomeType === "SHARE-SHARE") {
-      text = styleType === "fixed"
-        ? "分けられたおやつを受け取りながらも、この子は自分の調子を崩しませんでした。"
-        : "分けられたおやつを、静かに受け取っていました。";
-    } else if (outcomeType === "TAKE-SHARE") {
-      text = styleType === "reactive"
-        ? "あなたの手が自分の方へ戻るのを見て、少し距離を取りました。"
-        : "あなたの手が自分の方へ戻るのを、少し離れて見ていました。";
-    } else if (outcomeType === "SHARE-TAKE") {
-      if (styleType === "fixed") text = "その日は、自分の調子のまま手元を守りました。";
-      else if (styleType === "random") text = "多くを持ち帰りながらも、その日の気分のまま揺れていました。";
-      else text = "この子は多くを持ち帰り、あなたの反応を確かめていました。";
-    } else {
-      text = styleType === "fixed"
-        ? "ふたりとも手元を守る形が続き、この子は同じ調子を保っていました。"
-        : "ふたりとも手元を守り、広場には少し静けさが残りました。";
-    }
-
-    if (!isFinalDay && dayIndex > 0 && styleType !== "fixed" && dayIndex % 2 === 1) {
-      text = `${prevLink}${text}`;
-    }
-
-    if (!isFinalDay && styleType === "fixed" && dayIndex >= 4) {
-      text = `${text}変わらず自分の順番で選んでいました。`;
-    }
-
-    if (!isFinalDay && styleType === "random" && dayIndex >= 3 && storyMetrics.mismatch >= 3) {
-      text = `${text}近づいたり離れたりする揺れが残っていました。`;
-    }
-
-    return { day: dayIndex + 1, text };
+    const opponentMove = opponentHistory[dayIndex] || SHARE; const isFinalDay = dayIndex === MAX_DAYS - 1;
+    const prevPlayer = dayIndex > 0 ? playerHistory[dayIndex-1] : null;
+    const outcomeKey = playerMove===SHARE && opponentMove===SHARE?"mutualShare":playerMove===TAKE && opponentMove===SHARE?"playerTook":playerMove===SHARE && opponentMove===TAKE?"opponentTook":"mutualTake";
+    let text = isFinalDay ? pickVoice(opponent.id, opponentMove===SHARE?"finalShare":"finalTake") : pickVoice(opponent.id, outcomeKey);
+    if (!isFinalDay && dayIndex>0) text += prevPlayer===SHARE ? pickVoice(opponent.id,"afterPlayerShared") : pickVoice(opponent.id,"afterPlayerTook");
+    text += getStrategyTone(styleType);
+    return { day: dayIndex + 1, text: text.slice(0, 52) };
   });
 }
 
@@ -1092,8 +1115,7 @@ function renderOpponentPerspective(opponent) {
     return;
   }
 
-  const storyMetrics = getStoryMetrics();
-  const dayThoughts = generateOpponentPerspectiveDays(opponent, storyMetrics);
+  const dayThoughts = generateOpponentPerspectiveDays(opponent);
   opponentPerspective.hidden = false;
   opponentPerspective.open = false;
   opponentPerspectiveText.innerHTML = dayThoughts.map((entry) => `<li><span class="opponent-thought-day">${entry.day}日目</span><span class="opponent-thought-text">${entry.text}</span></li>`).join("");
