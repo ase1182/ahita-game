@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.23"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.24"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1023,9 +1023,9 @@ function getRunGameTheoryMetrics() {
   const opponentTakeDays = rows.filter((row) => row.playerMove === SHARE && row.opponentMove === TAKE).length;
   const mutualTakeDays = rows.filter((row) => row.playerMove === TAKE && row.opponentMove === TAKE).length;
   const opponentSharedDays = rows.filter((row) => row.opponentMove === SHARE).length;
-  const pObserved = MAX_DAYS > 0 ? opponentSharedDays / MAX_DAYS : 0;
-  const expectedShare = 1 + (2 * pObserved);
-  const expectedTake = 1 + (4 * pObserved);
+  const opponentShareRate = MAX_DAYS > 0 ? opponentSharedDays / MAX_DAYS : 0;
+  const expectedShare = 1 + (2 * opponentShareRate);
+  const expectedTake = 1 + (4 * opponentShareRate);
   const playerAvg = MAX_DAYS > 0 ? state.playerScore / MAX_DAYS : 0;
   const opponentAvg = MAX_DAYS > 0 ? state.opponentScore / MAX_DAYS : 0;
   const lostAvg = MAX_DAYS > 0 ? lostTotal / MAX_DAYS : 0;
@@ -1035,36 +1035,24 @@ function getRunGameTheoryMetrics() {
     rows, totalPlaced, delivered, lostTotal,
     playerTotal: state.playerScore, opponentTotal: state.opponentScore,
     shareShareDays, playerTakeDays, opponentTakeDays, mutualTakeDays,
-    opponentSharedDays, pObserved, expectedShare, expectedTake,
+    opponentSharedDays, opponentShareRate, expectedShare, expectedTake,
     playerAvg, opponentAvg, lostAvg, deliveryRate, lossRate
   };
 }
 
-function generateGameTheoryRunComment(metrics, storyMetrics) {
-  const trendText = storyMetrics.mutualShareDays >= 4
-    ? "分け合いの日が多く、やり取りの中で協調が続いた7日間でした。"
-    : storyMetrics.mutualTakeDays >= 3
-      ? "手元を守る選択がぶつかる日が重なり、慎重な空気が残る7日間でした。"
-      : "分け合いと手元優先が混ざり、日ごとの間合いが揺れやすい展開でした。";
+function generateGameTheoryRunComment(metrics) {
+  const shapeText = `今回の7日間では、分け合いが${metrics.shareShareDays}日、こぼれた日が${metrics.mutualTakeDays}日ありました。`;
   const expectedGap = metrics.expectedTake - metrics.expectedShare;
-  const expectedLeadText = expectedGap >= 0.4 ? "単純モデルではひとりじめの期待値が高めに見えます。" : "単純モデルでは両選択の期待値差は小さめです。";
-  const actualGap = metrics.playerAvg - metrics.expectedTake;
-  const actualGapText = actualGap >= 0
-    ? "実際の平均は単純期待値と同等以上で、相手との噛み合いが得点に結びついた場面がありました。"
-    : "実際の平均は単純期待値より控えめで、相手の反応変化や日ごとの噛み合いが効いた可能性があります。";
-  const lossText = metrics.lossRate >= 0.3
-    ? "こぼれ率が高めだったため、両者に届く総量が減りやすい回でもありました。"
-    : "こぼれ率は抑えられ、森に置かれたおやつがふたりへ届きやすい回になりました。";
-  const finalLine = storyMetrics.finalPlayerMove === SHARE
-    ? "最終日はわける選択で終わっており、結末は協調側の余韻につながっています。"
-    : "最終日はひとりじめで終わっており、結末には慎重さを残す流れが見えます。";
-  return `${trendText}\n\n相手がわけた比率から計算した短期期待値では、相手の行動が固定なら取り分の見え方は整理できます。${expectedLeadText}${actualGapText}\n\n森全体では到達率${Math.round(metrics.deliveryRate * 100)}%、こぼれ率${Math.round(metrics.lossRate * 100)}%でした。${lossText}${finalLine}`;
+  const theoryText = expectedGap >= 0.4
+    ? "1日だけを見ると、ひとりじめは自分の枚数を増やしやすい選択に見えます。ですが、同じ考えが重なるとおやつはこぼれます。"
+    : "1日だけを見ると、ふたつの選び方の差は小さめです。ですが、守り合いが重なるとおやつはこぼれます。";
+  const repeatText = "このゲームは7日間続くので、短期の得だけでなく、相手が何を覚えて次の日にどう変えたかも結果に残ります。";
+  return `${shapeText}\n\n${theoryText}\n\n${repeatText}`;
 }
 
 function renderGameTheoryRunAnalysis() {
   if (!runTheoryAnalysis) return;
   const metrics = getRunGameTheoryMetrics();
-  const storyMetrics = getStoryMetrics();
   const segments = [
     { key: "player", label: "あなた", value: metrics.playerTotal },
     { key: "opponent", label: "相手", value: metrics.opponentTotal },
@@ -1080,11 +1068,11 @@ function renderGameTheoryRunAnalysis() {
   const toPercent = (value) => `${Math.round(value * 100)}%`;
   const toFixed1 = (value) => value.toFixed(1);
   const runIntro = `<p class="run-theory-intro">今回の7日間を、行動の事実 → 集計 → 期待値 → 解釈の順で整理しています。</p>`;
-  const patternCards = `<div class="run-pattern-grid" aria-label="今回の7日間の形"><p class="run-pattern-card"><span>分け合いの日</span><strong>${metrics.shareShareDays}日</strong></p><p class="run-pattern-card"><span>あなた多めの日</span><strong>${metrics.playerTakeDays}日</strong></p><p class="run-pattern-card"><span>相手多めの日</span><strong>${metrics.opponentTakeDays}日</strong></p><p class="run-pattern-card"><span>こぼれた日</span><strong>${metrics.mutualTakeDays}日</strong></p></div>`;
-  const totals = `<div class="run-theory-summary"><p>あなたのおやつ: <strong>${metrics.playerTotal}枚</strong></p><p>相手のおやつ: <strong>${metrics.opponentTotal}枚</strong></p><p>ふたりに届いた合計: <strong>${metrics.delivered}/${metrics.totalPlaced}枚</strong></p><p>こぼれたおやつ: <strong>${metrics.lostTotal}/${metrics.totalPlaced}枚</strong></p><p>森全体の到達率: <strong>${toPercent(metrics.deliveryRate)}</strong></p><p>森全体のこぼれ率: <strong>${toPercent(metrics.lossRate)}</strong></p></div><p class="run-theory-footnote">到達率が高いほど、森に置かれたおやつがふたりに残った回です。こぼれ率が高いほど、同日に手元を守る選択が重なった影響が大きくなります。</p>`;
-  const expectation = `<div class="run-theory-summary"><p>相手がわけた日: <strong>${metrics.opponentSharedDays}/${MAX_DAYS}日</strong></p><p>観測上の p: <strong>約${toPercent(metrics.pObserved)}</strong></p><p>毎回わけると仮定した1日平均: <strong>約${toFixed1(metrics.expectedShare)}枚</strong></p><p>毎回ひとりじめると仮定した1日平均: <strong>約${toFixed1(metrics.expectedTake)}枚</strong></p></div><p class="run-theory-footnote">この期待値は「相手の行動が変わらない」と仮定した単純モデルです。この森では、相手もあなたの行動を見て次の日を変えることがあります。</p>`;
-  const actualAverages = `<div class="run-theory-summary"><p>あなたの実際の1日平均: <strong>約${toFixed1(metrics.playerAvg)}枚</strong></p><p>相手の実際の1日平均: <strong>約${toFixed1(metrics.opponentAvg)}枚</strong></p><p>こぼれた平均: <strong>約${toFixed1(metrics.lostAvg)}枚</strong></p></div>`;
-  runTheoryAnalysis.innerHTML = `${runIntro}<div class="theory-table-wrap" role="region" aria-label="今回の7日間の行動表"><table class="theory-payoff-table run-theory-table"><thead><tr><th>日</th><th>あなた</th><th>相手</th><th>結果</th><th>あなた</th><th>相手</th><th>こぼれ</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>${patternCards}${totals}<div class="run-flow"><div class="run-flow-bar" role="img" aria-label="あなた${metrics.playerTotal}枚、相手${metrics.opponentTotal}枚、こぼれ${metrics.lostTotal}枚">${barHtml}</div><div class="run-flow-legend">${legendHtml}</div></div>${expectation}${actualAverages}<p class="run-theory-comment">${generateGameTheoryRunComment(metrics, storyMetrics).replaceAll("\n", "<br><br>")}</p>`;
+  const patternCards = `<h4 class="run-section-title">今回の型まとめ</h4><div class="run-pattern-grid" aria-label="今回の7日間の形"><p class="run-pattern-card"><span>分け合い</span><strong>${metrics.shareShareDays}日</strong></p><p class="run-pattern-card"><span>あなた多め</span><strong>${metrics.playerTakeDays}日</strong></p><p class="run-pattern-card"><span>相手多め</span><strong>${metrics.opponentTakeDays}日</strong></p><p class="run-pattern-card"><span>こぼれた日</span><strong>${metrics.mutualTakeDays}日</strong></p></div><p class="run-theory-footnote">どの日が多いかで、7日間の形が見えてきます。</p>`;
+  const totals = `<div class="run-theory-summary"><p>あなた: <strong>${metrics.playerTotal}枚</strong></p><p>相手: <strong>${metrics.opponentTotal}枚</strong></p><p>届いた合計: <strong>${metrics.delivered}/${metrics.totalPlaced}枚</strong></p><p>届いた割合: <strong>約${toPercent(metrics.deliveryRate)}</strong></p><p>こぼれたおやつ: <strong>${metrics.lostTotal}枚</strong></p><p class="run-sub-note">こぼれ率: 約${toPercent(metrics.lossRate)}</p></div>`;
+  const expectation = `<h4 class="run-section-title">もし相手の動きが変わらないなら</h4><p class="run-theory-footnote">今回、相手は7日のうち<strong>${metrics.opponentSharedDays}日</strong>わけました（約${toPercent(metrics.opponentShareRate)}）。この割合だけを使って単純に見ると、1日あたりの平均は次のように見えます。</p><div class="run-theory-summary"><p>毎回わける: <strong>約${toFixed1(metrics.expectedShare)}枚</strong></p><p>毎回ひとりじめ: <strong>約${toFixed1(metrics.expectedTake)}枚</strong></p></div><p class="run-theory-footnote">ただし、これは相手の動きが変わらないと仮定した単純な見方です。実際には、あなたの選び方を見て行動を変える相手もいます。</p><p class="run-theory-footnote run-equation-note"><small>計算式（補足）: わける = 1 + 2p / ひとりじめ = 1 + 4p（ここでは、相手が分ける割合を p と置きます）</small></p>`;
+  const nashBlock = `<h4 class="run-section-title">ナッシュ均衡という見方</h4><p class="run-theory-footnote">1日だけの表を見ると、自分の枚数だけを考えるなら「ひとりじめ」は強い選び方に見えます。相手がわけるなら5枚、相手がひとりじめても1枚は届くからです。</p><p class="run-theory-footnote">このように、相手の選び方を前提にして自分だけ変えても得しにくい形を、ゲーム理論ではナッシュ均衡と呼びます。この森では、両方がひとりじめる形がそれに近い状態です。ただし、それが森全体にとってよい結果とは限りません。</p><p class="run-theory-footnote">1日だけなら、ひとりじめは強く見えます。しかし、このゲームは7日間続きます。相手によっては昨日の選び方を覚え、次の日の行動を変えます。だから、1日だけの表では見えない信頼・警戒・距離が結果に残ります。</p>`;
+  runTheoryAnalysis.innerHTML = `${runIntro}<div class="theory-table-wrap" role="region" aria-label="今回の7日間の行動表"><table class="theory-payoff-table run-theory-table"><thead><tr><th>日</th><th>あなた</th><th>相手</th><th>結果</th><th>あなた</th><th>相手</th><th>こぼれ</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>${patternCards}<h4 class="run-section-title">42枚はどこへ行ったか</h4>${totals}<div class="run-flow"><div class="run-flow-bar" role="img" aria-label="あなた${metrics.playerTotal}枚、相手${metrics.opponentTotal}枚、こぼれ${metrics.lostTotal}枚">${barHtml}</div><div class="run-flow-legend">${legendHtml}</div></div>${expectation}${nashBlock}<p class="run-theory-comment">${generateGameTheoryRunComment(metrics).replaceAll("\n", "<br><br>")}</p>`;
 }
 
 function renderOpponentProfile(profile) {
