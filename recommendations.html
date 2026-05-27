@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>この森が好きな人へ</title>
   <meta name="description" content="「また明日も会うきみへ」の余韻に合う本や音声コンテンツの紹介ページです。" />
-  <link rel="stylesheet" href="style.css?v=0d1f4aa" />
+  <link rel="stylesheet" href="style.css?v=0.3.9" />
 </head>
 <body id="recommendations-page">
   <main class="recommendations-shell" aria-label="おすすめ紹介ページ">
@@ -32,8 +32,44 @@
     </section>
 
     <p class="recommendations-back-wrap">
-      <a class="recommendations-back-link button-link" href="./">トップページへ戻る</a>
+      <a class="recommendations-back-link button-link" href="index.html?return=result">結果に戻る</a>
     </p>
   </main>
+  <script>
+    (function () {
+      const KEY_FROM = "ahita.recommendations.fromResult";
+      const KEY_BGM = "ahita.sound.enabled";
+      const KEY_BGM_WAS_PLAYING = "ahita.recommendations.bgmWasPlaying";
+      const KEY_BGM_TIME = "ahita.recommendations.bgmTime";
+      const backLink = document.querySelector(".recommendations-back-link");
+      if (!backLink) return;
+      const fromResult = sessionStorage.getItem(KEY_FROM) === "true";
+      if (fromResult) {
+        backLink.textContent = "結果に戻る";
+        backLink.addEventListener("click", function (event) {
+          event.preventDefault();
+          if (document.referrer && document.referrer.includes("index.html")) {
+            history.back();
+            return;
+          }
+          window.location.href = "index.html?return=result";
+        });
+      } else {
+        backLink.href = "index.html";
+      }
+      const soundEnabled = localStorage.getItem(KEY_BGM) !== "false";
+      const wasPlaying = sessionStorage.getItem(KEY_BGM_WAS_PLAYING) === "true";
+      if (fromResult && soundEnabled && wasPlaying) {
+        const bgm = new Audio("assets/forest-bgm.mp3");
+        bgm.loop = true;
+        bgm.volume = 0.25;
+        const t = Number(sessionStorage.getItem(KEY_BGM_TIME) || 0);
+        if (Number.isFinite(t) && t > 0) bgm.currentTime = t;
+        const p = bgm.play();
+        if (p && typeof p.catch === "function") p.catch(function(){ /* autoplay制限は許容 */ });
+        window.addEventListener("pagehide", function () { bgm.pause(); });
+      }
+    }());
+  </script>
 </body>
 </html>

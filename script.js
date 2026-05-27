@@ -4,13 +4,16 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.8"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.9"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
   version: "ahita.cookies.version",
   currentRunId: "ahita.ahita.currentRunId",
-  resultReachedAt: "ahita.ahita.resultReachedAt"
+  resultReachedAt: "ahita.ahita.resultReachedAt",
+  recommendationsFromResult: "ahita.recommendations.fromResult",
+  recommendationsBgmWasPlaying: "ahita.recommendations.bgmWasPlaying",
+  recommendationsBgmTime: "ahita.recommendations.bgmTime"
 };
 
 console.info("また明日も会うきみへ version:", APP_VERSION);
@@ -158,6 +161,7 @@ const shareButton = document.getElementById("share-button");
 const takeButton = document.getElementById("take-button");
 const retryButton = document.getElementById("retry-button");
 const shareResultButton = document.getElementById("share-result-button");
+const recommendationsLink = document.querySelector(".result-recommend-link");
 const newOpponentButton = document.getElementById("new-opponent-button");
 const continueButton = document.getElementById("continue-button");
 const bgm = document.getElementById("bgm");
@@ -517,6 +521,17 @@ if (grantCookiesButton) {
   grantCookiesButton.addEventListener("touchend", onGrantCookies, { passive: false });
 }
 if (soundToggleButton) soundToggleButton.addEventListener("click", handleSoundToggle);
+
+if (recommendationsLink) {
+  recommendationsLink.addEventListener("click", () => {
+    if (!safeStorage) return;
+    safeStorage.setItem(STORAGE_KEYS.recommendationsFromResult, "true");
+    const bgmWasPlaying = Boolean(bgm && !bgm.paused && isSoundEnabled());
+    safeStorage.setItem(STORAGE_KEYS.recommendationsBgmWasPlaying, bgmWasPlaying ? "true" : "false");
+    if (bgm) safeStorage.setItem(STORAGE_KEYS.recommendationsBgmTime, String(bgm.currentTime || 0));
+  });
+}
+
 if (bgm) bgm.volume = BGM_VOLUME;
 updateSoundToggleLabel();
 document.addEventListener("click", tryPlayBgm, { once: true });
@@ -854,7 +869,7 @@ function showResult() {
   renderResultOpponent();
   const totalCookies = MAX_DAYS * 6;
   const wastedCookies = totalCookies - state.playerScore - state.opponentScore;
-  snackResult.innerHTML = `<span class="result-chip"><span>あなたのおやつ</span><strong>${state.playerScore}</strong></span><span class="result-chip"><span>相手のおやつ</span><strong>${state.opponentScore}</strong></span><span class="result-chip"><span>こぼれたおやつ</span><strong>${wastedCookies}</strong></span>`;
+  snackResult.innerHTML = `<span class="result-chip"><span>あなたのおやつ</span><strong>${state.playerScore}<span class="result-unit">枚</span></strong></span><span class="result-chip"><span>相手のおやつ</span><strong>${state.opponentScore}<span class="result-unit">枚</span></strong></span><span class="result-chip"><span>こぼれたおやつ</span><strong>${wastedCookies}<span class="result-unit">枚</span></strong></span>`;
   relationshipEnding.textContent = `関係の結末：${getRelationshipEnding()}`;
   renderResultTracks();
   const resultItems = resultScreen.querySelectorAll(".result-panel, .result-stats, .result-buttons");
