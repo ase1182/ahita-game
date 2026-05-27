@@ -387,6 +387,7 @@ h1,
 #result-screen .run-pattern-card{margin:0;padding:8px 9px;border-radius:9px;border:1px solid rgba(90,77,59,.18);background:rgba(253,247,236,.76);display:flex;flex-direction:column;gap:4px}
 #result-screen .run-pattern-card span{font-size:.83rem;color:#4a3d2e}
 #result-screen .run-pattern-card strong{font-size:1rem;color:#2a2218}
+#result-screen .run-section-title{margin:10px 0 6px;font-size:.95rem;color:#30271d}
 #result-screen .run-flow{margin-top:10px}
 #result-screen .run-flow-bar{display:flex;width:100%;min-height:34px;border-radius:10px;overflow:hidden;background:rgba(225,215,194,.6);border:1px solid rgba(90,77,59,.2)}
 #result-screen .run-flow-segment{display:flex;align-items:center;justify-content:center;padding:0 6px;font-size:.78rem;font-weight:700;color:#1f1a14;white-space:nowrap}
@@ -396,6 +397,8 @@ h1,
 #result-screen .run-flow-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:.82rem;color:#3b3025}
 #result-screen .run-flow-legend-item{padding:3px 7px;border-radius:999px;background:rgba(255,248,237,.75);border:1px solid rgba(90,77,59,.18)}
 #result-screen .run-theory-footnote{margin-top:6px;margin-bottom:0;font-size:.86rem;line-height:1.62;color:#4a3d2f}
+#result-screen .run-sub-note{font-size:.8rem;opacity:.88}
+#result-screen .run-equation-note{margin-top:4px}
 #result-screen .run-theory-comment{margin-top:10px;line-height:1.7}
 @keyframes resultDetailReveal{
   from{opacity:0;transform:translateY(4px)}
@@ -429,6 +432,10 @@ h1,
   #result-screen .theory .theory-payoff-table{font-size:.84rem;min-width:480px}
   #result-screen .run-flow-segment{font-size:.72rem;padding:0 4px}
   #result-screen .run-pattern-grid{grid-template-columns:1fr}
+  #result-screen .run-theory-summary{gap:5px;margin-top:8px}
+  #result-screen .run-theory-summary p{padding:5px 7px}
+  #result-screen .run-flow-legend{font-size:.78rem;gap:6px}
+  #result-screen .run-theory-footnote{font-size:.82rem;line-height:1.56}
   .bgm-toggle{right:max(10px, env(safe-area-inset-right));top:max(10px, env(safe-area-inset-top));min-height:44px;min-width:44px;padding:9px 12px;font-size:.9rem}
 }
 
