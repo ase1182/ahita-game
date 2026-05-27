@@ -1131,7 +1131,30 @@ body#recommendations-page.is-embedded{margin:0;min-height:auto;background:#f4ecd
 #game-screen .buttons{gap:8px;min-height:168px;position:sticky;bottom:6px}
 #game-screen .buttons button{touch-action:manipulation;-webkit-tap-highlight-color:rgba(90,120,95,.16)}
 #game-screen #continue-button{font-weight:800;box-shadow:0 8px 16px rgba(30,50,34,.24);border-color:rgba(52,80,58,.5)}
-#game-screen #share-button:active,#game-screen #take-button:active,#game-screen #continue-button:active{transform:translateY(1px) scale(.997)}
+#game-screen #share-button:active,#game-screen #take-button:active,#game-screen #continue-button:active{transform:translateY(1px) scale(.98)}
+#game-screen .buttons button{transition:transform .12s ease-out,background-image .12s ease-out,box-shadow .12s ease-out}
+#game-screen .turn-result-line.motion-turn-result{animation:turnResultReveal .14s ease-out both}
+#game-screen .turn-clue-line.motion-turn-clue{animation:turnClueReveal .18s ease-out .09s both}
+#game-screen #continue-button.motion-advance{animation:continueButtonPop .2s ease-out both}
+#game-screen .day.motion-day-update{animation:dayLabelReveal .18s ease-out both}
+
+@keyframes turnResultReveal{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes turnClueReveal{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes continueButtonPop{
+  0%{opacity:0;transform:translateY(4px) scale(.985)}
+  65%{opacity:1;transform:translateY(0) scale(1.02)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes dayLabelReveal{
+  from{opacity:.82;transform:translateY(2px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
 @media (max-width:520px){
   #game-screen{padding:10px 10px 12px}
@@ -1149,4 +1172,12 @@ body#recommendations-page.is-embedded{margin:0;min-height:auto;background:#f4ecd
   #game-screen .turn-clue-line{font-size:.86rem}
   #game-screen .buttons{position:static;min-height:152px;gap:7px;bottom:auto;padding-bottom:0}
   #game-screen .buttons button{min-height:48px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  #game-screen .buttons button{transition:none}
+  #game-screen .turn-result-line.motion-turn-result,
+  #game-screen .turn-clue-line.motion-turn-clue,
+  #game-screen #continue-button.motion-advance,
+  #game-screen .day.motion-day-update{animation:none}
 }

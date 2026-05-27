@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.14"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.15"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -211,6 +211,8 @@ function setTurnMessage(resultLine, clueLine = "") {
     turnResultLine.textContent = resultLine;
     turnClueLine.textContent = clueLine;
     turnClueLine.hidden = clueLine.length === 0;
+    triggerMotion(turnResultLine, "motion-turn-result");
+    if (!turnClueLine.hidden) triggerMotion(turnClueLine, "motion-turn-clue");
     return;
   }
   message.textContent = clueLine ? `${resultLine}
@@ -823,6 +825,7 @@ function updateScreen() {
   dayLabel.textContent = `${state.day}日目`;
   dayNote.textContent = getDayNote(state);
   progressBar.style.width = `${(state.day / MAX_DAYS) * 100}%`;
+  triggerMotion(dayLabel, "motion-day-update");
   document.body.setAttribute("data-phase", `day-${state.day}`);
   setupOpponentShadow();
   setTurnMessage("まだ、相手の正体はわかりません。", "");
