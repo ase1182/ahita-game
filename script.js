@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const APP_VERSION = "v0.3.24"; // index.html の #build-version と合わせる
+const APP_VERSION = "v0.3.25"; // index.html の #build-version と合わせる
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -1041,12 +1041,9 @@ function getRunGameTheoryMetrics() {
 }
 
 function generateGameTheoryRunComment(metrics) {
-  const shapeText = `今回の7日間では、分け合いが${metrics.shareShareDays}日、こぼれた日が${metrics.mutualTakeDays}日ありました。`;
-  const expectedGap = metrics.expectedTake - metrics.expectedShare;
-  const theoryText = expectedGap >= 0.4
-    ? "1日だけを見ると、ひとりじめは自分の枚数を増やしやすい選択に見えます。ですが、同じ考えが重なるとおやつはこぼれます。"
-    : "1日だけを見ると、ふたつの選び方の差は小さめです。ですが、守り合いが重なるとおやつはこぼれます。";
-  const repeatText = "このゲームは7日間続くので、短期の得だけでなく、相手が何を覚えて次の日にどう変えたかも結果に残ります。";
+  const shapeText = `今回の形: 分け合い${metrics.shareShareDays}日・こぼれ${metrics.mutualTakeDays}日でした。`;
+  const theoryText = "理論で見ると: 1日だけならひとりじめは自分の枚数を増やしやすい一方、守り合いが重なると森全体のこぼれが増えます。";
+  const repeatText = "7日間として見ると: 相手によっては昨日を覚えて次の日の距離を変えるため、平均枚数と関係の結末を合わせて見ることが大切です。";
   return `${shapeText}\n\n${theoryText}\n\n${repeatText}`;
 }
 
@@ -1067,12 +1064,13 @@ function renderGameTheoryRunAnalysis() {
   const legendHtml = segments.map((seg) => `<span class="run-flow-legend-item ${seg.key}">${seg.label}: ${seg.value}枚</span>`).join("");
   const toPercent = (value) => `${Math.round(value * 100)}%`;
   const toFixed1 = (value) => value.toFixed(1);
-  const runIntro = `<p class="run-theory-intro">今回の7日間を、行動の事実 → 集計 → 期待値 → 解釈の順で整理しています。</p>`;
-  const patternCards = `<h4 class="run-section-title">今回の型まとめ</h4><div class="run-pattern-grid" aria-label="今回の7日間の形"><p class="run-pattern-card"><span>分け合い</span><strong>${metrics.shareShareDays}日</strong></p><p class="run-pattern-card"><span>あなた多め</span><strong>${metrics.playerTakeDays}日</strong></p><p class="run-pattern-card"><span>相手多め</span><strong>${metrics.opponentTakeDays}日</strong></p><p class="run-pattern-card"><span>こぼれた日</span><strong>${metrics.mutualTakeDays}日</strong></p></div><p class="run-theory-footnote">どの日が多いかで、7日間の形が見えてきます。</p>`;
-  const totals = `<div class="run-theory-summary"><p>あなた: <strong>${metrics.playerTotal}枚</strong></p><p>相手: <strong>${metrics.opponentTotal}枚</strong></p><p>届いた合計: <strong>${metrics.delivered}/${metrics.totalPlaced}枚</strong></p><p>届いた割合: <strong>約${toPercent(metrics.deliveryRate)}</strong></p><p>こぼれたおやつ: <strong>${metrics.lostTotal}枚</strong></p><p class="run-sub-note">こぼれ率: 約${toPercent(metrics.lossRate)}</p></div>`;
-  const expectation = `<h4 class="run-section-title">もし相手の動きが変わらないなら</h4><p class="run-theory-footnote">今回、相手は7日のうち<strong>${metrics.opponentSharedDays}日</strong>わけました（約${toPercent(metrics.opponentShareRate)}）。この割合だけを使って単純に見ると、1日あたりの平均は次のように見えます。</p><div class="run-theory-summary"><p>毎回わける: <strong>約${toFixed1(metrics.expectedShare)}枚</strong></p><p>毎回ひとりじめ: <strong>約${toFixed1(metrics.expectedTake)}枚</strong></p></div><p class="run-theory-footnote">ただし、これは相手の動きが変わらないと仮定した単純な見方です。実際には、あなたの選び方を見て行動を変える相手もいます。</p><p class="run-theory-footnote run-equation-note"><small>計算式（補足）: わける = 1 + 2p / ひとりじめ = 1 + 4p（ここでは、相手が分ける割合を p と置きます）</small></p>`;
-  const nashBlock = `<h4 class="run-section-title">ナッシュ均衡という見方</h4><p class="run-theory-footnote">1日だけの表を見ると、自分の枚数だけを考えるなら「ひとりじめ」は強い選び方に見えます。相手がわけるなら5枚、相手がひとりじめても1枚は届くからです。</p><p class="run-theory-footnote">このように、相手の選び方を前提にして自分だけ変えても得しにくい形を、ゲーム理論ではナッシュ均衡と呼びます。この森では、両方がひとりじめる形がそれに近い状態です。ただし、それが森全体にとってよい結果とは限りません。</p><p class="run-theory-footnote">1日だけなら、ひとりじめは強く見えます。しかし、このゲームは7日間続きます。相手によっては昨日の選び方を覚え、次の日の行動を変えます。だから、1日だけの表では見えない信頼・警戒・距離が結果に残ります。</p>`;
-  runTheoryAnalysis.innerHTML = `${runIntro}<div class="theory-table-wrap" role="region" aria-label="今回の7日間の行動表"><table class="theory-payoff-table run-theory-table"><thead><tr><th>日</th><th>あなた</th><th>相手</th><th>結果</th><th>あなた</th><th>相手</th><th>こぼれ</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>${patternCards}<h4 class="run-section-title">42枚はどこへ行ったか</h4>${totals}<div class="run-flow"><div class="run-flow-bar" role="img" aria-label="あなた${metrics.playerTotal}枚、相手${metrics.opponentTotal}枚、こぼれ${metrics.lostTotal}枚">${barHtml}</div><div class="run-flow-legend">${legendHtml}</div></div>${expectation}${nashBlock}<p class="run-theory-comment">${generateGameTheoryRunComment(metrics).replaceAll("\n", "<br><br>")}</p>`;
+  const oneLineSummary = metrics.mutualTakeDays >= 3 ? "今回は、手元を守る日が重なり、こぼれたおやつが多い7日間でした。" : metrics.shareShareDays >= 4 ? "今回は、分け合いが多く、こぼれは少なめの7日間でした。" : metrics.rows.slice(3).filter((row) => row.outcomeLabel === "分け合い").length >= 2 ? "今回は、後半に分ける日が増え、少し持ち直した7日間でした。" : "今回は、あなたに多く残る一方で、相手との距離も残る7日間でした。";
+  const runIntro = `<h4 class="run-section-title">ひとことでまとめ</h4><p class="run-theory-intro">${oneLineSummary}</p>`;
+  const patternCards = `<h4 class="run-section-title">4つの型</h4><div class="run-pattern-grid" aria-label="今回の7日間の形"><p class="run-pattern-card"><span>分け合い</span><strong>${metrics.shareShareDays}日</strong></p><p class="run-pattern-card"><span>あなた多め</span><strong>${metrics.playerTakeDays}日</strong></p><p class="run-pattern-card"><span>相手多め</span><strong>${metrics.opponentTakeDays}日</strong></p><p class="run-pattern-card"><span>こぼれた日</span><strong>${metrics.mutualTakeDays}日</strong></p></div><p class="run-theory-footnote">どの型が多いかで、7日間の形が見えます。</p>`;
+  const totals = `<h4 class="run-section-title">おやつの行き先</h4><div class="run-theory-summary"><p>あなた: <strong>${metrics.playerTotal}枚</strong></p><p>相手: <strong>${metrics.opponentTotal}枚</strong></p><p>こぼれ: <strong>${metrics.lostTotal}枚</strong></p><p>届いた割合: <strong>約${toPercent(metrics.deliveryRate)}</strong></p></div><p class="run-theory-footnote">こぼれた分は、42枚の中で誰にも届かなかったおやつです。</p>`;
+  const expectation = `<h4 class="run-section-title">1日だけで見ると</h4><p class="run-theory-footnote">相手が分けた日: <strong>${metrics.opponentSharedDays} / 7日</strong></p><p class="run-theory-footnote">もしその割合が続くなら:</p><div class="run-theory-summary"><p>毎回わける: <strong>約${toFixed1(metrics.expectedShare)}枚/日</strong></p><p>毎回ひとりじめ: <strong>約${toFixed1(metrics.expectedTake)}枚/日</strong></p></div><p class="run-theory-footnote">これは相手の動きが変わらないと仮定した単純な見方です。</p>`;
+  const repeatedView = `<h4 class="run-section-title">7日間で見ると</h4><p class="run-theory-footnote">1日だけなら、ひとりじめは強く見えます。けれど、このゲームは7日間続きます。</p><p class="run-theory-footnote">相手によっては昨日の選び方を覚え、次の日の距離を変えます。同じ選択でも、日をまたぐと意味が変わります。</p><p class="run-theory-footnote">だから実際の平均枚数と、最後に残る関係の結末をあわせて見ることが大切です。</p>`;
+  runTheoryAnalysis.innerHTML = `${runIntro}<h4 class="run-section-title">7日間の日別表</h4><div class="theory-table-wrap" role="region" aria-label="今回の7日間の行動表"><table class="theory-payoff-table run-theory-table"><thead><tr><th>日</th><th>あなた</th><th>相手</th><th>結果</th><th>あなた</th><th>相手</th><th>こぼれ</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>${patternCards}${totals}<div class="run-flow"><div class="run-flow-bar" role="img" aria-label="あなた${metrics.playerTotal}枚、相手${metrics.opponentTotal}枚、こぼれ${metrics.lostTotal}枚">${barHtml}</div><div class="run-flow-legend">${legendHtml}</div></div>${expectation}${repeatedView}<h4 class="run-section-title">今回の読み解き</h4><p class="run-theory-comment">${generateGameTheoryRunComment(metrics).replaceAll("\n", "<br><br>")}</p>`;
 }
 
 function renderOpponentProfile(profile) {
@@ -1101,30 +1099,30 @@ const RANDOM_STRATEGY_KEYS = new Set(["randomMood", "rareTaker"]);
 const REACTIVE_STRATEGY_KEYS = new Set(["mirrorYesterday", "generousMirror", "suspiciousMirror", "grimTrigger", "pavlovLike", "testerOwl", "majorityFollower", "twoWarnings", "followsRichSide", "cautiousCrow", "remembersForTwoDays", "changesAfterThree", "forgetfulRabbit"]);
 
 const opponentPerspectiveVoices = {
-  default: { mutualShare:["互いに分けた日は、少しだけ肩の力を抜いていました。"], playerTook:["あなたが多く持ち帰ると、次の間合いを慎重に測っていました。"], opponentTook:["その日は自分の分を先に抱え、反応を静かに見ていました。"], mutualTake:["守り合う選択が重なり、広場の空気は少しかたくなりました。"], afterPlayerShared:["前日に分けてもらえた記憶が、判断をやわらげていました。"], afterPlayerTook:["前日のひとりじめを覚え、身を守る気配が強まっていました。"], finalShare:["最後は分けられたおやつを、静かな区切りとして受け取っていました。"], finalTake:["最後は手元を守る選択を、そのまま終わりの形にしていました。"] },
-  tanuki:{mutualShare:["分け合えた日は、様子見の目つきが少しやわらいでいました。"],playerTook:["多く持ち帰る手つきを見て、次は同じ歩幅で返そうとしていました。"]},
-  rabbit:{mutualShare:["分けてもらえた日は、耳を伏せるようにほっとしていました。"],mutualTake:["守り合いになると、すぐ一歩ぶん距離を取りました。"]},
-  crow:{opponentTook:["有利な日でも浮かれず、次の損得を枝上で計っていました。"]},
-  squirrel:{afterPlayerShared:["前日の分け方を小さく覚え、今日は安心寄りに選んでいました。"]},
-  wolf:{afterPlayerTook:["前日の取り合いを強く覚え、警戒を解かずに判断していました。"]},
-  fox:{opponentTook:["今日は試しの一手として多めに取り、返し方を読んでいました。"]},
-  deer:{mutualTake:["取り合いの気配が重なると、森の奥へ引くように選んでいました。"]},
-  cat:{opponentTook:["気分の波に乗るように多めに取り、次の間合いは決めきりませんでした。"]}
+  default: { mutualShare: "分け合えたので、次も様子を見ながら近づく判断をしました。", playerTook: "あなたが多く取ったので、次は距離を置いて警戒しました。", opponentTook: "その日は自分が多く取り、あなたの反応を確かめました。", mutualTake: "ふたりで守り合ったので、次も慎重に距離を保ちました。" },
+  tanuki: { mutualShare: "分け合えたので、次も同じ歩幅で試してみようとしました。", playerTook: "あなたが多く取ったので、次は様子見を強める判断にしました。" },
+  rabbit: { mutualShare: "分けられたので、少しだけ近づいてもよいと見ました。", mutualTake: "守り合いになったので、すぐ半歩ぶん距離を置きました。" },
+  crow: { playerTook: "あなたの守り方を覚え、次は枝の上から警戒を強めました。", opponentTook: "自分が多く取った日は、あなたの返し方を観察しました。" },
+  squirrel: { mutualShare: "分けてもらえたので、その記憶を次の手がかりにしました。" },
+  wolf: { playerTook: "手元を守る選び方を見て、次は距離を保つ方を選びました。", mutualTake: "守り合いが続くと見て、警戒を解かない判断にしました。" },
+  fox: { opponentTook: "その日は試しに多く取り、あなたの反応を見極めました。" },
+  deer: { mutualShare: "分け合えたので、静かに近づく余地があると見ました。", mutualTake: "守り合いを見て、次も静かに距離を残す判断にしました。" },
+  cat: { mutualShare: "分け合えた日でも、気分の揺れを残して近づきました。", opponentTook: "見てはいましたが、その日の気分で多く取る方へ寄りました。" }
 };
 
-function pickVoice(opponentId, key){ const bank=(opponentPerspectiveVoices[opponentId]&&opponentPerspectiveVoices[opponentId][key])||opponentPerspectiveVoices.default[key]||[""]; return bank[Math.floor(Math.random()*bank.length)]||""; }
-function getStrategyTone(styleType){return styleType==="fixed"?"同じ調子を崩さず選んでいました。":styleType==="random"?"その日の気分の揺れを残した判断でした。":"昨日までの流れを見て選んでいました。";}
+function pickVoice(opponentId, key){ return (opponentPerspectiveVoices[opponentId] && opponentPerspectiveVoices[opponentId][key]) || opponentPerspectiveVoices.default[key] || opponentPerspectiveVoices.default.mutualShare; }
 function generateOpponentPerspectiveDays(opponent) {
   const playerHistory = state.playerHistory.slice(); const opponentHistory = state.opponentHistory.slice();
   const styleType = FIXED_STRATEGY_KEYS.has(opponent?.strategyKey) ? "fixed" : RANDOM_STRATEGY_KEYS.has(opponent?.strategyKey) ? "random" : "reactive";
   return playerHistory.map((playerMove, dayIndex) => {
-    const opponentMove = opponentHistory[dayIndex] || SHARE; const isFinalDay = dayIndex === MAX_DAYS - 1;
-    const prevPlayer = dayIndex > 0 ? playerHistory[dayIndex-1] : null;
+    const opponentMove = opponentHistory[dayIndex] || SHARE;
     const outcomeKey = playerMove===SHARE && opponentMove===SHARE?"mutualShare":playerMove===TAKE && opponentMove===SHARE?"playerTook":playerMove===SHARE && opponentMove===TAKE?"opponentTook":"mutualTake";
-    let text = isFinalDay ? pickVoice(opponent.id, opponentMove===SHARE?"finalShare":"finalTake") : pickVoice(opponent.id, outcomeKey);
-    if (!isFinalDay && dayIndex>0) text += prevPlayer===SHARE ? pickVoice(opponent.id,"afterPlayerShared") : pickVoice(opponent.id,"afterPlayerTook");
-    text += getStrategyTone(styleType);
-    return { day: dayIndex + 1, text: text.slice(0, 52) };
+    let text = pickVoice(opponent.id, outcomeKey);
+    if (styleType === "fixed") text += " その日も自分の順番を崩しませんでした。";
+    else if (styleType === "reactive") text += dayIndex === 0 ? " まずは様子を見て、次に備えました。" : " その判断を次の日の距離に反映しました。";
+    else text += " あなたを見つつも、その日の気分が混ざりました。";
+    const oneSentence = `${text.replace(/\s+/g, "").split("。").filter(Boolean)[0]}。`;
+    return { day: dayIndex + 1, text: oneSentence };
   });
 }
 
