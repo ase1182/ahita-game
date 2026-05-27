@@ -162,6 +162,9 @@ const takeButton = document.getElementById("take-button");
 const retryButton = document.getElementById("retry-button");
 const shareResultButton = document.getElementById("share-result-button");
 const recommendationsLink = document.querySelector(".result-recommend-link");
+const recommendationsOverlay = document.getElementById("recommendations-overlay");
+const closeRecommendationsOverlayButton = document.getElementById("close-recommendations-overlay");
+const recommendationsFrame = document.getElementById("recommendations-frame");
 const newOpponentButton = document.getElementById("new-opponent-button");
 const continueButton = document.getElementById("continue-button");
 const bgm = document.getElementById("bgm");
@@ -522,15 +525,46 @@ if (grantCookiesButton) {
 }
 if (soundToggleButton) soundToggleButton.addEventListener("click", handleSoundToggle);
 
+function openRecommendationsOverlay() {
+  if (!recommendationsOverlay || !recommendationsFrame) return;
+  recommendationsOverlay.hidden = false;
+  recommendationsOverlay.setAttribute("aria-hidden", "false");
+  recommendationsFrame.src = "recommendations.html?from=result&mode=overlay";
+}
+
+function closeRecommendationsOverlay() {
+  if (!recommendationsOverlay || !recommendationsFrame) return;
+  recommendationsOverlay.hidden = true;
+  recommendationsOverlay.setAttribute("aria-hidden", "true");
+  recommendationsFrame.src = "about:blank";
+}
+
 if (recommendationsLink) {
-  recommendationsLink.addEventListener("click", () => {
-    if (!safeStorage) return;
-    safeStorage.setItem(STORAGE_KEYS.recommendationsFromResult, "true");
-    const bgmWasPlaying = Boolean(bgm && !bgm.paused && isSoundEnabled());
-    safeStorage.setItem(STORAGE_KEYS.recommendationsBgmWasPlaying, bgmWasPlaying ? "true" : "false");
-    if (bgm) safeStorage.setItem(STORAGE_KEYS.recommendationsBgmTime, String(bgm.currentTime || 0));
+  recommendationsLink.addEventListener("click", (event) => {
+    if (event) event.preventDefault();
+    if (safeStorage) {
+      safeStorage.setItem(STORAGE_KEYS.recommendationsFromResult, "true");
+      const bgmWasPlaying = Boolean(bgm && !bgm.paused && isSoundEnabled());
+      safeStorage.setItem(STORAGE_KEYS.recommendationsBgmWasPlaying, bgmWasPlaying ? "true" : "false");
+      if (bgm) safeStorage.setItem(STORAGE_KEYS.recommendationsBgmTime, String(bgm.currentTime || 0));
+    }
+    openRecommendationsOverlay();
   });
 }
+
+if (closeRecommendationsOverlayButton) {
+  closeRecommendationsOverlayButton.addEventListener("click", closeRecommendationsOverlay);
+}
+if (recommendationsOverlay) {
+  recommendationsOverlay.addEventListener("click", (event) => {
+    const closeTrigger = event.target instanceof HTMLElement && event.target.dataset.closeOverlay === "true";
+    if (closeTrigger) closeRecommendationsOverlay();
+  });
+}
+window.addEventListener("message", (event) => {
+  if (event.origin !== window.location.origin) return;
+  if (event.data === "ahita.closeRecommendationsOverlay") closeRecommendationsOverlay();
+});
 
 if (bgm) bgm.volume = BGM_VOLUME;
 updateSoundToggleLabel();

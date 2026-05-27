@@ -163,7 +163,7 @@
       <section class="result-recommend-panel result-panel" aria-label="おすすめページへの案内">
         <h3>この森の続きを探す</h3>
         <p>この世界観に近い本・音声コンテンツの紹介ページです。</p>
-        <p><a class="result-recommend-link button-link" href="recommendations.html?from=result">おすすめを見る</a></p>
+        <p><a class="result-recommend-link button-link" href="recommendations.html?from=result" data-open-overlay="true">おすすめを見る</a></p>
         <p class="result-recommend-note">PRを含む紹介ページへ移動します。</p>
       </section>
 
@@ -203,6 +203,15 @@
       </details>
     </section>
   </main>
+
+  <div id="recommendations-overlay" class="recommendations-overlay" hidden aria-hidden="true">
+    <div class="recommendations-overlay-backdrop" data-close-overlay="true"></div>
+    <section class="recommendations-overlay-dialog" role="dialog" aria-modal="true" aria-label="おすすめ紹介ページ">
+      <button id="close-recommendations-overlay" class="recommendations-overlay-close" type="button" aria-label="おすすめを閉じる">結果に戻る</button>
+      <iframe id="recommendations-frame" title="おすすめ紹介ページ" loading="lazy"></iframe>
+    </section>
+  </div>
+
   <button id="sound-toggle" class="bgm-toggle" type="button">音を消す</button>
   <!-- Temporary build marker for cache/deploy debugging -->
   <small id="build-version" class="build-version" aria-hidden="true">v0.3.9</small>
