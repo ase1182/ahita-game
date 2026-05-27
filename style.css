@@ -378,11 +378,23 @@ h1,
 #result-screen .opponent-thought-days li:last-child{border-bottom:none;padding-bottom:0}
 #result-screen .opponent-thought-day{flex:0 0 auto;min-width:3.2em;font-size:.82rem;font-weight:700;letter-spacing:.02em;color:#4a3b2c}
 #result-screen .opponent-thought-text{flex:1 1 auto;font-size:.92rem;line-height:1.7;color:#332b21}
+
+#result-screen .run-theory-table th:first-child{white-space:nowrap}
+#result-screen .run-theory-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px;margin-top:10px}
+#result-screen .run-theory-summary p{margin:0;padding:6px 8px;border-radius:8px;background:rgba(255,248,236,.7);font-size:.9rem;line-height:1.5}
+#result-screen .run-flow{margin-top:10px}
+#result-screen .run-flow-bar{display:flex;width:100%;min-height:34px;border-radius:10px;overflow:hidden;background:rgba(225,215,194,.6);border:1px solid rgba(90,77,59,.2)}
+#result-screen .run-flow-segment{display:flex;align-items:center;justify-content:center;padding:0 6px;font-size:.78rem;font-weight:700;color:#1f1a14;white-space:nowrap}
+#result-screen .run-flow-segment.player{background:rgba(129,170,116,.85)}
+#result-screen .run-flow-segment.opponent{background:rgba(143,124,196,.72)}
+#result-screen .run-flow-segment.lost{background:rgba(168,145,121,.45)}
+#result-screen .run-flow-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:.82rem;color:#3b3025}
+#result-screen .run-theory-comment{margin-top:10px;line-height:1.7}
 @keyframes resultDetailReveal{
   from{opacity:0;transform:translateY(4px)}
   to{opacity:1;transform:translateY(0)}
 }
-@media (max-width:640px){.day-note{font-size:.9rem;max-width:68%}#message{min-height:52px;font-size:1rem}.buttons{bottom:0;padding-bottom:calc(8px + env(safe-area-inset-bottom));z-index:3}.buttons button{position:relative;z-index:4}button{padding:10px 14px}#start-screen{gap:8px}#start-screen .start-intro-card,#start-screen .start-rules-card{padding:12px 13px;line-height:1.7;font-size:.98rem}#start-screen .start-rules-list{gap:3px;padding-left:1.1em;line-height:1.56}#start-screen .start-section-title{font-size:.98rem;margin-bottom:6px}#start-screen .start-details{margin-top:7px;padding-top:7px}#start-screen .start-details summary{min-height:42px}#start-screen .cookie-count{font-size:1rem;gap:6px}#start-screen .start-note{padding:8px 11px;line-height:1.58}#result-screen .result-opponent-body{flex-direction:column;align-items:flex-start;gap:8px}#result-screen .result-opponent-wrap{align-self:center}#result-screen .result-opponent-image{width:110px;height:110px}#result-screen .result-panel{padding:11px 11px}#result-screen .result-primary #result-text{font-size:.98rem} #result-screen .opponent-thought-days li{gap:6px}#result-screen .opponent-thought-day{min-width:3em;font-size:.8rem}#result-screen .opponent-thought-text{font-size:.9rem;line-height:1.64}#result-screen .result-buttons{bottom:0}}
+@media (max-width:640px){.day-note{font-size:.9rem;max-width:68%}#message{min-height:52px;font-size:1rem}.buttons{bottom:0;padding-bottom:calc(8px + env(safe-area-inset-bottom));z-index:3}.buttons button{position:relative;z-index:4}button{padding:10px 14px}#start-screen{gap:8px}#start-screen .start-intro-card,#start-screen .start-rules-card{padding:12px 13px;line-height:1.7;font-size:.98rem}#start-screen .start-rules-list{gap:3px;padding-left:1.1em;line-height:1.56}#start-screen .start-section-title{font-size:.98rem;margin-bottom:6px}#start-screen .start-details{margin-top:7px;padding-top:7px}#start-screen .start-details summary{min-height:42px}#start-screen .cookie-count{font-size:1rem;gap:6px}#start-screen .start-note{padding:8px 11px;line-height:1.58}#result-screen .result-opponent-body{flex-direction:column;align-items:flex-start;gap:8px}#result-screen .result-opponent-wrap{align-self:center}#result-screen .result-opponent-image{width:110px;height:110px}#result-screen .result-panel{padding:11px 11px}#result-screen .result-primary #result-text{font-size:.98rem} #result-screen .opponent-thought-days li{gap:6px}#result-screen .opponent-thought-day{min-width:3em;font-size:.8rem}#result-screen .opponent-thought-text{font-size:.9rem;line-height:1.62}#result-screen .result-buttons{bottom:0}}
 @media (max-width:420px){
   h1{margin:0 0 8px}
   .game{padding:12px 10px 18px}
