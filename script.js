@@ -4,7 +4,7 @@ const MAX_DAYS = 7;
 const TURN_DELAY_MS = 520;
 const BGM_VOLUME = 0.25;
 const SFX_VOLUME_BASE = 0.52;
-const BUILD_VERSION = "f5e4a2c-uihide";
+const APP_VERSION = "v0.3.0";
 const STORAGE_KEYS = {
   balance: "ahita.cookies.balance",
   lastGrantRunId: "ahita.cookies.lastGrantRunId",
@@ -13,7 +13,7 @@ const STORAGE_KEYS = {
   resultReachedAt: "ahita.ahita.resultReachedAt"
 };
 
-console.info("また明日も会うきみへ build:", BUILD_VERSION);
+console.info("また明日も会うきみへ version:", APP_VERSION);
 
 const PAYOFF_TABLE = {
   [`${SHARE}_${SHARE}`]: { player: 3, opponent: 3 },
@@ -168,7 +168,7 @@ const woodDropSe = document.getElementById("se-wood-drop");
 const buildVersionElement = document.getElementById("build-version");
 
 if (buildVersionElement) {
-  buildVersionElement.textContent = `build ${BUILD_VERSION}`;
+  buildVersionElement.textContent = APP_VERSION;
 }
 
 const state = { day: 1, playerHistory: [], opponentHistory: [], playerScore: 0, opponentScore: 0, currentOpponent: null, isProcessingTurn: false, isFinished: false, resultTypeTitle: "", turnResolved: false, decisionTimes: [], turnStartedAt: 0 };
