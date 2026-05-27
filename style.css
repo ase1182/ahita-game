@@ -380,9 +380,9 @@ h1,
 #result-screen .opponent-thought-text{flex:1 1 auto;font-size:.92rem;line-height:1.7;color:#332b21}
 
 #result-screen .run-theory-table th:first-child{white-space:nowrap}
-#result-screen .run-theory-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px;margin-top:10px}
+#result-screen .run-theory-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:8px}
 #result-screen .run-theory-summary p{margin:0;padding:6px 8px;border-radius:8px;background:rgba(255,248,236,.7);font-size:.9rem;line-height:1.5}
-#result-screen .run-theory-intro{margin-top:8px;margin-bottom:10px;font-size:.94rem;line-height:1.68;color:#352d22}
+#result-screen .run-theory-intro{margin-top:6px;margin-bottom:8px;font-size:.93rem;line-height:1.62;color:#352d22}
 #result-screen .run-pattern-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin-top:10px}
 #result-screen .run-pattern-card{margin:0;padding:8px 9px;border-radius:9px;border:1px solid rgba(90,77,59,.18);background:rgba(253,247,236,.76);display:flex;flex-direction:column;gap:4px}
 #result-screen .run-pattern-card span{font-size:.83rem;color:#4a3d2e}
@@ -396,9 +396,7 @@ h1,
 #result-screen .run-flow-segment.lost{background:rgba(168,145,121,.45)}
 #result-screen .run-flow-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:.82rem;color:#3b3025}
 #result-screen .run-flow-legend-item{padding:3px 7px;border-radius:999px;background:rgba(255,248,237,.75);border:1px solid rgba(90,77,59,.18)}
-#result-screen .run-theory-footnote{margin-top:6px;margin-bottom:0;font-size:.86rem;line-height:1.62;color:#4a3d2f}
-#result-screen .run-sub-note{font-size:.8rem;opacity:.88}
-#result-screen .run-equation-note{margin-top:4px}
+#result-screen .run-theory-footnote{margin-top:4px;margin-bottom:0;font-size:.84rem;line-height:1.56;color:#4a3d2f}
 #result-screen .run-theory-comment{margin-top:10px;line-height:1.7}
 @keyframes resultDetailReveal{
   from{opacity:0;transform:translateY(4px)}
