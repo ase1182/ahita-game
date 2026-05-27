@@ -1071,3 +1071,14 @@ a:not(.button-link):not(.credits-entry-link){text-decoration-thickness:2px;text-
 #result-screen .result-buttons button{width:100%;min-height:54px}
 #result-screen .replay-note{margin:2px 2px 4px;color:#f2ead7;opacity:.92}
 #result-screen .result-recommend-panel,#result-screen .theory.result-panel{background:rgba(241,232,212,.84)}
+
+
+/* result actions panel v0.3.9 */
+#result-screen .result-chip strong{display:inline-flex;align-items:baseline;gap:1px;white-space:nowrap}
+#result-screen .result-chip .result-unit{font-size:.72em;font-weight:700;opacity:.92}
+#result-screen .result-actions-panel{margin-top:8px;padding:14px 12px;border-radius:14px;background:rgba(82,65,45,.18);border:1px solid rgba(95,76,53,.32)}
+#result-screen .result-actions-title{margin:0 0 8px;font-size:.92rem;letter-spacing:.04em;color:#2f261c}
+#result-screen .result-actions-panel .result-buttons{margin-top:0;padding:0;background:transparent;border:none;box-shadow:none}
+#result-screen .result-actions-panel .replay-note{margin:8px 2px 0;color:#3a2f23;opacity:.88;font-size:.85rem;line-height:1.55}
+#result-screen .result-share-button{font-weight:700;border-width:2px;border-color:rgba(62,48,33,.5);background:rgba(233,219,190,.95)}
+#result-screen .result-share-button:hover,#result-screen .result-share-button:focus-visible{background:rgba(227,211,180,.98)}
